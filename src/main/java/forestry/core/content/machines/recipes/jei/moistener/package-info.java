@@ -4,6 +4,6 @@
 package forestry.core.content.machines.recipes.jei.moistener;
 
 import forestry.core.platform.util.FieldsAreNonnullByDefault;
-import net.minecraft.MethodsReturnNonnullByDefault;
+import forestry.api.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

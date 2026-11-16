@@ -14,19 +14,19 @@ import forestry.core.platform.util.NBTUtilForestry;
 import forestry.core.platform.util.ResourceUtil;
 import forestry.core.platform.util.SpeciesUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -96,8 +96,8 @@ public class LeavesModel extends ModelBlockCached<ForestryLeavesBlock, LeavesMod
 			species = SpeciesUtil.TREE_TYPE.get().getDefaultSpecies();
 			sprite = IForestryClientApi.INSTANCE.getTreeManager().getLeafSprite(species);
 		}
-		ResourceLocation leafLocation = sprite.get(Boolean.TRUE.equals(extraData.get(LeavesBlockEntity.PROPERTY_POLLINATED)), fancy);
-		ResourceLocation fruitLocation = extraData.get(LeavesBlockEntity.PROPERTY_FRUIT_TEXTURE);
+		Identifier leafLocation = sprite.get(Boolean.TRUE.equals(extraData.get(LeavesBlockEntity.PROPERTY_POLLINATED)), fancy);
+		Identifier fruitLocation = extraData.get(LeavesBlockEntity.PROPERTY_FRUIT_TEXTURE);
 
 		return new Key(ResourceUtil.getBlockSprite(leafLocation), fruitLocation != null ? ResourceUtil.getBlockSprite(fruitLocation) : null, fancy);
 	}

@@ -16,7 +16,7 @@ import forestry.apiculture.bees.BeeHousingScreen;
 import forestry.apiculture.models.ModelBee;
 import forestry.apiculture.particles.*;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.client.event.ModelEvent;

@@ -5,7 +5,7 @@ import forestry.core.features.CoreItems;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
 import com.mojang.datafixers.util.Pair;
 import forestry.api.ForestryConstants;
 import forestry.api.apiculture.genetics.BeeLifeStage;
@@ -47,7 +47,7 @@ import net.minecraft.client.renderer.*;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.player.Player;
@@ -143,7 +143,7 @@ public class CoreClientHandler implements IClientModuleHandler {
 	}
 
 	private static void registerModelLoaders(ModelEvent.RegisterGeometryLoaders event) {
-		event.register(ResourceLocation.fromNamespaceAndPath(ForestryConstants.MOD_ID, "fluid_container"), FluidContainerModel.Loader.INSTANCE);
+		event.register(Identifier.fromNamespaceAndPath(ForestryConstants.MOD_ID, "fluid_container"), FluidContainerModel.Loader.INSTANCE);
 
 		// Client model registration depends on TreeManager / BeeManager / etc. being
 		// initialized. RegisterGeometryLoaders fires before FMLCommonSetupEvent, so make
@@ -156,14 +156,14 @@ public class CoreClientHandler implements IClientModuleHandler {
 		IBeeClientManager beeManager = IForestryClientApi.INSTANCE.getBeeManager();
 
 		for (BeeLifeStage stage : BeeLifeStage.values()) {
-			for (ResourceLocation location : beeManager.getAllModelLocations(stage)) {
+			for (Identifier location : beeManager.getAllModelLocations(stage)) {
 				event.register(ModelResourceLocation.standalone(location));
 			}
 		}
 
 		ITreeClientManager treeManager = IForestryClientApi.INSTANCE.getTreeManager();
 
-		for (Pair<ResourceLocation, ResourceLocation> pair : treeManager.getAllSaplingModels()) {
+		for (Pair<Identifier, Identifier> pair : treeManager.getAllSaplingModels()) {
 			event.register(ModelResourceLocation.standalone(pair.getFirst()));
 			event.register(ModelResourceLocation.standalone(pair.getSecond()));
 		}
@@ -230,12 +230,12 @@ public class CoreClientHandler implements IClientModuleHandler {
 			}
 			event.registerFluidType(new IClientFluidTypeExtensions() {
 				@Override
-				public ResourceLocation getStillTexture() {
+				public Identifier getStillTexture() {
 					return forestryType.getStillTexture();
 				}
 
 				@Override
-				public ResourceLocation getFlowingTexture() {
+				public Identifier getFlowingTexture() {
 					return forestryType.getFlowingTexture();
 				}
 

@@ -3,7 +3,7 @@ package forestry.core.platform.util;
 import com.mojang.authlib.GameProfile;
 import forestry.core.platform.network.IStreamable;
 import io.netty.buffer.Unpooled;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;

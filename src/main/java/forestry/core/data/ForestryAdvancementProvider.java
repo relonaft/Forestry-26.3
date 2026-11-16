@@ -8,19 +8,19 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.AdvancementType;
-import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.advancements.critereon.ImpossibleTrigger;
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.PlayerTrigger;
+import net.minecraft.advancements.triggers.CriteriaTriggers;
+import net.minecraft.advancements.predicates.entity.EntityPredicate;
+import net.minecraft.advancements.triggers.ImpossibleTrigger;
+import net.minecraft.advancements.triggers.InventoryChangeTrigger;
+import net.minecraft.advancements.predicates.ItemPredicate;
+import net.minecraft.advancements.triggers.PlayerTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -78,7 +78,7 @@ public class ForestryAdvancementProvider extends AdvancementProvider {
 					icon,
 					Component.translatable("advancements.forestry.root.title"),
 					Component.translatable("advancements.forestry.root.description"),
-					ResourceLocation.withDefaultNamespace("textures/block/honeycomb_block.png"),
+					Identifier.withDefaultNamespace("textures/block/honeycomb_block.png"),
 					AdvancementType.TASK,
 					false,
 					false,
@@ -494,7 +494,7 @@ public class ForestryAdvancementProvider extends AdvancementProvider {
 		 * @param parent  The advancement it hangs under
 		 * @return The advancement, to hang a child under
 		 */
-		private static AdvancementHolder discoveredBee(Consumer<AdvancementHolder> writer, String name, ResourceLocation species, AdvancementHolder parent) {
+		private static AdvancementHolder discoveredBee(Consumer<AdvancementHolder> writer, String name, Identifier species, AdvancementHolder parent) {
 			return ForestryAdvancements.add(writer, name,
 				SpeciesUtil.BEE_TYPE.get().createStack(species, BeeLifeStage.DRONE),
 				parent,
@@ -511,7 +511,7 @@ public class ForestryAdvancementProvider extends AdvancementProvider {
 		 * @param type    The frame the advancement tree draws around the icon
 		 * @return The advancement, to hang a child under
 		 */
-		private static AdvancementHolder discoveredTree(Consumer<AdvancementHolder> writer, String name, ResourceLocation species, AdvancementHolder parent, AdvancementType type) {
+		private static AdvancementHolder discoveredTree(Consumer<AdvancementHolder> writer, String name, Identifier species, AdvancementHolder parent, AdvancementType type) {
 			return ForestryAdvancements.add(writer, name,
 				SpeciesUtil.TREE_TYPE.get().createStack(species, TreeLifeStage.SAPLING),
 				parent,

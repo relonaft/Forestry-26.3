@@ -7,7 +7,7 @@ import forestry.core.content.energy.screen.CombustionEngineScreen;
 import forestry.core.content.energy.screen.PeatEngineScreen;
 import forestry.core.content.energy.screen.SolarEngineScreen;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;

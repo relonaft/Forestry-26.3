@@ -4,7 +4,7 @@ import forestry.core.platform.config.ForestryConfig;
 import forestry.core.platform.entities.ParticleIgnition;
 import forestry.core.platform.entities.ParticleSmoke;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.ParticleStatus;
+import net.minecraft.server.level.ParticleStatus;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;

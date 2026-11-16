@@ -56,14 +56,14 @@ import forestry.core.content.backpacks.features.CrateItems;
 import forestry.core.content.backpacks.items.CratedItem;
 import forestry.core.content.worktable.features.WorktableBlocks;
 import it.unimi.dsi.fastutil.objects.ObjectIntPair;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SingleItemRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -84,7 +84,7 @@ import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import forestry.api.ForestryConstants;
 import thedarkcolour.modkit.data.MKRecipeProvider;
@@ -1782,7 +1782,7 @@ public class ForestryRecipeProvider {
 
 	private static void crate(RecipeOutput consumer, CratedItem crated, Ingredient ingredient) {
 		ItemStack contained = crated.getContained();
-		ResourceLocation name = ModUtil.getRegistryName(contained.getItem());
+		Identifier name = ModUtil.getRegistryName(contained.getItem());
 
 		new CarpenterRecipeBuilder()
 			.setPackagingTime(Constants.CARPENTER_CRATING_CYCLES)

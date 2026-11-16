@@ -11,7 +11,7 @@ import forestry.core.platform.client.ForestryColors;
 import forestry.core.platform.config.ForestryConfig;
 import forestry.modules.BlankForestryModule;
 import forestry.core.content.backpacks.client.StorageClientHandler;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
@@ -36,7 +36,7 @@ public class ModuleStorage extends BlankForestryModule {
 	public static final BackpackDefinition BREWER = new BackpackDefinition(0xBD7CBD, ForestryColors.WHITE, BACKPACK_INTERFACE.createBackpackFilter(ForestryTags.Items.BREWER_ALLOW, ForestryTags.Items.BREWER_REJECT));
 
 	@Override
-	public ResourceLocation getId() {
+	public Identifier getId() {
 		return ForestryModuleIds.STORAGE;
 	}
 

@@ -3,7 +3,7 @@ package forestry.core.platform.gui;
 import forestry.core.platform.render.ColourProperties;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
@@ -13,7 +13,7 @@ public abstract class TitledForestryScreen<C extends AbstractContainerMenu> exte
 	}
 
 	// For Forestry addons
-	protected TitledForestryScreen(ResourceLocation texture, C container, Inventory inv, Component title) {
+	protected TitledForestryScreen(Identifier texture, C container, Inventory inv, Component title) {
 		super(texture, container, inv, title);
 	}
 

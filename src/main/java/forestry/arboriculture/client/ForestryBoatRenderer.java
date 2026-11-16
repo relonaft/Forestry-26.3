@@ -3,22 +3,22 @@ package forestry.arboriculture.client;
 import com.mojang.datafixers.util.Pair;
 import forestry.arboriculture.wood.ForestryWoodType;
 import forestry.arboriculture.entities.ForestryBoat;
-import net.minecraft.client.model.BoatModel;
+import net.minecraft.client.model.object.boat.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
 import net.minecraft.client.model.ListModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.BoatRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 
 import java.util.EnumMap;
 
 import static forestry.api.ForestryConstants.forestry;
 
 public class ForestryBoatRenderer extends BoatRenderer {
-	private final EnumMap<ForestryWoodType, Pair<ResourceLocation, ListModel<Boat>>> boatResources;
+	private final EnumMap<ForestryWoodType, Pair<Identifier, ListModel<Boat>>> boatResources;
 
 	public ForestryBoatRenderer(EntityRendererProvider.Context ctx, boolean hasChest) {
 		super(ctx, hasChest);
@@ -46,7 +46,7 @@ public class ForestryBoatRenderer extends BoatRenderer {
 	}
 
 	@Override
-	public Pair<ResourceLocation, ListModel<Boat>> getModelWithLocation(Boat boat) {
+	public Pair<Identifier, ListModel<Boat>> getModelWithLocation(Boat boat) {
 		return boat instanceof ForestryBoat forestryBoat ? this.boatResources.get(forestryBoat.getWoodType()) : super.getModelWithLocation(boat);
 	}
 }

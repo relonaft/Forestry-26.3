@@ -12,7 +12,7 @@ import forestry.lepidopterology.entities.EntityButterfly;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import forestry.lepidopterology.ModuleLepidopterology;

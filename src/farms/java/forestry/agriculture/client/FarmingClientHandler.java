@@ -6,7 +6,7 @@ import forestry.agriculture.features.FarmingBlocks;
 import forestry.agriculture.features.FarmingMenuTypes;
 import forestry.agriculture.minifarm.gui.MinifarmScreen;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;

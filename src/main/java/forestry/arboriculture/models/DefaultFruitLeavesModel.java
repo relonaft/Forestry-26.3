@@ -2,13 +2,13 @@ package forestry.arboriculture.models;
 
 import forestry.arboriculture.leaves.DefaultFruitLeavesBlock;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData;
 
 public class DefaultFruitLeavesModel extends DecorativeLeavesModel<DefaultFruitLeavesBlock> {
 	public DefaultFruitLeavesModel() {

@@ -8,18 +8,18 @@ import forestry.api.core.genetics.IIndividual;
 import forestry.api.core.genetics.capability.IIndividualHandlerItem;
 import forestry.arboriculture.sapling.SaplingBlockEntity;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 
@@ -33,21 +33,21 @@ public class SaplingModel implements IUnbakedGeometry<SaplingModel> {
 	@Override
 	public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
 		ITreeClientManager treeManager = IForestryClientApi.INSTANCE.getTreeManager();
-		Map<ResourceLocation, BakedModel> baked = new HashMap<>();
+		Map<Identifier, BakedModel> baked = new HashMap<>();
 
-		for (Pair<ResourceLocation, ResourceLocation> pair : treeManager.getAllSaplingModels()) {
+		for (Pair<Identifier, Identifier> pair : treeManager.getAllSaplingModels()) {
 			bakeInto(baked, baker, spriteGetter, pair.getFirst());
 			bakeInto(baked, baker, spriteGetter, pair.getSecond());
 		}
 		// ensure the default pair is baked even if no species registered a model
-		Pair<ResourceLocation, ResourceLocation> def = treeManager.getDefaultSaplingModels();
+		Pair<Identifier, Identifier> def = treeManager.getDefaultSaplingModels();
 		bakeInto(baked, baker, spriteGetter, def.getFirst());
 		bakeInto(baked, baker, spriteGetter, def.getSecond());
 
 		return new Baked(treeManager, baked);
 	}
 
-	private static void bakeInto(Map<ResourceLocation, BakedModel> baked, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ResourceLocation location) {
+	private static void bakeInto(Map<Identifier, BakedModel> baked, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, Identifier location) {
 		if (!baked.containsKey(location)) {
 			BakedModel model = baker.bake(location, BlockModelRotation.X0_Y0, spriteGetter);
 			if (model != null) {
@@ -58,23 +58,23 @@ public class SaplingModel implements IUnbakedGeometry<SaplingModel> {
 
 	public static class Baked implements BakedModel {
 		private final ITreeClientManager treeManager;
-		private final Map<ResourceLocation, BakedModel> baked;
+		private final Map<Identifier, BakedModel> baked;
 		@Nullable
 		private ItemOverrides overrideList;
 
-		public Baked(ITreeClientManager treeManager, Map<ResourceLocation, BakedModel> baked) {
+		public Baked(ITreeClientManager treeManager, Map<Identifier, BakedModel> baked) {
 			this.treeManager = treeManager;
 			this.baked = baked;
 		}
 
 		private BakedModel blockModelFor(@Nullable ITreeSpecies species) {
-			Pair<ResourceLocation, ResourceLocation> pair = species != null ? this.treeManager.getSaplingModels(species) : this.treeManager.getDefaultSaplingModels();
+			Pair<Identifier, Identifier> pair = species != null ? this.treeManager.getSaplingModels(species) : this.treeManager.getDefaultSaplingModels();
 			BakedModel model = this.baked.get(pair.getFirst());
 			return model != null ? model : this.baked.get(this.treeManager.getDefaultSaplingModels().getFirst());
 		}
 
 		private BakedModel itemModelFor(ITreeSpecies species) {
-			Pair<ResourceLocation, ResourceLocation> pair = this.treeManager.getSaplingModels(species);
+			Pair<Identifier, Identifier> pair = this.treeManager.getSaplingModels(species);
 			BakedModel model = this.baked.get(pair.getSecond());
 			return model != null ? model : this.baked.get(this.treeManager.getDefaultSaplingModels().getSecond());
 		}

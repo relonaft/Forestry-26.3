@@ -2,6 +2,6 @@
 @MethodsReturnNonnullByDefault
 package forestry.api.core.multiblock;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
+import forestry.api.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

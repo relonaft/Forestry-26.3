@@ -1,3 +1,3 @@
 @javax.annotation.ParametersAreNonnullByDefault
-@net.minecraft.MethodsReturnNonnullByDefault
+@forestry.api.MethodsReturnNonnullByDefault
 package forestry.api.client;

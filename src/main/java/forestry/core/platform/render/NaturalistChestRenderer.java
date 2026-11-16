@@ -14,10 +14,10 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 public class NaturalistChestRenderer implements BlockEntityRenderer<NaturalistChestBlockEntity> {
@@ -28,7 +28,7 @@ public class NaturalistChestRenderer implements BlockEntityRenderer<NaturalistCh
 	private final ModelPart lid;
 	private final ModelPart base;
 	private final ModelPart lock;
-	private final ResourceLocation texture;
+	private final Identifier texture;
 
 	public NaturalistChestRenderer(BlockEntityRendererProvider.Context ctx, String textureName) {
 		ModelPart root = ctx.bakeLayer(ForestryModelLayers.NATURALIST_CHEST_LAYER);

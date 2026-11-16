@@ -1,15 +1,15 @@
 package forestry.core.content.backpacks;
 
 import forestry.api.core.genetics.capability.IIndividualHandlerItem;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Predicate;
 
 public class NaturalistBackpackFilter implements Predicate<ItemStack> {
-	private final ResourceLocation speciesRootUid;
+	private final Identifier speciesRootUid;
 
-	public NaturalistBackpackFilter(ResourceLocation speciesType) {
+	public NaturalistBackpackFilter(Identifier speciesType) {
 		this.speciesRootUid = speciesType;
 	}
 

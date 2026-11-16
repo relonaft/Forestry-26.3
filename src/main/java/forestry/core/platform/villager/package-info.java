@@ -2,6 +2,6 @@
 @MethodsReturnNonnullByDefault
 package forestry.core.platform.villager;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
+import forestry.api.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

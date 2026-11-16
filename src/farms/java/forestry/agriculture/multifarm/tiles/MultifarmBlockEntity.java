@@ -17,7 +17,7 @@ import forestry.agriculture.multifarm.multiblock.MultiblockLogicFarm;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -79,7 +79,7 @@ public abstract class MultifarmBlockEntity extends MultiblockTileEntityForestry<
 	}
 
 	@Override
-	public ResourceLocation getSocketType() {
+	public Identifier getSocketType() {
 		return getMultiblockLogic().getController().getSocketType();
 	}
 

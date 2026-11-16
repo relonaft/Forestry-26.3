@@ -1,0 +1,11 @@
+{
+ "classes": {
+  "net.minecraft.resources.ResourceLocation": "net.minecraft.resources.Identifier",
+  "net.minecraft.ResourceLocationException": "net.minecraft.IdentifierException",
+  "net.minecraft.commands.arguments.ResourceLocationArgument": "net.minecraft.commands.arguments.IdentifierArgument"
+ },
+ "text": {
+  "readResourceLocation": "readIdentifier",
+  "writeResourceLocation": "writeIdentifier"
+ }
+}

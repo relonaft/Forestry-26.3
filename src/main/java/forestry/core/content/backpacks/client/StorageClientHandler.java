@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.bus.api.IEventBus;
@@ -43,7 +43,7 @@ public class StorageClientHandler implements IClientModuleHandler {
 			// all registered backpacks, so addon backpacks from IBackpackInterface get the property too
 			for (Item item : BuiltInRegistries.ITEM) {
 				if (item instanceof BackpackItem) {
-					ItemProperties.register(item, ResourceLocation.withDefaultNamespace("mode"), itemPropertyFunction);
+					ItemProperties.register(item, Identifier.withDefaultNamespace("mode"), itemPropertyFunction);
 				}
 			}
 		});

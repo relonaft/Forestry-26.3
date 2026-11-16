@@ -11,11 +11,11 @@ import forestry.api.core.genetics.alleles.BeeChromosomes;
 import forestry.apiculture.features.ApicultureTiles;
 import forestry.core.platform.tile.TileUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
@@ -45,13 +45,13 @@ import forestry.api.apiculture.ForestryActivityTypes;
 
 // Hives where wild bees live
 public class HiveBlock extends Block implements EntityBlock {
-	private final ResourceLocation speciesId;
+	private final Identifier speciesId;
 
 	public HiveBlock(HiveBlockType type) {
 		this(type.getSpeciesId());
 	}
 
-	public HiveBlock(ResourceLocation speciesId) {
+	public HiveBlock(Identifier speciesId) {
 		super(Properties.of().sound(SoundType.WOOD).lightLevel(state -> 7).strength(2.5f));
 		this.speciesId = speciesId;
 	}
@@ -164,7 +164,7 @@ public class HiveBlock extends Block implements EntityBlock {
 		return drops;
 	}
 
-	public ResourceLocation getSpeciesId() {
+	public Identifier getSpeciesId() {
 		return this.speciesId;
 	}
 

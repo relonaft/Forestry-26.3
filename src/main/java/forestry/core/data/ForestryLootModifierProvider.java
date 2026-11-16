@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import static net.minecraft.advancements.critereon.ItemPredicate.Builder.item;
+import static net.minecraft.advancements.predicates.ItemPredicate.Builder.item;
 import static net.minecraft.world.level.storage.loot.predicates.MatchTool.toolMatches;
 
 /**

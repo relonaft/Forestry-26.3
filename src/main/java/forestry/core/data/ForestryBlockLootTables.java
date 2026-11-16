@@ -17,11 +17,11 @@ import forestry.core.platform.loot.OrganismFunction;
 import forestry.core.platform.util.SpeciesUtil;
 import forestry.core.platform.registration.FeatureBlock;
 import forestry.core.platform.registration.FeatureBlockGroup;
-import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.advancements.predicates.StatePropertiesPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.BlockLootSubProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Items;
@@ -39,7 +39,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.BonusLevelTableCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.providers.number.BinomialDistributionGenerator;
+import net.minecraft.world.level.storage.loot.providers.number.ints.BinomialDistributionGenerator;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import thedarkcolour.modkit.MKUtils;
@@ -57,9 +57,9 @@ public class ForestryBlockLootTables extends BlockLootSubProvider {
 	// The pass below covers every forestry block, including the ones a content jar registers. Those get their loot
 	// from that jar's own provider, so they are skipped rather than written into core's root as well. Handed in by
 	// Data from the modules the content jars declare, the same set that scopes core's names
-	private final Set<ResourceLocation> contentOwned;
+	private final Set<Identifier> contentOwned;
 
-	protected ForestryBlockLootTables(HolderLookup.Provider registries, Set<ResourceLocation> contentOwned) {
+	protected ForestryBlockLootTables(HolderLookup.Provider registries, Set<Identifier> contentOwned) {
 		super(Set.of(), FeatureFlags.DEFAULT_FLAGS, registries);
 		this.contentOwned = contentOwned;
 	}

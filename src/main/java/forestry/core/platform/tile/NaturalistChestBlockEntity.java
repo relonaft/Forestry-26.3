@@ -6,7 +6,7 @@ import forestry.core.platform.gui.NaturalistInventoryMenu;
 import forestry.core.platform.inventory.NaturalistChestInventory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -25,14 +25,14 @@ public abstract class NaturalistChestBlockEntity extends BaseBlockEntity {
 	private static final float lidAngleVariationPerTick = 0.1F;
 	public static final VoxelShape CHEST_SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
 
-	private final ResourceLocation speciesTypeId;
+	private final Identifier speciesTypeId;
 	@Nullable
 	private ISpeciesType<?, ?> speciesType;
 	public float lidAngle;
 	public float prevLidAngle;
 	private int numPlayersUsing;
 
-	public NaturalistChestBlockEntity(BlockEntityType type, BlockPos pos, BlockState state, ResourceLocation speciesTypeId) {
+	public NaturalistChestBlockEntity(BlockEntityType type, BlockPos pos, BlockState state, Identifier speciesTypeId) {
 		super(type, pos, state);
 		this.speciesTypeId = speciesTypeId;
 		setInternalInventory(new NaturalistChestInventory(this));

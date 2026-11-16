@@ -2,7 +2,7 @@
 package forestry.api.core.backpacks;
 
 import forestry.api.core.genetics.ISpeciesType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,12 +16,12 @@ import java.util.function.Predicate;
  * To create your own backpack, create an {@link IBackpackDefinition}.
  * Backpack definitions have a filter, which you can create here with
  * {@link #createBackpackFilter(TagKey, TagKey)}
- * or {@link #createNaturalistBackpackFilter(ResourceLocation)}
+ * or {@link #createNaturalistBackpackFilter(Identifier)}
  * or create your own.
  * <p>
  * After you've created your backpack definition, create the item with
  * {@link #createBackpack(IBackpackDefinition, EnumBackpackType)}
- * or {@link #createNaturalistBackpack(IBackpackDefinition, ResourceLocation)}
+ * or {@link #createNaturalistBackpack(IBackpackDefinition, Identifier)}
  * and then register the returned item like any other item.
  */
 public interface IBackpackInterface {
@@ -42,7 +42,7 @@ public interface IBackpackInterface {
 	 * @param speciesTypeId The species root.
 	 * @return Created backpack item.
 	 */
-	Item createNaturalistBackpack(IBackpackDefinition definition, ResourceLocation speciesTypeId);
+	Item createNaturalistBackpack(IBackpackDefinition definition, Identifier speciesTypeId);
 
 	/**
 	 * Makes a new backpack filter that accepts items in the allow tag, unless they are also in the reject tag.
@@ -62,7 +62,7 @@ public interface IBackpackInterface {
 	 *
 	 * @param speciesTypeId The species root's unique ID.
 	 * @return a new backpack filter for the specified species root
-	 * @see #createNaturalistBackpack(IBackpackDefinition, ResourceLocation)
+	 * @see #createNaturalistBackpack(IBackpackDefinition, Identifier)
 	 */
-	Predicate<ItemStack> createNaturalistBackpackFilter(ResourceLocation speciesTypeId);
+	Predicate<ItemStack> createNaturalistBackpackFilter(Identifier speciesTypeId);
 }
