@@ -1060,3 +1060,8 @@ static def getChangelog(Object version) {
 	// Fallback in case this fails
 	return "Forestry Update ${version}"
 }
+
+// unofficial port: the project ids in gradle.properties belong to upstream, so nothing is ever uploaded from this fork
+tasks.matching { it.name == 'curseforge' || it.name.startsWith('modrinth') || it.name.startsWith('publish') }.configureEach {
+	enabled = false
+}

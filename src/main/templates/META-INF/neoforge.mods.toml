@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "{fmlVersionRange}"
-issueTrackerURL = "https://github.com/thedarkcolour/ForestryCE/issues"
+issueTrackerURL = "https://github.com/relonaft/Forestry-26.3/issues"
 
 license = "GNU Lesser Public License v3"
 
@@ -8,12 +8,14 @@ license = "GNU Lesser Public License v3"
 modId = "forestry"
 version = "${version}"
 displayName = "Forestry"
-displayURL = "https://github.com/thedarkcolour/ForestryCE"
+displayURL = "https://github.com/relonaft/Forestry-26.3"
 logoFile = "forestry-ce-logo-banner.png"
 credits = "mistaqur, Binnie, CovertJaguar, MysteriousAges, Nirek, Temp1011, ramidzkh, EnderiumSmith, Spearkiller"
 authors = "thedarkcolour, SirSengir, mezz, Nedelosk"
 description ='''
 Trees, bees and more.
+
+Unofficial port to Minecraft 26.3. Not made or supported by the Forestry or Forestry: CE developers.
 '''
 
 [[dependencies.forestry]]

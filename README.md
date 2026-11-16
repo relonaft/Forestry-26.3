@@ -1,46 +1,45 @@
-# [Forestry: Community Edition](https://www.curseforge.com/minecraft/mc-mods/forestry-community-edition)
+# Forestry for Minecraft 26.3 (unofficial port)
 
-[![Discord](https://img.shields.io/discord/417745379258400778.svg?colorB=7289DA&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAABWAgMAAABnZYq0AAAACVBMVEUAAB38%2FPz%2F%2F%2F%2Bm8P%2F9AAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfhBxwQJhxy2iqrAAABoElEQVRIx7WWzdGEIAyGgcMeKMESrMJ6rILZCiiBg4eYKr%2Fd1ZAfgXFm98sJfAyGNwno3G9sLucgYGpQ4OGVRxQTREMDZjF7ILSWjoiHo1n%2BE03Aw8p7CNY5IhkYd%2F%2F6MtO3f8BNhR1QWnarCH4tr6myl0cWgUVNcfMcXACP1hKrGMt8wcAyxide7Ymcgqale7hN6846uJCkQxw6GG7h2MH4Czz3cLqD1zHu0VOXMfZjHLoYvsdd0Q7ZvsOkafJ1P4QXxrWFd14wMc60h8JKCbyQvImzlFjyGoZTKzohwWR2UzSONHhYXBQOaKKsySsahwGGDnb%2FiYPJw22sCqzirSULYy1qtHhXGbtgrM0oagBV4XiTJok3GoLoDNH8ooTmBm7ZMsbpFzi2bgPGoXWXME6XT%2BRJ4GLddxJ4PpQy7tmfoU2HPN6cKg%2BledKHBKlF8oNSt5w5g5o8eXhu1IOlpl5kGerDxIVT%2BztzKepulD8utXqpChamkzzuo7xYGk%2FkpSYuviLXun5bzdRf0Krejzqyz7Z3p0I1v2d6HmA07dofmS48njAiuMgAAAAASUVORK5CYII%3D)](https://discord.gg/49XNRJk)
+> **Unofficial and work in progress.** This is a port of the Forestry mod to **Minecraft 26.3 on NeoForge**.
+> It is not made, endorsed or supported by the Forestry or Forestry: Community Edition developers.
 
-Forestry: Community Edition is a fork of the classic [Forestry](https://github.com/ForestryMC/ForestryMC) Minecraft mod,
-known for its bees, trees, and automatic farms. This fork began after all of Forestry's maintainers eventually
-went inactive after the 1.13+ flattening.
+## Status
 
-### Reporting Bugs
-Please make sure the bug has not already been reported by [searching the issues](https://github.com/ForestryMC/ForestryMC/issues?q=is%3Aissue).
+**It does not build for 26.3 yet.** The `26.3` branch still holds the 1.21.1 code it started from.
+There is nothing to download or play.
 
-For crashes, you must post a link to the full crash report.  
-[gist.github.com](https://gist.github.com) is a good place to upload them.  
-Full crash reports are located in [the minecraft data folder](http://hopper.minecraft.net/help/finding-minecraft-data-folder/), in "crash-reports".
+The plan and the current state are in [docs/port-26.3](docs/port-26.3) (in Russian).
 
-Thank you for reporting bugs!
+## Goal
 
-### Translators
+A Forestry for Minecraft 26.3 that has everything the original Forestry 5.8.2 for Minecraft 1.12.2 had:
+bees, trees, butterflies, farms, machines, engines, mail, backpacks and the rest.
 
-Translations are always welcome. For your convenience, there is a Python script, `check_translations.py` in the lang folder
-that you can use to quickly check for missing translations in your language.
-Refer to the translation guide [HERE](https://github.com/thedarkcolour/ForestryCE/blob/1.20.1/src/main/resources/assets/forestry/lang/README.md).
+## What it is built from
 
-### Building
-To build a mod JAR, open a command line and type "gradlew build".
-The finished JAR will be under `./build/libs`.
+- **Code base:** [Forestry: Community Edition](https://github.com/thedarkcolour/ForestryCE), branch `1.21.1`,
+  commit `85800f8` (3.0.0-alpha9). This repository is a fork of it.
+- **Feature reference:** the original [Forestry](https://github.com/ForestryMC/ForestryMC), branch `mc-1.12`,
+  commit `72e15b0` (5.8.2). Features that the Community Edition dropped are ported back from there.
 
-### Contributing Code
-Forestry is a large and complex project that I spent hundreds of hours working on, so I am always open to contributions.
+Branches: `26.3` is the port. `1.21.1` is an unmodified mirror of the Community Edition.
 
-To set up your environment, clone from GitHub, and make sure to run the following command:
-```shell
-git config --local blame.ignoreRevsFile .git-blame-ignore-revs
-```
+## Reporting problems
 
-If you'd like to contribute to Forestry:
-- **Bugfixes**: Bugfixes are always welcome.
-- **Translations**: Translations are always welcome.
-- **Textures**: New textures for Forestry are mostly done. New texture proposals will be showcased on Discord before being merged.
-- **Gameplay changes**: Discuss your proposed changes with me on Discord before implementing them in code.
-- **New Features**: Discuss your feature idea on Discord before implementing it in code.
-  - Do not include unrelated changes in a feature PR. These should be discussed and PR'd separately.
-- **Multiple Features**: Please make separate pull requests for each feature instead of making one giant PR. Large pull requests are difficult and time-consuming to review.
+Report problems with this port in [this repository's issues](https://github.com/relonaft/Forestry-26.3/issues).
+Do not report them to Forestry or Forestry: Community Edition. Their developers have nothing to do with this port.
 
-### For Mod Developers
-The Maven repository is not available yet. Use CurseForge or Modrinth's artifacts.
+## Credits and license
+
+Forestry is (c) 2011-2014 SirSengir and contributors, among them CovertJaguar, Player, MysteriousAges, Binnie,
+mezz and Nedelosk. Forestry: Community Edition is by thedarkcolour and contributors.
+
+This port is licensed under LGPL-3.0, the same as both of them. See [LICENSE.md](LICENSE.md). The changes made
+by this port are the commits on the `26.3` branch after `85800f8`.
+
+## По-русски
+
+Неофициальный порт мода Forestry на Minecraft 26.3 (NeoForge). Под 26.3 пока не собирается, играть не во что.
+Цель: всё, что было в оригинальном Forestry 5.8.2 для 1.12.2. Основа кода: Forestry: Community Edition 1.21.1.
+План и состояние работ: [docs/port-26.3](docs/port-26.3). Об ошибках порта пишите в
+[issues этого репозитория](https://github.com/relonaft/Forestry-26.3/issues), а не авторам Forestry.

@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "{fmlVersionRange}"
-issueTrackerURL = "https://github.com/thedarkcolour/ForestryCE/issues"
+issueTrackerURL = "https://github.com/relonaft/Forestry-26.3/issues"
 
 license = "GNU Lesser Public License v3"
 
@@ -8,11 +8,13 @@ license = "GNU Lesser Public License v3"
 modId = "forestrymail"
 version = "${version}"
 displayName = "Forestry: Mail"
-displayURL = "https://github.com/thedarkcolour/ForestryCE"
+displayURL = "https://github.com/relonaft/Forestry-26.3"
 logoFile = "forestry-ce-logo-banner.png"
 authors = "thedarkcolour, SirSengir, mezz, Nedelosk"
 description = '''
 Letters, the post office and trade stations.
+
+Unofficial port to Minecraft 26.3. Not made or supported by the Forestry or Forestry: CE developers.
 '''
 
 [[dependencies.forestrymail]]
