@@ -30,6 +30,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -63,7 +64,7 @@ public class BigCandleBlock extends Block implements SimpleWaterloggedBlock {
 	@Override
 	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
 		if (!state.getValue(LIT)) return;
-		JumboCandleBlock.addParticlesAndSound(level, pos.getCenter().add(0, 0.4375f, 0), random, this.flame);
+		JumboCandleBlock.addParticlesAndSound(level, Vec3.atCenterOf(pos).add(0, 0.4375f, 0), random, this.flame);
 	}
 
 	@Override
@@ -75,7 +76,7 @@ public class BigCandleBlock extends Block implements SimpleWaterloggedBlock {
 			if (stack.is(Items.FLINT_AND_STEEL)) {
 				if (!level.isClientSide()) {
 					level.setBlock(pos, state.setValue(LIT, true), 3);
-					stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+					stack.hurtAndBreak(1, player, hand.asEquipmentSlot());
 				}
 				level.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS);
 				return InteractionResult.SUCCESS;
@@ -130,6 +131,6 @@ public class BigCandleBlock extends Block implements SimpleWaterloggedBlock {
 
 	@Override
 	public PushReaction getPistonPushReaction(BlockState state) {
-		return PushReaction.DESTROY;
+		return PushReaction.POPPED;
 	}
 }

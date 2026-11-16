@@ -66,6 +66,7 @@
 | 2026-11-16 | переходник сохранения блок-сущностей (`ValueInput`/`ValueOutput`) в шести корневых классах | 2680 | 425 |
 | 2026-11-16 | чтение NBT через `getXOr`, стаки через свои `parseItem`/`saveItem`, `GameProfile`, `ResourceKey.identifier()`, `FMLEnvironment.getDist()` | 2503 | 403 |
 | 2026-11-16 | сигнатуры методов блоков, удаление блок-сущностей через `preRemoveSideEffects`, подсказки предметов через `TooltipList` | 2436 | 391 |
+| 2026-11-16 | загрузчики данных на `AddServerReloadListenersEvent`, мелкие переименования (`POPPED`, `noCollision`, `getMinY`, позиция блока в NBT) | 2364 | 365 |
 
 Временно вне компиляции (помечено `todo port` в `build.gradle`):
 

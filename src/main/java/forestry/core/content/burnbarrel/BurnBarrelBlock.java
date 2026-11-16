@@ -124,7 +124,7 @@ public class BurnBarrelBlock extends ForestryBlock implements EntityBlock {
 	// IBlockExtension, where returning null means "use the value from the block properties"
 	@Override
 	public PushReaction getPistonPushReaction(BlockState state) {
-		return PushReaction.DESTROY;
+		return PushReaction.POPPED;
 	}
 
 	@Override
@@ -132,7 +132,7 @@ public class BurnBarrelBlock extends ForestryBlock implements EntityBlock {
 		if (!state.getValue(LIT)) {
 			return;
 		}
-		addParticlesAndSound(level, pos.getCenter().add(0, 0.55f, 0), random);
+		addParticlesAndSound(level, Vec3.atCenterOf(pos).add(0, 0.55f, 0), random);
 	}
 
 	// Adapted from Jumbo Candles which was adapted from vanilla candles

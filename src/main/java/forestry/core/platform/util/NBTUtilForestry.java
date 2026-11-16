@@ -5,6 +5,7 @@ import forestry.Forestry;
 import forestry.core.platform.network.IStreamable;
 import io.netty.buffer.Unpooled;
 import net.minecraft.util.Util;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.UUIDUtil;
@@ -86,6 +87,15 @@ public abstract class NBTUtilForestry {
 
 	public static void setItemStackTag(ItemStack stack, CompoundTag tag) {
 		stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag.copy()));
+	}
+
+	// NbtUtils had these until 1.21.5. The codec writes the same int array
+	public static Optional<BlockPos> readBlockPos(CompoundTag tag, String key) {
+		return tag.read(key, BlockPos.CODEC);
+	}
+
+	public static Tag writeBlockPos(BlockPos pos) {
+		return BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, pos).getOrThrow();
 	}
 
 	// until 1.21.5 the stacks had these as their own parse, save and saveOptional methods

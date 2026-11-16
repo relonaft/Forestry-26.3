@@ -4,20 +4,21 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.profiling.ProfilerFiller;
 
 import forestry.Forestry;
 
-public abstract class DefinitionManager<T> extends SimpleJsonResourceReloadListener {
+public abstract class DefinitionManager<T> extends SimpleJsonResourceReloadListener<JsonElement> {
 	private final String folder;
 	private final Codec<T> codec;
 	private final Consumer<Map<Identifier, T>> rebuild;
@@ -25,7 +26,7 @@ public abstract class DefinitionManager<T> extends SimpleJsonResourceReloadListe
 	private Map<Identifier, T> definitions = Map.of();
 
 	protected DefinitionManager(String folder, Codec<T> codec, Consumer<Map<Identifier, T>> rebuild) {
-		super(new Gson(), folder);
+		super(ExtraCodecs.JSON, FileToIdConverter.json(folder));
 		this.folder = folder;
 		this.codec = codec;
 		this.rebuild = rebuild;

@@ -146,13 +146,13 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 		}
 
 		if (data.contains(ANCHOR_KEY)) {
-			NbtUtils.readBlockPos(data, ANCHOR_KEY).ifPresent(this::setAnchorPos);
+			NBTUtilForestry.readBlockPos(data, ANCHOR_KEY).ifPresent(this::setAnchorPos);
 		}
 
 		// The shared payload, meaning controller state, is stashed until load-time validation adopts it. Any
 		// member type may carry it after a re-anchor hand-off (spec 6.4), so always stash it if present.
 		if (data.contains(PAYLOAD_KEY)) {
-			setStash(data.getCompound(PAYLOAD_KEY).copy());
+			setStash(data.getCompoundOrEmpty(PAYLOAD_KEY).copy());
 		}
 
 		// Per-block own inventory (sieve, swarmer, hygroregulator) round-trips here. The shared controller
@@ -174,7 +174,7 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 
 		BlockPos anchor = getAnchorPos();
 		if (anchor != null) {
-			data.put(ANCHOR_KEY, NbtUtils.writeBlockPos(anchor));
+			data.put(ANCHOR_KEY, NBTUtilForestry.writeBlockPos(anchor));
 		}
 
 		// Single-holder invariant (spec 6.1), only the holder serializes the shared payload. If a live
@@ -571,7 +571,7 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 		super.encodeDescriptionPacket(packetData);
 		BlockPos anchor = getAnchorPos();
 		if (anchor != null) {
-			packetData.put(ANCHOR_KEY, NbtUtils.writeBlockPos(anchor));
+			packetData.put(ANCHOR_KEY, NBTUtilForestry.writeBlockPos(anchor));
 		}
 		if (isHolder()) {
 			MultiblockController controller = getController();
@@ -588,7 +588,7 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 				List<BlockPos> memberPositions = controller.getMembers();
 				members.putInt("count", memberPositions.size());
 				for (int i = 0; i < memberPositions.size(); i++) {
-					members.put(Integer.toString(i), NbtUtils.writeBlockPos(memberPositions.get(i)));
+					members.put(Integer.toString(i), NBTUtilForestry.writeBlockPos(memberPositions.get(i)));
 				}
 				packetData.put(MEMBERS_KEY, members);
 
@@ -603,7 +603,7 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 	protected void decodeDescriptionPacket(CompoundTag packetData) {
 		super.decodeDescriptionPacket(packetData);
 		if (packetData.contains(ANCHOR_KEY)) {
-			NbtUtils.readBlockPos(packetData, ANCHOR_KEY).ifPresent(this::setAnchorPos);
+			NBTUtilForestry.readBlockPos(packetData, ANCHOR_KEY).ifPresent(this::setAnchorPos);
 		}
 
 		// BUG 2. When the holder's packet carries the full assembled state, reconstruct and register a real
@@ -611,7 +611,7 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 		// NOT depend on the client running its own unreliable validation, so the GUI and highlight resolve a
 		// real assembled controller after a world reload (spec 9).
 		if (this.level != null && this.level.isClientSide()) {
-			if (packetData.getBoolean(ASSEMBLED_KEY) && packetData.contains(MEMBERS_KEY)) {
+			if (packetData.getBooleanOr(ASSEMBLED_KEY, false) && packetData.contains(MEMBERS_KEY)) {
 				reconstructClientController(packetData);
 			} else {
 				dropClientController();
@@ -648,7 +648,7 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 		BlockPos min = null;
 		BlockPos max = null;
 		for (int i = 0; i < count; i++) {
-			BlockPos pos = NbtUtils.readBlockPos(membersTag, Integer.toString(i)).orElse(null);
+			BlockPos pos = NBTUtilForestry.readBlockPos(membersTag, Integer.toString(i)).orElse(null);
 			if (pos == null) {
 				continue;
 			}

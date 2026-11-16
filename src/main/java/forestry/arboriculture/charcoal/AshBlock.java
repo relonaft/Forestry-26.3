@@ -45,7 +45,7 @@ public class AshBlock extends FallingBlock {
 
 	@Override
 	public PushReaction getPistonPushReaction(BlockState state) {
-		return PushReaction.DESTROY;
+		return PushReaction.POPPED;
 	}
 
 	@Override

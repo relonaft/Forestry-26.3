@@ -5,20 +5,21 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.profiling.ProfilerFiller;
 
 import forestry.Forestry;
 
-public abstract class SpeciesManager<D extends ISpeciesDefinition> extends SimpleJsonResourceReloadListener {
+public abstract class SpeciesManager<D extends ISpeciesDefinition> extends SimpleJsonResourceReloadListener<JsonElement> {
 	private final String folder;
 	// a supplier because the codec needs the karyotype, which does not exist at class init
 	private final Supplier<Codec<D>> codec;
@@ -27,7 +28,7 @@ public abstract class SpeciesManager<D extends ISpeciesDefinition> extends Simpl
 	private Map<Identifier, D> definitions = Map.of();
 
 	protected SpeciesManager(String folder, Supplier<Codec<D>> codec, Consumer<Map<Identifier, D>> rebuild) {
-		super(new Gson(), folder);
+		super(ExtraCodecs.JSON, FileToIdConverter.json(folder));
 		this.folder = folder;
 		this.codec = codec;
 		this.rebuild = rebuild;
