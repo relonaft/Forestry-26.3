@@ -4,7 +4,7 @@ import groovy.json.JsonSlurper
 plugins {
 	id('idea')
 	id('maven-publish')
-	id 'net.neoforged.moddev' version '2.0.140'
+	id 'net.neoforged.moddev' version '2.0.148'
 	// todo replace with mc-publish, as these plugins do not support Gradle configuration cache
 	id('com.modrinth.minotaur') version '2.+'
 	id('net.darkhax.curseforgegradle') version '1.3.33'
@@ -18,8 +18,7 @@ group = 'thedarkcolour.forestry'
 version = forestryVersion
 base.archivesName = "forestry-$minecraftVersion"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
-java.toolchain.vendor = JvmVendorSpec.JETBRAINS
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 // The jars of D1, one source set each. sourceSets.main IS the core jar: Gradle's jar task,
 // processResources, components.java and the access transformers all attach to main by convention,
@@ -60,6 +59,11 @@ sourceSets {
 	mail
 }
 
+// todo port: no 26.3 build of Patchouli, KubeJS or ModKit yet
+var portExcludes = ['forestry/**/data/**', 'forestry/core/platform/compat/patchouli/**', 'forestry/core/platform/compat/kubejs/**']
+sourceSets.main.java.exclude portExcludes
+contentModules.each { sourceSets[it].java.exclude portExcludes }
+
 // Everything requires core, and nothing else. Arboriculture moving into core dissolved the only
 // cross-content edge the split ever had - three TreeUtil imports for butterfly pollination
 sourceSets.butterflies.compileClasspath += sourceSets.main.output
@@ -89,13 +93,8 @@ neoForge {
 	version = "$forgeVersion"
 
 	accessTransformers = files('src/main/resources/META-INF/accesstransformer.cfg')
-	validateAccessTransformers = true
-
-	// Add Parchment parameter mappings
-	parchment {
-		mappingsVersion = project.mappingsVersion
-		minecraftVersion = project.minecraftVersion
-	}
+	// todo port: turn back on once the entries are checked against 26.3
+	validateAccessTransformers = false
 
 	mods {
 		// One mod id per jar. A jar loads as a mod only if it carries neoforge.mods.toml, so this
@@ -438,38 +437,9 @@ repositories {
 		content { includeGroup 'mezz.jei' }
 	}
 	maven {
-		name = 'Patchouli'
-		url = 'https://maven.blamejared.com/'
-	}
-	maven {
-		name = 'Architectury API'
-		url = 'https://maven.architectury.dev'
-		content { includeGroup 'dev.architectury' }
-	}
-	maven {
-		name = 'KubeJS and Rhino'
-		url = 'https://maven.latvian.dev/releases'
-		content { includeGroupAndSubgroups 'dev.latvian' }
-	}
-	maven {
-		name = 'Mekanism'
-		url = 'https://modmaven.dev/'
-		content { includeGroup 'mekanism' }
-	}
-	maven {
 		name = 'Curios'
 		url = 'https://maven.theillusivec4.top/'
 		content { includeGroup 'top.theillusivec4.curios' }
-	}
-	maven {
-		name = 'CurseMaven'
-		url = 'https://cursemaven.com'
-		content { includeGroup 'curse.maven' }
-	}
-	maven { url = "https://maven.createmod.net" }
-	maven {
-		name = 'Ponder'
-		url = 'https://raw.githubusercontent.com/Fuzss/modresources/main/maven/'
 	}
 	maven {
 		name = 'ModKit'
@@ -485,19 +455,9 @@ dependencies {
 	// JEI OPTIONAL
 	compileOnly "mezz.jei:jei-$minecraftVersion-neoforge-api:$jeiVersion"
 	runtimeOnly "mezz.jei:jei-$minecraftVersion-neoforge:$jeiVersion"
-	// KubeJS OPTIONAL
-	implementation "dev.architectury:architectury-neoforge:${architecturyVersion}"
-	implementation "dev.latvian.mods:rhino:${rhinoVersion}"
-	implementation "dev.latvian.mods:kubejs-neoforge:${kubejsVersion}"
 	// Curios Optional
 	implementation "top.theillusivec4.curios:curios-neoforge:${curiosVersion}+${minecraftVersion}"
-	// Ponder OPTIONAL
-	implementation("net.createmod.ponder:ponder-neoforge:${ponderVersion}+mc${minecraftVersion}")
-	// PATCHOULI REQUIRED
-	compileOnly "vazkii.patchouli:Patchouli:$patchouliVersion-NEOFORGE:api"
-	runtimeOnly "vazkii.patchouli:Patchouli:$patchouliVersion-NEOFORGE"
-	// ModKit DEV ONLY
-	modkit 'com.github.thedarkcolour:ModKit:c0c491b35bf7c5785b933b27966a9c0b9dee4163'
+	// todo port: ModKit has no 26.3 build, datagen is out of the compile until it does
 
 	// GameTests exercise every jar, and two of them build their expected species maps from the data
 	// providers that now live in those jars
@@ -509,7 +469,6 @@ var generateModMetadata = tasks.register('generateModMetadata', ProcessResources
 			'version'              : project.version,
 			'forgeVersionRange'    : forgeVersionRange,
 			'jeiVersionRange'      : jeiVersionRange,
-			'patchouliVersionRange': patchouliVersionRange,
 			'fmlVersionRange'      : fmlVersionRange,
 	]
 	inputs.properties replaceProperties
@@ -833,7 +792,7 @@ tasks.named('assemble') {
 
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'
-	options.compilerArgs << '-Xmaxerrs' << '400'
+	options.compilerArgs << '-Xmaxerrs' << '100000'
 }
 
 idea {

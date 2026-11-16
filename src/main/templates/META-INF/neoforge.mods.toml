@@ -26,13 +26,6 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.forestry]]
-modId = "patchouli"
-type = "REQUIRED"
-versionRange = "${patchouliVersionRange}"
-ordering = "NONE"
-side = "BOTH"
-
-[[dependencies.forestry]]
 modId = "jei"
 type = "OPTIONAL"
 versionRange = "${jeiVersionRange}"
