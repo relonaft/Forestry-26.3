@@ -1,8 +1,10 @@
 package forestry.agriculture.multifarm.items;
 
+import forestry.core.platform.util.TooltipList;
 import forestry.core.platform.util.TranslationKeys;
 import forestry.core.platform.item.ForestryBlockItem;
 import forestry.agriculture.multifarm.blocks.MultifarmBlock;
+import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -10,6 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class MultifarmBlockItem extends ForestryBlockItem<MultifarmBlock> {
 	public MultifarmBlockItem(MultifarmBlock block) {
@@ -17,7 +20,8 @@ public class MultifarmBlockItem extends ForestryBlockItem<MultifarmBlock> {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag flag) {
+		List<Component> tooltip = new TooltipList(adder);
 		if (Screen.hasShiftDown()) {
 			tooltip.add(Component.translatable("block.forestry.farm.tooltip").withStyle(ChatFormatting.GRAY));
 		} else {

@@ -15,6 +15,8 @@ import forestry.core.platform.util.NetworkUtil;
 import forestry.core.content.backpacks.BackpackMode;
 import forestry.core.content.backpacks.gui.BackpackMenu;
 import forestry.core.content.backpacks.inventory.BackpackInventory;
+import forestry.core.platform.util.TooltipList;
+import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,6 +31,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -180,8 +183,9 @@ public class BackpackItem extends WithScreenItem implements ITintedItem {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
-		super.appendHoverText(itemstack, context, list, flag);
+	public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag flag) {
+		List<Component> list = new TooltipList(adder);
+		super.appendHoverText(itemstack, context, display, adder, flag);
 
 		int occupied = ItemInventory.getOccupiedSlotCount(itemstack);
 

@@ -6,6 +6,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.Containers;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -203,7 +204,7 @@ public class ForestryChestBoat extends ForestryBoat implements HasCustomInventor
 	}
 	// </editor-fold>
 
-	public void stopOpen(Player player) {
+	public void stopOpen(ContainerUser player) {
 		level().gameEvent(GameEvent.CONTAINER_CLOSE, position(), GameEvent.Context.of(player));
 	}
 }

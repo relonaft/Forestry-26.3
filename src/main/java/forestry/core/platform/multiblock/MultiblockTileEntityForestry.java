@@ -19,8 +19,10 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -740,12 +742,12 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 	}
 
 	@Override
-	public final void startOpen(Player player) {
+	public final void startOpen(ContainerUser player) {
 		getInternalInventory().startOpen(player);
 	}
 
 	@Override
-	public final void stopOpen(Player player) {
+	public final void stopOpen(ContainerUser player) {
 		getInternalInventory().stopOpen(player);
 	}
 
@@ -826,5 +828,14 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 		// Flash white while unformed, steady rainbow once assembled, both handled by the renderer
 		MultiblockController controller = getController();
 		return controller == null || !controller.isAssembled();
+	}
+
+	// until 1.21.5 this was AbstractMultiblockBlock.onRemove. That ran on every state change of the block,
+	// so an alveary part that switched on spilled its own inventory. This runs only when the block goes
+	@Override
+	public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+		if (this.level != null && this instanceof IMultiblockComponent.HasInventory component) {
+			Containers.dropContents(this.level, pos, component.getInternalInventory());
+		}
 	}
 }

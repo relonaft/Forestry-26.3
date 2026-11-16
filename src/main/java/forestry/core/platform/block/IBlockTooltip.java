@@ -1,0 +1,13 @@
+package forestry.core.platform.block;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+
+import java.util.List;
+
+// Block.appendHoverText until 1.21.5 removed it. ForestryBlockItem calls this where BlockItem called the block
+public interface IBlockTooltip {
+	void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag);
+}

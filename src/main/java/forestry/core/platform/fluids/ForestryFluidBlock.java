@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -51,7 +52,7 @@ public class ForestryFluidBlock extends LiquidBlock {
 	}
 
 	@Override
-	public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity entity) {
+	public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
 		if (this.freezing) {
 			entity.setIsInPowderSnow(true);
 		} else if (this.burning) {

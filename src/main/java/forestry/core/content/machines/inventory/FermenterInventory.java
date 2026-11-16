@@ -33,7 +33,7 @@ public class FermenterInventory extends BlockEntityInventoryAdapter<FermenterBlo
 		} else if (slotIndex == SLOT_CAN_INPUT) {
 			return FluidHelper.isFillableContainerWithRoom(stack);
 		} else if (slotIndex == SLOT_FUEL) {
-			return stack.getItemHolder().getData(ForestryDataMaps.FERMENTER_FUELS) != null;
+			return stack.typeHolder().getData(ForestryDataMaps.FERMENTER_FUELS) != null;
 		}
 		return false;
 	}

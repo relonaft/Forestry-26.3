@@ -120,19 +120,6 @@ public class BurnBarrelBlock extends ForestryBlock implements EntityBlock {
 		return (BlockEntityTicker<T>) ticker;
 	}
 
-	@Override
-	protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-		if (!state.is(newState.getBlock())) {
-			BurnBarrelBlockEntity barrel = TileUtil.getTile(level, pos, BurnBarrelBlockEntity.class);
-			if (barrel != null) {
-				Containers.dropContents(level, pos, barrel.getInternalInventory());
-			}
-			level.removeBlockEntity(pos);
-		}
-
-		super.onRemove(state, level, pos, newState, movedByPiston);
-	}
-
 	// Deviation from 1.20.1: this overrode a vanilla BlockBehaviour method. 1.21.1 moved it to NeoForge's
 	// IBlockExtension, where returning null means "use the value from the block properties"
 	@Override
