@@ -32,9 +32,9 @@ public class OwnerHandler implements IOwnerHandler, IStreamable, INbtWritable, I
 			data.writeBoolean(false);
 		} else {
 			data.writeBoolean(true);
-			data.writeLong(this.owner.getId().getMostSignificantBits());
-			data.writeLong(this.owner.getId().getLeastSignificantBits());
-			data.writeUtf(this.owner.getName());
+			data.writeLong(this.owner.id().getMostSignificantBits());
+			data.writeLong(this.owner.id().getLeastSignificantBits());
+			data.writeUtf(this.owner.name());
 		}
 	}
 
@@ -57,10 +57,10 @@ public class OwnerHandler implements IOwnerHandler, IStreamable, INbtWritable, I
 	@Override
 	public CompoundTag write(CompoundTag data, HolderLookup.Provider registries) {
 		if (this.owner != null) {
-			if (this.owner.getId() != null) {
-				data.putUUID("owner_uuid", this.owner.getId());
+			if (this.owner.id() != null) {
+				data.putUUID("owner_uuid", this.owner.id());
 			}
-			data.putString("owner_name", this.owner.getName());
+			data.putString("owner_name", this.owner.name());
 		}
 		return data;
 	}

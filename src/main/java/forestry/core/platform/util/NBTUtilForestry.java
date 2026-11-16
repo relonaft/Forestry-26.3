@@ -1,19 +1,25 @@
 package forestry.core.platform.util;
 
 import com.mojang.authlib.GameProfile;
+import forestry.Forestry;
 import forestry.core.platform.network.IStreamable;
 import io.netty.buffer.Unpooled;
 import net.minecraft.util.Util;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.UUID;
 
 public abstract class NBTUtilForestry {
@@ -52,8 +58,8 @@ public abstract class NBTUtilForestry {
 			return null;
 		}
 
-		UUID id = nbt.hasUUID(GAME_PROFILE_ID) ? nbt.getUUID(GAME_PROFILE_ID) : null;
-		String name = nbt.contains(GAME_PROFILE_NAME) ? nbt.getString(GAME_PROFILE_NAME) : null;
+		UUID id = nbt.read(GAME_PROFILE_ID, UUIDUtil.CODEC).orElse(null);
+		String name = nbt.getString(GAME_PROFILE_NAME).orElse(null);
 		if (id == null && (name == null || name.isEmpty())) {
 			return null;
 		}
@@ -63,11 +69,11 @@ public abstract class NBTUtilForestry {
 	}
 
 	public static CompoundTag writeGameProfile(CompoundTag nbt, GameProfile profile) {
-		if (profile.getId() != null) {
-			nbt.putUUID(GAME_PROFILE_ID, profile.getId());
+		if (profile.id() != null) {
+			nbt.store(GAME_PROFILE_ID, UUIDUtil.CODEC, profile.id());
 		}
-		if (profile.getName() != null) {
-			nbt.putString(GAME_PROFILE_NAME, profile.getName());
+		if (profile.name() != null) {
+			nbt.putString(GAME_PROFILE_NAME, profile.name());
 		}
 		return nbt;
 	}
@@ -80,5 +86,39 @@ public abstract class NBTUtilForestry {
 
 	public static void setItemStackTag(ItemStack stack, CompoundTag tag) {
 		stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag.copy()));
+	}
+
+	// until 1.21.5 the stacks had these as their own parse, save and saveOptional methods
+
+	public static Optional<ItemStack> parseItem(HolderLookup.Provider registries, Tag tag) {
+		return ItemStack.CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), tag)
+				.resultOrPartial(error -> Forestry.LOGGER.error("Tried to load invalid item: '{}'", error));
+	}
+
+	public static Tag saveItem(ItemStack stack, HolderLookup.Provider registries) {
+		if (stack.isEmpty()) {
+			throw new IllegalStateException("Cannot encode empty ItemStack");
+		}
+		return ItemStack.CODEC.encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), stack).getOrThrow();
+	}
+
+	public static Tag saveItemOptional(ItemStack stack, HolderLookup.Provider registries) {
+		return stack.isEmpty() ? new CompoundTag() : saveItem(stack, registries);
+	}
+
+	public static Optional<FluidStack> parseFluid(HolderLookup.Provider registries, Tag tag) {
+		return FluidStack.CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), tag)
+				.resultOrPartial(error -> Forestry.LOGGER.error("Tried to load invalid fluid: '{}'", error));
+	}
+
+	public static FluidStack parseFluidOptional(HolderLookup.Provider registries, CompoundTag tag) {
+		return tag.isEmpty() ? FluidStack.EMPTY : parseFluid(registries, tag).orElse(FluidStack.EMPTY);
+	}
+
+	public static Tag saveFluid(FluidStack stack, HolderLookup.Provider registries) {
+		if (stack.isEmpty()) {
+			throw new IllegalStateException("Cannot encode empty FluidStack");
+		}
+		return FluidStack.CODEC.encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), stack).getOrThrow();
 	}
 }

@@ -256,7 +256,7 @@ public class SolarEngineBlockEntity extends EngineBlockEntity {
 
 	private static boolean isTwilightForest(Level level) {
 		// todo use constant instead of calling toString each tick
-		return level.dimension().location().toString().equals("twilightforest:twilight_forest");
+		return level.dimension().identifier().toString().equals("twilightforest:twilight_forest");
 	}
 
 	/**

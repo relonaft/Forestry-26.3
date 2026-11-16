@@ -64,6 +64,7 @@
 | 2026-11-16 | импорты переехавших классов, `ResourceLocation` → `Identifier`, своя `MethodsReturnNonnullByDefault` | 2981 | 455 |
 | 2026-11-16 | `isClientSide()`, `getRandom()`, `InteractionResultHolder` и `ItemInteractionResult` → `InteractionResult` | 2718 | 427 |
 | 2026-11-16 | переходник сохранения блок-сущностей (`ValueInput`/`ValueOutput`) в шести корневых классах | 2680 | 425 |
+| 2026-11-16 | чтение NBT через `getXOr`, стаки через свои `parseItem`/`saveItem`, `GameProfile`, `ResourceKey.identifier()`, `FMLEnvironment.getDist()` | 2503 | 403 |
 
 Временно вне компиляции (помечено `todo port` в `build.gradle`):
 
