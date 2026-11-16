@@ -232,7 +232,7 @@ public class AnalyzerBlockEntity extends PoweredBlockEntity implements WorldlyCo
 
 	public ItemStack getIndividualOnDisplay() {
 		// null in BEWLR
-		if (this.level == null || this.level.isClientSide) {
+		if (this.level == null || this.level.isClientSide()) {
 			return this.individualOnDisplayClient;
 		}
 		return getItem(AnalyzerInventory.SLOT_ANALYZE);

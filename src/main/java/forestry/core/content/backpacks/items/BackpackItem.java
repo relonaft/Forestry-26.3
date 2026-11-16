@@ -24,7 +24,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
@@ -66,13 +65,13 @@ public class BackpackItem extends WithScreenItem implements ITintedItem {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+	public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
 		if (!playerIn.isShiftKeyDown()) {
 			return super.use(worldIn, playerIn, handIn);
 		} else {
 			ItemStack heldItem = playerIn.getItemInHand(handIn);
 			switchMode(heldItem);
-			return InteractionResultHolder.success(heldItem);
+			return InteractionResult.SUCCESS;
 		}
 	}
 
@@ -80,7 +79,7 @@ public class BackpackItem extends WithScreenItem implements ITintedItem {
 	public InteractionResult useOn(UseOnContext ctx) {
 		Level level = ctx.getLevel();
 		if (getInventoryHit(level, ctx.getClickedPos(), ctx.getClickedFace()) != null) {
-			return InteractionResult.sidedSuccess(level.isClientSide);
+			return InteractionResult.sidedSuccess(level.isClientSide());
 		}
 		return InteractionResult.PASS;
 	}
@@ -147,7 +146,7 @@ public class BackpackItem extends WithScreenItem implements ITintedItem {
 				return true;
 			}
 
-			if (!world.isClientSide) {
+			if (!world.isClientSide()) {
 				// Create our own backpack inventory
 				BackpackInventory backpackInventory = new BackpackInventory(player, getBackpackSize(), stack);
 

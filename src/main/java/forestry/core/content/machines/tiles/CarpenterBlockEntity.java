@@ -103,7 +103,7 @@ public class CarpenterBlockEntity extends PoweredBlockEntity implements WorldlyC
 	}
 
 	public void checkRecipe(RegistryAccess registryAccess) {
-		if (this.level.isClientSide) {
+		if (this.level.isClientSide()) {
 			return;
 		}
 

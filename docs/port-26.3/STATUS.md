@@ -62,6 +62,7 @@
 |---|---|---|---|
 | 2026-11-16 | сборка переведена на 26.3, код не тронут | 5357 | 843 |
 | 2026-11-16 | импорты переехавших классов, `ResourceLocation` → `Identifier`, своя `MethodsReturnNonnullByDefault` | 2981 | 455 |
+| 2026-11-16 | `isClientSide()`, `getRandom()`, `InteractionResultHolder` и `ItemInteractionResult` → `InteractionResult` | 2718 | 427 |
 
 Временно вне компиляции (помечено `todo port` в `build.gradle`):
 

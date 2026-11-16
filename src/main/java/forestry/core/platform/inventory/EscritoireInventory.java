@@ -73,7 +73,7 @@ public class EscritoireInventory extends BlockEntityInventoryAdapter<EscritoireB
 				}
 			}
 			Level level = this.tile.getLevel();
-			if (level != null && !level.isClientSide) {
+			if (level != null && !level.isClientSide()) {
 				EscritoireGame game = this.tile.getGame();
 				game.initialize(specimen);
 			}

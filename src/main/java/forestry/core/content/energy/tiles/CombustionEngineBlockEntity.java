@@ -163,7 +163,7 @@ public class CombustionEngineBlockEntity extends EngineBlockEntity implements Wo
 
 	@Override
 	protected boolean isBurning() {
-		return mayBurn() && (this.level.isClientSide || (!this.burnTank.isEmpty() && this.currentOutput != 0));
+		return mayBurn() && (this.level.isClientSide() || (!this.burnTank.isEmpty() && this.currentOutput != 0));
 	}
 
 	/**

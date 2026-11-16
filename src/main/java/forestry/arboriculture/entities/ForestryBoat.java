@@ -59,7 +59,7 @@ public class ForestryBoat extends Boat {
 					}
 
 					causeFallDamage(this.fallDistance, 1f, damageSources().fall());
-					if (!level.isClientSide && !isRemoved()) {
+					if (!level.isClientSide() && !isRemoved()) {
 						this.kill();
 						if (level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
 							for (int i = 0; i < 3; ++i) {

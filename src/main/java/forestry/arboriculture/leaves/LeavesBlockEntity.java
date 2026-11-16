@@ -197,7 +197,7 @@ public class LeavesBlockEntity extends TileTreeContainer implements IFruitBearer
 		this.species = genome.resolveActive(TreeChromosomes.SPECIES);
 
 		// update fruit state if genome changed
-		if (oldTree != null && tree.getSpecies() != oldTree.getSpecies() || (this.level != null && this.level.isClientSide)) {
+		if (oldTree != null && tree.getSpecies() != oldTree.getSpecies() || (this.level != null && this.level.isClientSide())) {
 			setFruit(tree, false);
 		}
 
@@ -209,21 +209,21 @@ public class LeavesBlockEntity extends TileTreeContainer implements IFruitBearer
 	public void setFruit(ITree tree, boolean alwaysFruit) {
 		IGenome genome = tree.getGenome();
 
-		if (tree.hasFruitLeaves() && this.level != null && !this.level.isClientSide) {
+		if (tree.hasFruitLeaves() && this.level != null && !this.level.isClientSide()) {
 			IFruit fruitProvider = genome.resolveActive(TreeChromosomes.FRUIT);
 			if (fruitProvider.isFruitLeaf()) {
-				this.isFruitLeaf = alwaysFruit || fruitProvider.getFruitChance(genome, this.level) >= this.level.random.nextFloat();
+				this.isFruitLeaf = alwaysFruit || fruitProvider.getFruitChance(genome, this.level) >= this.level.getRandom().nextFloat();
 			}
 		}
 
 		if (this.isFruitLeaf) {
 			IFruit fruit = genome.resolveActive(TreeChromosomes.FRUIT);
-			if (this.level != null && this.level.isClientSide) {
+			if (this.level != null && this.level.isClientSide()) {
 				this.fruitSprite = fruit.getSprite(genome, this.level, getBlockPos(), getRipeningTime());
 			}
 
 			this.ripeningPeriod = (short) fruit.getRipeningPeriod();
-		} else if (this.level != null && this.level.isClientSide) {
+		} else if (this.level != null && this.level.isClientSide()) {
 			this.fruitSprite = null;
 		}
 	}
@@ -288,7 +288,7 @@ public class LeavesBlockEntity extends TileTreeContainer implements IFruitBearer
 
 	public void setMate(ITree pollen) {
 		getTree().setMate(pollen.getGenome());
-		if (!this.level.isClientSide) {
+		if (!this.level.isClientSide()) {
 			sendNetworkUpdate();
 		}
 	}

@@ -150,10 +150,10 @@ public class SqueezerBlockEntity extends PoweredBlockEntity implements ISocketab
 
 		// createRandomFluidStack folds in any addon-defined per-cycle randomness (variable amount / chance of nothing).
 		// It may return less than createFluidStack() (the amount reserved below) or EMPTY, in which case fill is a no-op.
-		FluidStack resultFluid = this.currentRecipe.getFluidOutput().createRandomFluidStack(this.level.random);
+		FluidStack resultFluid = this.currentRecipe.getFluidOutput().createRandomFluidStack(this.level.getRandom());
 		this.productTank.fillInternal(resultFluid, IFluidHandler.FluidAction.EXECUTE);
 
-		float roll = this.level.random.nextFloat();
+		float roll = this.level.getRandom().nextFloat();
 		double threshold = this.currentRecipe.getRemnantsChance() * this.outputMultiplier;
 
 		if (!this.currentRecipe.getRemnants().isEmpty() && roll < threshold) {

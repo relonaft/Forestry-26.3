@@ -110,7 +110,7 @@ public class CentrifugeBlockEntity extends PoweredBlockEntity implements ISocket
 		}
 
 		// We are done, add products to queue
-		Collection<ItemStack> products = this.currentRecipe.getProducts(level.random, this.outputMultiplier);
+		Collection<ItemStack> products = this.currentRecipe.getProducts(level.getRandom(), this.outputMultiplier);
 		this.pendingProducts.addAll(products);
 
 		//Add Item to preview slot.

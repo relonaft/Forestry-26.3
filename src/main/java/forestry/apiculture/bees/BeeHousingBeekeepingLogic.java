@@ -243,7 +243,7 @@ public class BeeHousingBeekeepingLogic implements IBeekeepingLogic {
 
 	@Override
 	public void clearCachedValues() {
-		if (!this.housing.getLevel().isClientSide) {
+		if (!this.housing.getLevel().isClientSide()) {
 			this.queenCanWorkCache.clear();
 			canWork();
 			if (this.queen != null) {
@@ -401,7 +401,7 @@ public class BeeHousingBeekeepingLogic implements IBeekeepingLogic {
 		IApiaristTracker breedingTracker = SpeciesUtil.BEE_TYPE.get().getBreedingTracker(level, beeHousing.getOwner());
 
 		// Princess
-		boolean secondPrincess = level.random.nextFloat() < ForestryConfig.SERVER.hiveSecondPrincessChance.get();
+		boolean secondPrincess = level.getRandom().nextFloat() < ForestryConfig.SERVER.hiveSecondPrincessChance.get();
 		int count = secondPrincess ? 2 : 1;
 		while (count > 0) {
 			count--;
@@ -440,7 +440,7 @@ public class BeeHousingBeekeepingLogic implements IBeekeepingLogic {
 	@Override
 	public void syncToClient() {
 		Level level = this.housing.getLevel();
-		if (level != null && !level.isClientSide) {
+		if (level != null && !level.isClientSide()) {
 			NetworkUtil.sendNetworkPacket(new PacketBeeLogicActive(this.housing), this.housing.getBlockPos(), level);
 		}
 	}
@@ -448,7 +448,7 @@ public class BeeHousingBeekeepingLogic implements IBeekeepingLogic {
 	@Override
 	public void syncToClient(ServerPlayer player) {
 		Level level = this.housing.getLevel();
-		if (level != null && !level.isClientSide) {
+		if (level != null && !level.isClientSide()) {
 			NetworkUtil.sendToPlayer(new PacketBeeLogicActive(this.housing), player);
 		}
 	}

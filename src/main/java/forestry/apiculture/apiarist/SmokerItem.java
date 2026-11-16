@@ -7,7 +7,6 @@ import forestry.core.platform.tile.TileUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,7 +23,7 @@ public class SmokerItem extends ItemForestry {
 
 	@Override
 	public void inventoryTick(ItemStack stack, Level level, Entity entity, int itemSlot, boolean isSelected) {
-		if (level.isClientSide && isSelected && level.random.nextInt(40) == 0) {
+		if (level.isClientSide() && isSelected && level.getRandom().nextInt(40) == 0) {
 			addSmoke(level, entity, 1);
 		}
 	}
@@ -64,7 +63,7 @@ public class SmokerItem extends ItemForestry {
 		Vec3 scaledOffset = handOffset.scale(1.0 / distance);
 		Vec3 smokePos = lookDistance.add(entity.position()).add(scaledOffset);
 
-		if (level.isClientSide) {
+		if (level.isClientSide()) {
 			ParticleRender.addEntitySmokeFX(level, smokePos.x, smokePos.y + 1, smokePos.z);
 		}
 
@@ -73,10 +72,10 @@ public class SmokerItem extends ItemForestry {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		player.startUsingItem(hand);
 		ItemStack itemStack = player.getItemInHand(hand);
-		return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStack);
+		return InteractionResult.SUCCESS;
 	}
 
 	@Override

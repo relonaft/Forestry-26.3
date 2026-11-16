@@ -91,7 +91,7 @@ public class EscritoireBlockEntity extends BaseBlockEntity implements WorldlyCon
 	}
 
 	public void probe() {
-		if (this.level.isClientSide) {
+		if (this.level.isClientSide()) {
 			return;
 		}
 
@@ -141,7 +141,7 @@ public class EscritoireBlockEntity extends BaseBlockEntity implements WorldlyCon
 	public void setItem(int slotIndex, ItemStack itemstack) {
 		super.setItem(slotIndex, itemstack);
 		if (slotIndex == EscritoireInventory.SLOT_ANALYZE) {
-			if (this.level != null && !this.level.isClientSide) {
+			if (this.level != null && !this.level.isClientSide()) {
 				PacketItemStackDisplay packet = new PacketItemStackDisplay(this, getIndividualOnDisplay());
 				NetworkUtil.sendNetworkPacket(packet, this.worldPosition, this.level);
 			}
@@ -161,7 +161,7 @@ public class EscritoireBlockEntity extends BaseBlockEntity implements WorldlyCon
 	}
 
 	public ItemStack getIndividualOnDisplay() {
-		if (this.level == null || this.level.isClientSide) {
+		if (this.level == null || this.level.isClientSide()) {
 			return this.individualOnDisplayClient;
 		}
 		return getItem(AnalyzerInventory.SLOT_ANALYZE);

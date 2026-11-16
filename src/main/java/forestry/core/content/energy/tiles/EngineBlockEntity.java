@@ -171,7 +171,7 @@ public abstract class EngineBlockEntity extends BaseBlockEntity implements IActi
 		}
 		this.active = active;
 
-		if (!this.level.isClientSide) {
+		if (!this.level.isClientSide()) {
 			NetworkUtil.sendNetworkPacket(new PacketActiveUpdate(this), this.worldPosition, this.level);
 		}
 	}

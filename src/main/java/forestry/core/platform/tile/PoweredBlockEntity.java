@@ -65,7 +65,7 @@ public abstract class PoweredBlockEntity extends BaseBlockEntity implements IRen
 	}
 
 	public int getStepsPerWorkCycle() {
-		if (this.level.isClientSide) {
+		if (this.level.isClientSide()) {
 			return this.stepsPerWorkCycle;
 		}
 		return Math.round(this.stepsPerWorkCycle / this.speedMultiplier);

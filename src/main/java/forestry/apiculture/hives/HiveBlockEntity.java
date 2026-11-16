@@ -86,7 +86,7 @@ public class HiveBlockEntity extends BlockEntity implements IHiveTile, IActivata
 	public void tick(Level level) {
         this.tickHelper.onTick();
 
-		if (level.isClientSide) {
+		if (level.isClientSide()) {
 			if (this.active && this.tickHelper.updateOnInterval(4)) {
 				if (this.beeLogic.canDoBeeFX()) {
                     this.beeLogic.doBeeFX();
@@ -195,12 +195,12 @@ public class HiveBlockEntity extends BlockEntity implements IHiveTile, IActivata
 
 	private static void attack(LivingEntity entity, int maxDamage) {
 		Level level = entity.level();
-		double attackAmount = level.random.nextDouble() / 2.0 + 0.5;
+		double attackAmount = level.getRandom().nextDouble() / 2.0 + 0.5;
 		int damage = (int) (attackAmount * maxDamage);
 		if (damage > 0) {
 			// Entities are not attacked if they wear a full set of apiarist's armor.
 			int count = BeeManager.armorApiaristHelper.wearsItems(entity, null, true);
-			if (level.random.nextInt(4) >= count) {
+			if (level.getRandom().nextInt(4) >= count) {
 				entity.hurt(CoreDamageTypes.source(level, CoreDamageTypes.HIVE), damage);
 			}
 		}
@@ -218,7 +218,7 @@ public class HiveBlockEntity extends BlockEntity implements IHiveTile, IActivata
 		}
 		this.active = active;
 
-		if (!this.level.isClientSide) {
+		if (!this.level.isClientSide()) {
 			NetworkUtil.sendNetworkPacket(new PacketActiveUpdate(this), this.worldPosition, this.level);
 		}
 	}

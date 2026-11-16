@@ -13,7 +13,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -86,33 +85,33 @@ public class BurnBarrelBlock extends ForestryBlock implements EntityBlock {
 
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-		if (!level.isClientSide) {
+		if (!level.isClientSide()) {
 			BurnBarrelBlockEntity barrel = TileUtil.getTile(level, pos, BurnBarrelBlockEntity.class);
 			if (barrel != null) {
 				barrel.openGui((ServerPlayer) player, InteractionHand.MAIN_HAND, pos);
 			}
 		}
-		return InteractionResult.sidedSuccess(level.isClientSide);
+		return InteractionResult.sidedSuccess(level.isClientSide());
 	}
 
 	// Deviation from 1.20.1: Block#use split into useItemOn and useWithoutItem. The barrel lights from a held flint
 	// and steel or fire charge, so this path forwards the hand the player actually used and consumes the click,
 	// which also stops flint and steel from placing a fire against the barrel
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-		if (!level.isClientSide) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		if (!level.isClientSide()) {
 			BurnBarrelBlockEntity barrel = TileUtil.getTile(level, pos, BurnBarrelBlockEntity.class);
 			if (barrel != null) {
 				barrel.openGui((ServerPlayer) player, hand, pos);
 			}
 		}
-		return ItemInteractionResult.sidedSuccess(level.isClientSide);
+		return InteractionResult.SUCCESS;
 	}
 
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> actualType) {
-		if (level.isClientSide || actualType != CoreTiles.BURN_BARREL.tileType()) {
+		if (level.isClientSide() || actualType != CoreTiles.BURN_BARREL.tileType()) {
 			return null;
 		}
 		// IForestryTicker and not a bare lambda. It advances the TickHelper that updateOnInterval reads

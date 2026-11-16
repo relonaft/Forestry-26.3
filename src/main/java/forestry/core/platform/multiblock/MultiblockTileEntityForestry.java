@@ -237,7 +237,7 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 		// farm that clears the computed targets, which the old PAUSED path left intact (MINOR 6 parity). The
 		// state stays untouched in the anchor's NBT, and reload re-fires the assembled callbacks through
 		// load-time validation.
-		if (this.level != null && !this.level.isClientSide) {
+		if (this.level != null && !this.level.isClientSide()) {
 			BlockPos anchor = getAnchorPos();
 			if (anchor != null) {
 				MultiblockController controller = MultiblockIndex.get(this.level, anchor);
@@ -266,7 +266,7 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 		if (level == null) {
 			return;
 		}
-		if (level.isClientSide) {
+		if (level.isClientSide()) {
 			// the server resends the new holder's packet if the machine survives
 			dropClientController();
 			return;
@@ -608,7 +608,7 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 		// client-side controller and adopt the synced payload. This is the authoritative client path. It does
 		// NOT depend on the client running its own unreliable validation, so the GUI and highlight resolve a
 		// real assembled controller after a world reload (spec 9).
-		if (this.level != null && this.level.isClientSide) {
+		if (this.level != null && this.level.isClientSide()) {
 			if (packetData.getBoolean(ASSEMBLED_KEY) && packetData.contains(MEMBERS_KEY)) {
 				reconstructClientController(packetData);
 			} else {

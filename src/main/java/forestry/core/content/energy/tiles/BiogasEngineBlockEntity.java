@@ -229,7 +229,7 @@ public class BiogasEngineBlockEntity extends EngineBlockEntity implements Worldl
 	// / STATE INFORMATION
 	@Override
 	protected boolean isBurning() {
-		return mayBurn() && this.burnTank.getFluidAmount() > 0 && (this.level.isClientSide || this.currentOutput != 0);
+		return mayBurn() && this.burnTank.getFluidAmount() > 0 && (this.level.isClientSide() || this.currentOutput != 0);
 	}
 
 	@Override
