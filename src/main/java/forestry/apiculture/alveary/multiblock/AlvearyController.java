@@ -234,8 +234,8 @@ public class AlvearyController extends MultiblockController implements IAlvearyC
 	public void readPayload(CompoundTag data) {
 		readOwner(data);
 
-		this.temperatureSteps = data.getByte("temperatureSteps");
-		this.humiditySteps = data.getByte("humiditySteps");
+		this.temperatureSteps = data.getByteOr("temperatureSteps", (byte) 0);
+		this.humiditySteps = data.getByteOr("humiditySteps", (byte) 0);
 
         this.beekeepingLogic.read(data, this.level.registryAccess());
         this.inventory.read(data, this.level.registryAccess());

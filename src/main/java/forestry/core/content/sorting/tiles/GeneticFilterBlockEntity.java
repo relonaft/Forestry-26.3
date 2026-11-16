@@ -58,7 +58,7 @@ public class GeneticFilterBlockEntity extends ForestryBlockEntity implements ISt
 	public void loadAdditional(CompoundTag data, HolderLookup.Provider registries) {
 		super.loadAdditional(data, registries);
 
-        this.logic.read(data.getCompound("Logic"), registries);
+        this.logic.read(data.getCompoundOrEmpty("Logic"), registries);
 	}
 
 	@Override

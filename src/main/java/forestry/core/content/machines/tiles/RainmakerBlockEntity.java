@@ -67,11 +67,11 @@ public class RainmakerBlockEntity extends MillBlockEntity {
 	public void loadAdditional(CompoundTag compoundNBT, HolderLookup.Provider registries) {
 		super.loadAdditional(compoundNBT, registries);
 
-        this.charge = compoundNBT.getInt("Charge");
-        this.progress = compoundNBT.getFloat("Progress");
-        this.stage = compoundNBT.getInt("Stage");
-        this.duration = compoundNBT.getInt("Duration");
-        this.reverse = compoundNBT.getBoolean("Reverse");
+        this.charge = compoundNBT.getIntOr("Charge", 0);
+        this.progress = compoundNBT.getFloatOr("Progress", 0.0F);
+        this.stage = compoundNBT.getIntOr("Stage", 0);
+        this.duration = compoundNBT.getIntOr("Duration", 0);
+        this.reverse = compoundNBT.getBooleanOr("Reverse", false);
 	}
 
 

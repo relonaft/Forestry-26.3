@@ -252,9 +252,9 @@ public class BiogasEngineBlockEntity extends EngineBlockEntity implements Worldl
 		this.sockets.read(nbt, registries);
 
 		if (nbt.contains("shutdown")) {
-			this.shutdown = nbt.getBoolean("shutdown");
+			this.shutdown = nbt.getBooleanOr("shutdown", false);
 		}
-		this.burnTime = nbt.getFloat("burnTime");
+		this.burnTime = nbt.getFloatOr("burnTime", 0.0F);
 		this.tankManager.read(nbt, registries);
 
 		ItemStack chip = this.sockets.getItem(0);

@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import forestry.api.core.IErrorLogic;
 import forestry.api.core.IErrorLogicSource;
 import forestry.api.core.ILocationProvider;
+import forestry.api.core.ValueIoHelper;
 import forestry.api.core.util.TickHelper;
 import forestry.core.platform.block.TileStreamUpdateTracker;
 import forestry.core.platform.errors.ErrorLogic;
@@ -29,6 +30,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
@@ -82,9 +85,7 @@ public abstract class ForestryBlockEntity extends BlockEntity implements IStream
 	}
 
 	// / SAVING & LOADING
-	@Override
 	public void loadAdditional(CompoundTag data, HolderLookup.Provider registries) {
-		super.loadAdditional(data, registries);
         this.inventory.read(data, registries);
 	}
 
@@ -93,9 +94,7 @@ public abstract class ForestryBlockEntity extends BlockEntity implements IStream
 		loadAdditional(data, getRegistries());
 	}
 
-	@Override
 	public void saveAdditional(CompoundTag data, HolderLookup.Provider registries) {
-		super.saveAdditional(data, registries);
         this.inventory.write(data, registries);
 	}
 
@@ -111,9 +110,7 @@ public abstract class ForestryBlockEntity extends BlockEntity implements IStream
 		return NBTUtilForestry.writeStreamableToNbt(this, tag, registries);
 	}
 
-	@Override
 	public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
-		super.handleUpdateTag(tag, registries);
 		NBTUtilForestry.readStreamableFromNbt(this, tag, registries);
 	}
 
@@ -266,5 +263,25 @@ public abstract class ForestryBlockEntity extends BlockEntity implements IStream
 	@Override
 	public Component getDisplayName() {
 		return getTitle();
+	}
+
+	@Override
+	protected final void loadAdditional(ValueInput input) {
+		super.loadAdditional(input);
+		loadAdditional(ValueIoHelper.toTag(input), input.lookup());
+	}
+
+	@Override
+	protected final void saveAdditional(ValueOutput output) {
+		super.saveAdditional(output);
+		CompoundTag data = new CompoundTag();
+		saveAdditional(data, ValueIoHelper.registries(this));
+		output.store(data);
+	}
+
+	@Override
+	public final void handleUpdateTag(ValueInput input) {
+		super.handleUpdateTag(input);
+		handleUpdateTag(ValueIoHelper.toTag(input), input.lookup());
 	}
 }

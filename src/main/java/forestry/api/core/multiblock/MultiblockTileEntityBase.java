@@ -1,5 +1,6 @@
 package forestry.api.core.multiblock;
 
+import forestry.api.core.ValueIoHelper;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -10,6 +11,8 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -110,17 +113,16 @@ public abstract class MultiblockTileEntityBase<T extends IMultiblockLogic> exten
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public final void onDataPacket(Connection network, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider registries) {
-		super.onDataPacket(network, packet, registries);
-		CompoundTag nbtData = packet.getTag();
-		if (nbtData != null) {
-			this.decodeDescriptionPacket(nbtData);
+	public final void onDataPacket(Connection network, ValueInput input) {
+		CompoundTag nbtData = ValueIoHelper.toTag(input);
+		// an empty tag was not loaded before 1.21.6 either
+		if (!nbtData.isEmpty()) {
+			super.onDataPacket(network, input);
 		}
+		this.decodeDescriptionPacket(nbtData);
 	}
 
-	@Override
 	public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
-		super.handleUpdateTag(tag, registries);
 		this.decodeDescriptionPacket(tag);
 	}
 
@@ -135,5 +137,31 @@ public abstract class MultiblockTileEntityBase<T extends IMultiblockLogic> exten
 	/** Reads tile/payload data from the description packet. */
 	protected void decodeDescriptionPacket(CompoundTag packetData) {
 
+	}
+
+	public void loadAdditional(CompoundTag data, HolderLookup.Provider registries) {
+	}
+
+	public void saveAdditional(CompoundTag data, HolderLookup.Provider registries) {
+	}
+
+	@Override
+	protected final void loadAdditional(ValueInput input) {
+		super.loadAdditional(input);
+		loadAdditional(ValueIoHelper.toTag(input), input.lookup());
+	}
+
+	@Override
+	protected final void saveAdditional(ValueOutput output) {
+		super.saveAdditional(output);
+		CompoundTag data = new CompoundTag();
+		saveAdditional(data, ValueIoHelper.registries(this));
+		output.store(data);
+	}
+
+	@Override
+	public final void handleUpdateTag(ValueInput input) {
+		super.handleUpdateTag(input);
+		handleUpdateTag(ValueIoHelper.toTag(input), input.lookup());
 	}
 }

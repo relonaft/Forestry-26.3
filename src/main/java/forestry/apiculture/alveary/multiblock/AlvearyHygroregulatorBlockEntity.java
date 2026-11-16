@@ -100,7 +100,7 @@ public class AlvearyHygroregulatorBlockEntity extends AbstractAlvearyBlockEntity
 		super.loadAdditional(compoundNBT, registries);
         this.tankManager.read(compoundNBT, registries);
 
-        this.heatTicks = compoundNBT.getInt("TransferTime");
+        this.heatTicks = compoundNBT.getIntOr("TransferTime", 0);
 
 		if (compoundNBT.contains("CurrentLiquid")) {
 			FluidStack liquid = FluidStack.parseOptional(registries, compoundNBT.getCompound("CurrentLiquid"));

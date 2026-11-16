@@ -139,7 +139,7 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 		super.loadAdditional(data, registries);
 
 		if (data.contains("owner")) {
-			CompoundTag ownerNbt = data.getCompound("owner");
+			CompoundTag ownerNbt = data.getCompoundOrEmpty("owner");
 			this.owner = NBTUtilForestry.readGameProfile(ownerNbt);
 		}
 
@@ -640,8 +640,8 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 		BlockPos holderPos = getBlockPos();
 
 		// Decode the synced member positions and derive the client controller's min and max bounding box
-		CompoundTag membersTag = packetData.getCompound(MEMBERS_KEY);
-		int count = membersTag.getInt("count");
+		CompoundTag membersTag = packetData.getCompoundOrEmpty(MEMBERS_KEY);
+		int count = membersTag.getIntOr("count", 0);
 		List<BlockPos> members = new java.util.ArrayList<>(count);
 		BlockPos min = null;
 		BlockPos max = null;
@@ -673,7 +673,7 @@ public abstract class MultiblockTileEntityForestry<T extends IMultiblockLogic> e
 		controller.setHolderPos(holderPos);
 		controller.setAssembled(true);
 		if (packetData.contains(PAYLOAD_KEY)) {
-			controller.readDescriptionPayload(packetData.getCompound(PAYLOAD_KEY));
+			controller.readDescriptionPayload(packetData.getCompoundOrEmpty(PAYLOAD_KEY));
 		}
 		// Fire the assembled transition so the controller's derived client state is real (ex. the alveary's
 		// climate provider, while the farm is a no-op). Per-part onMachineAssembled visuals, meaning entrance

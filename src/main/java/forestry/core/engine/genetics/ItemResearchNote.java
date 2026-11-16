@@ -74,7 +74,7 @@ public class ItemResearchNote extends ItemForestry {
 
 	@Nullable
 	private static IMutation<?> getEncodedMutation(CompoundTag compound) {
-		ISpeciesType<?, ?> type = IForestryApi.INSTANCE.getGeneticManager().getSpeciesTypeSafe(Identifier.parse(compound.getString(TYPE_KEY)));
+		ISpeciesType<?, ?> type = IForestryApi.INSTANCE.getGeneticManager().getSpeciesTypeSafe(Identifier.parse(compound.getStringOr(TYPE_KEY, "")));
 		if (type == null) {
 			return null;
 		}
@@ -195,11 +195,11 @@ public class ItemResearchNote extends ItemForestry {
 		public ResearchNote(@Nullable CompoundTag nbt) {
 			if (nbt != null) {
 				if (nbt.contains(RESEARCHER_KEY)) {
-					this.researcher = NBTUtilForestry.readGameProfile(nbt.getCompound(RESEARCHER_KEY));
+					this.researcher = NBTUtilForestry.readGameProfile(nbt.getCompoundOrEmpty(RESEARCHER_KEY));
 				} else {
 					this.researcher = null;
 				}
-				this.inner = nbt.getCompound(NBT_INNER);
+				this.inner = nbt.getCompoundOrEmpty(NBT_INNER);
 			} else {
 				this.researcher = null;
 				this.inner = new CompoundTag();

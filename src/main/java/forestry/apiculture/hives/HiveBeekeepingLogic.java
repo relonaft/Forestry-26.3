@@ -41,7 +41,7 @@ public class HiveBeekeepingLogic implements IBeekeepingLogic {
 	// / SAVING & LOADING
 	@Override
 	public void read(CompoundTag CompoundNBT, HolderLookup.Provider registries) {
-		setActive(CompoundNBT.getBoolean("Active"));
+		setActive(CompoundNBT.getBooleanOr("Active", false));
         this.hasFlowersCache.read(CompoundNBT, registries);
 	}
 

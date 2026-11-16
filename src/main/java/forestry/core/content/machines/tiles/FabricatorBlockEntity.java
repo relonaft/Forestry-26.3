@@ -78,8 +78,8 @@ public class FabricatorBlockEntity extends PoweredBlockEntity implements ISlotPi
 	public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
 		super.loadAdditional(compound, registries);
 
-        this.heat = compound.getInt("Heat");
-		this.meltingPoint = compound.getInt("MeltingPont");
+        this.heat = compound.getIntOr("Heat", 0);
+		this.meltingPoint = compound.getIntOr("MeltingPont", 0);
         this.tankManager.read(compound, registries);
         this.craftingInventory.read(compound, registries);
 	}

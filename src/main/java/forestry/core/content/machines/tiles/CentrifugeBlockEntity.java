@@ -70,9 +70,9 @@ public class CentrifugeBlockEntity extends PoweredBlockEntity implements ISocket
 	public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
 		super.loadAdditional(compound, registries);
 
-		ListTag nbttaglist = compound.getList("PendingProducts", 10);
+		ListTag nbttaglist = compound.getListOrEmpty("PendingProducts");
 		for (int i = 0; i < nbttaglist.size(); i++) {
-			CompoundTag CompoundNBT1 = nbttaglist.getCompound(i);
+			CompoundTag CompoundNBT1 = nbttaglist.getCompoundOrEmpty(i);
 			this.pendingProducts.add(ItemStack.parse(registries, CompoundNBT1).orElse(ItemStack.EMPTY));
 		}
 		this.sockets.read(compound, registries);

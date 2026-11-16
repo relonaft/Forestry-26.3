@@ -96,12 +96,12 @@ public class BeeHousingBeekeepingLogic implements IBeekeepingLogic {
 
 	@Override
 	public void read(CompoundTag compoundNBT, HolderLookup.Provider registries) {
-		this.beeProgress = compoundNBT.getInt("BreedingTime");
-		this.workThrottleCounter = compoundNBT.getInt("Throttle");
+		this.beeProgress = compoundNBT.getIntOr("BreedingTime", 0);
+		this.workThrottleCounter = compoundNBT.getIntOr("Throttle", 0);
 
 		// sadly this means duplicated NBT
 		if (compoundNBT.contains("queen")) {
-			CompoundTag queenNBT = compoundNBT.getCompound("queen");
+			CompoundTag queenNBT = compoundNBT.getCompoundOrEmpty("queen");
 			this.queenStack = ItemStack.parse(registries, queenNBT).orElse(ItemStack.EMPTY);
 			this.queen = (IBee) IIndividualHandlerItem.getIndividual(this.queenStack);
 			if (this.queen != null) {
@@ -109,11 +109,11 @@ public class BeeHousingBeekeepingLogic implements IBeekeepingLogic {
 			}
 		}
 
-		setActive(compoundNBT.getBoolean("Active"));
+		setActive(compoundNBT.getBooleanOr("Active", false));
 
 		this.hasFlowersCache.read(compoundNBT, registries);
 
-		ListTag list = compoundNBT.getList("Offspring", 10);
+		ListTag list = compoundNBT.getListOrEmpty("Offspring");
 		for (int i = 0; i < list.size(); i++) {
 			this.spawn.add(ItemStack.parse(registries, list.getCompound(i)).orElse(ItemStack.EMPTY));
 		}

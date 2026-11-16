@@ -11,6 +11,7 @@ import forestry.api.core.HumidityType;
 import forestry.api.core.IErrorLogic;
 import forestry.api.core.ISpectacleBlock;
 import forestry.api.core.TemperatureType;
+import forestry.api.core.ValueIoHelper;
 import forestry.api.core.genetics.capability.IIndividualHandlerItem;
 import forestry.api.core.util.TickHelper;
 import forestry.apiculture.ModuleApiculture;
@@ -44,6 +45,8 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
@@ -144,17 +147,13 @@ public class HiveBlockEntity extends BlockEntity implements IHiveTile, IActivata
 		}
 	}
 
-	@Override
 	public void loadAdditional(CompoundTag compoundNBT, HolderLookup.Provider registries) {
-		super.loadAdditional(compoundNBT, registries);
         this.contained.read(compoundNBT, registries);
         this.beeLogic.read(compoundNBT, registries);
 	}
 
 
-	@Override
 	public void saveAdditional(CompoundTag compoundNBT, HolderLookup.Provider registries) {
-		super.saveAdditional(compoundNBT, registries);
         this.contained.write(compoundNBT, registries);
         this.beeLogic.write(compoundNBT, registries);
 	}
@@ -237,18 +236,19 @@ public class HiveBlockEntity extends BlockEntity implements IHiveTile, IActivata
 	}
 
 	// todo wtf are these two methods (loading from NBT several times per packet)
-	@Override
 	public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
-		super.handleUpdateTag(tag, registries);
-		setActive(tag.getBoolean("active"));
+		setActive(tag.getBooleanOr("active", false));
 		this.beeLogic.read(tag, registries);
 	}
 
 	@Override
-	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
-		super.onDataPacket(net, pkt, registries);
-		CompoundTag nbt = pkt.getTag();
-		handleUpdateTag(nbt, registries);
+	public void onDataPacket(Connection net, ValueInput input) {
+		CompoundTag nbt = ValueIoHelper.toTag(input);
+		// an empty tag was not loaded before 1.21.6 either
+		if (!nbt.isEmpty()) {
+			super.onDataPacket(net, input);
+		}
+		handleUpdateTag(nbt, input.lookup());
 	}
 
 	@Override
@@ -337,5 +337,25 @@ public class HiveBlockEntity extends BlockEntity implements IHiveTile, IActivata
 			}
 			return false;
 		}
+	}
+
+	@Override
+	protected final void loadAdditional(ValueInput input) {
+		super.loadAdditional(input);
+		loadAdditional(ValueIoHelper.toTag(input), input.lookup());
+	}
+
+	@Override
+	protected final void saveAdditional(ValueOutput output) {
+		super.saveAdditional(output);
+		CompoundTag data = new CompoundTag();
+		saveAdditional(data, ValueIoHelper.registries(this));
+		output.store(data);
+	}
+
+	@Override
+	public final void handleUpdateTag(ValueInput input) {
+		super.handleUpdateTag(input);
+		handleUpdateTag(ValueIoHelper.toTag(input), input.lookup());
 	}
 }

@@ -72,9 +72,9 @@ public class TankManager implements ITankManager, ITankUpdateHandler, IStreamabl
 
 	@Override
 	public void read(CompoundTag data, HolderLookup.Provider registries) {
-		for (Tag tag : data.getList("tanks", Tag.TAG_COMPOUND)) {
+		for (Tag tag : data.getListOrEmpty("tanks")) {
 			CompoundTag compound = (CompoundTag) tag;
-			int slot = compound.getByte("tank");
+			int slot = compound.getByteOr("tank", (byte) 0);
 			if (slot >= 0 && slot < this.tanks.size()) {
 				StandardTank tank = this.tanks.get(slot);
 				tank.readFromNBT(registries, compound);

@@ -70,7 +70,7 @@ public class StillBlockEntity extends PoweredBlockEntity implements WorldlyConta
         this.tankManager.read(compoundNBT, registries);
 
 		if (compoundNBT.contains("Buffer")) {
-			CompoundTag buffer = compoundNBT.getCompound("Buffer");
+			CompoundTag buffer = compoundNBT.getCompoundOrEmpty("Buffer");
             this.bufferedLiquid = FluidStack.parseOptional(registries, buffer);
 		}
 	}

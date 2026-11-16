@@ -3,6 +3,7 @@ package forestry.arboriculture.trees;
 import forestry.api.arboriculture.ITreeSpecies;
 import forestry.api.arboriculture.genetics.ITree;
 import forestry.api.arboriculture.genetics.ITreeSpeciesType;
+import forestry.api.core.ValueIoHelper;
 import forestry.core.platform.client.ClientsideCode;
 import forestry.core.platform.network.IStreamable;
 import forestry.core.platform.util.NBTUtilForestry;
@@ -22,6 +23,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * This is the base TE class for any block that needs to contain tree genome information.
@@ -35,10 +38,7 @@ public abstract class TileTreeContainer extends BlockEntity implements IStreamab
 	}
 
 	/* SAVING & LOADING */
-	@Override
 	public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
-		super.saveAdditional(nbt, registries);
-
 		if (this.containedTree != null) {
 			Tag serialized = SpeciesUtil.serializeIndividual(this.containedTree);
 			if (serialized != null) {
@@ -47,10 +47,7 @@ public abstract class TileTreeContainer extends BlockEntity implements IStreamab
 		}
 	}
 
-	@Override
 	public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
-		super.loadAdditional(nbt, registries);
-
 		Tag treeNbt = nbt.get("ContainedTree");
 
 		if (treeNbt != null) {
@@ -114,10 +111,13 @@ public abstract class TileTreeContainer extends BlockEntity implements IStreamab
 	}
 
 	@Override
-	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
-		super.onDataPacket(net, pkt, registries);
-		CompoundTag nbt = pkt.getTag();
-		handleUpdateTag(nbt, registries);
+	public void onDataPacket(Connection net, ValueInput input) {
+		CompoundTag nbt = ValueIoHelper.toTag(input);
+		// an empty tag was not loaded before 1.21.6 either
+		if (!nbt.isEmpty()) {
+			super.onDataPacket(net, input);
+		}
+		handleUpdateTag(nbt, input.lookup());
 	}
 
 	@Override
@@ -126,9 +126,27 @@ public abstract class TileTreeContainer extends BlockEntity implements IStreamab
 		return NBTUtilForestry.writeStreamableToNbt(this, tag, registries);
 	}
 
-	@Override
 	public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
-		super.handleUpdateTag(tag, registries);
 		NBTUtilForestry.readStreamableFromNbt(this, tag, registries);
+	}
+
+	@Override
+	protected final void loadAdditional(ValueInput input) {
+		super.loadAdditional(input);
+		loadAdditional(ValueIoHelper.toTag(input), input.lookup());
+	}
+
+	@Override
+	protected final void saveAdditional(ValueOutput output) {
+		super.saveAdditional(output);
+		CompoundTag data = new CompoundTag();
+		saveAdditional(data, ValueIoHelper.registries(this));
+		output.store(data);
+	}
+
+	@Override
+	public final void handleUpdateTag(ValueInput input) {
+		super.handleUpdateTag(input);
+		handleUpdateTag(ValueIoHelper.toTag(input), input.lookup());
 	}
 }

@@ -25,7 +25,7 @@ public class ForestryEnergyStorage extends EnergyStorage implements IStreamable,
 
 	@Override
 	public void read(CompoundTag nbt, HolderLookup.Provider registries) {
-		setEnergyStored(nbt.getInt("Energy"));
+		setEnergyStored(nbt.getIntOr("Energy", 0));
 	}
 
 	@Override

@@ -32,10 +32,10 @@ public class BackpackDefinition implements IBackpackDefinition {
 
 		CompoundTag tagCompound = NBTUtilForestry.getItemStackTag(backpack);
 		if (tagCompound != null && tagCompound.contains("display", 10)) {
-			CompoundTag nbt = tagCompound.getCompound("display");
+			CompoundTag nbt = tagCompound.getCompoundOrEmpty("display");
 
 			if (nbt.contains("Name", 8)) {
-				display = Component.literal(nbt.getString("Name"));
+				display = Component.literal(nbt.getStringOr("Name", ""));
 			}
 		}
 

@@ -138,9 +138,9 @@ public class AlvearySwarmerBlockEntity extends AbstractAlvearyBlockEntity implem
 	public void loadAdditional(CompoundTag compoundNBT, HolderLookup.Provider registries) {
 		super.loadAdditional(compoundNBT, registries);
 
-		ListTag nbttaglist = compoundNBT.getList("PendingSpawns", 10);
+		ListTag nbttaglist = compoundNBT.getListOrEmpty("PendingSpawns");
 		for (int i = 0; i < nbttaglist.size(); i++) {
-			CompoundTag compoundNBT1 = nbttaglist.getCompound(i);
+			CompoundTag compoundNBT1 = nbttaglist.getCompoundOrEmpty(i);
             this.pendingSpawns.add(ItemStack.parse(registries, compoundNBT1).orElse(ItemStack.EMPTY));
 		}
 	}

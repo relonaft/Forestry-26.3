@@ -166,18 +166,18 @@ public class MemorizedRecipe implements INbtWritable, INbtReadable, IStreamable 
 	@Override
 	public void read(CompoundTag nbt, HolderLookup.Provider registries) {
 		InventoryUtil.readFromNBT(this.craftMatrix, "inventory", nbt);
-		this.lastUsed = nbt.getLong("LastUsed");
-		this.locked = nbt.getBoolean("Locked");
+		this.lastUsed = nbt.getLongOr("LastUsed", 0L);
+		this.locked = nbt.getBooleanOr("Locked", false);
 
 		if (nbt.contains("SelectedRecipe")) {
-			this.selectedRecipe = nbt.getInt("SelectedRecipe");
+			this.selectedRecipe = nbt.getIntOr("SelectedRecipe", 0);
 		}
 
 		this.recipes.clear();
 		this.recipeIds.clear();
-		ListTag recipesNbt = nbt.getList("Recipes", Tag.TAG_STRING);
+		ListTag recipesNbt = nbt.getListOrEmpty("Recipes");
 		for (int i = 0; i < recipesNbt.size(); i++) {
-			String recipeKey = recipesNbt.getString(i);
+			String recipeKey = recipesNbt.getStringOr(i, "");
 			Identifier recipeId = Identifier.tryParse(recipeKey);
 
 			if (recipeId != null) {

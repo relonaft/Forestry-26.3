@@ -95,14 +95,14 @@ public class LeavesBlockEntity extends TileTreeContainer implements IFruitBearer
 	public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
 		super.loadAdditional(nbt, registries);
 
-		this.ripeningTime = nbt.getInt(NBT_RIPENING);
-		this.damage = nbt.getInt(NBT_DAMAGE);
-		this.isFruitLeaf = nbt.getBoolean(NBT_FRUIT_LEAF);
+		this.ripeningTime = nbt.getIntOr(NBT_RIPENING, 0);
+		this.damage = nbt.getIntOr(NBT_DAMAGE, 0);
+		this.isFruitLeaf = nbt.getBooleanOr(NBT_FRUIT_LEAF, false);
 		boolean checkFruit = !nbt.contains(NBT_FRUIT_LEAF);
 
 		Tag caterpillarNbt = nbt.get(NBT_CATERPILLAR);
 		if (caterpillarNbt != null) {
-			this.maturationTime = nbt.getInt(NBT_MATURATION);
+			this.maturationTime = nbt.getIntOr(NBT_MATURATION, 0);
 
 			IButterflySpeciesType butterflyType = SpeciesUtil.getButterflyTypeSafe();
 			if (butterflyType != null) {
