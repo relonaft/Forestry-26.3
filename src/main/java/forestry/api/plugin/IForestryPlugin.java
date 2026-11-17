@@ -49,6 +49,7 @@ public interface IForestryPlugin {
 
 	/**
 	 * Called after all species are registered. Register circuits and circuit layout types heere.
+	 * Since 26.3 this is called once the game has bound item components, when a world loads, not at mod setup.
 	 */
 	default void registerCircuits(ICircuitRegistration circuits) {
 	}
@@ -56,6 +57,9 @@ public interface IForestryPlugin {
 	default void registerErrors(IErrorRegistration errors) {
 	}
 
+	/**
+	 * Since 26.3 this is called once the game has bound item components, when a world loads, not at mod setup.
+	 */
 	default void registerFarming(IFarmingRegistration farming) {
 	}
 

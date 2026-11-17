@@ -58,6 +58,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -76,6 +77,7 @@ import forestry.core.platform.PickupHandlerCore;
 @ForestryModule
 public class ModuleCore extends BlankForestryModule {
 	private static volatile boolean apiInitialized = false;
+	private static boolean boundRegistrationApplied = false;
 
 	@Override
 	public Identifier getId() {
@@ -108,6 +110,7 @@ public class ModuleCore extends BlankForestryModule {
 		NeoForge.EVENT_BUS.addListener(ModuleCore::onAddReloadListeners);
 		NeoForge.EVENT_BUS.addListener(ModuleCore::registerCommands);
 		NeoForge.EVENT_BUS.addListener(ModuleCore::onDatapackSync);
+		NeoForge.EVENT_BUS.addListener(ModuleCore::onComponentsBound);
 		if (FMLEnvironment.getDist() == Dist.CLIENT) {
 			NeoForge.EVENT_BUS.addListener(ClientsideCode::onRecipesReceived);
 		}
@@ -167,6 +170,18 @@ public class ModuleCore extends BlankForestryModule {
 		postItemRegistry();
 		((ForestryModuleManager) IForestryApi.INSTANCE.getModuleManager()).setupApi();
 		apiInitialized = true;
+	}
+
+	// deviation: circuits and farm types hold item stacks, which exist only once components are bound
+	private static synchronized void onComponentsBound(DefaultDataComponentsBoundEvent event) {
+		if (boundRegistrationApplied) {
+			return;
+		}
+		ensureApiInitialized();
+		for (IForestryModule module : IForestryApi.INSTANCE.getModuleManager().getLoadedModules()) {
+			module.applyBoundPluginRegistration();
+		}
+		boundRegistrationApplied = true;
 	}
 
 	private static void registerCapabilities(RegisterCapabilitiesEvent event) {
@@ -298,9 +313,13 @@ public class ModuleCore extends BlankForestryModule {
 
 	@Override
 	public void applyPluginRegistration() {
-		PluginManager.registerCircuits();
 		PluginManager.registerGenetics();
 		PluginManager.registerPollen();
+	}
+
+	@Override
+	public void applyBoundPluginRegistration() {
+		PluginManager.registerCircuits();
 	}
 
 	@Override
