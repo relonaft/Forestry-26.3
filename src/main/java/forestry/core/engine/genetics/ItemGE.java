@@ -16,6 +16,7 @@ import forestry.core.platform.item.ItemForestry;
 import forestry.core.platform.util.GeneticsUtil;
 import forestry.core.platform.util.TooltipList;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -181,7 +182,7 @@ public abstract class ItemGE extends ItemForestry implements IIndividualItem {
 	}
 
 	@Override
-	public String getCreatorModId(ItemStack stack) {
+	public String getCreatorModId(HolderLookup.Provider registries, ItemStack stack) {
 		ISpecies<?> species = getSpecies(stack);
 		return species.id().getNamespace();
 	}

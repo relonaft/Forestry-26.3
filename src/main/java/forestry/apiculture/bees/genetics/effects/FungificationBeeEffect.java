@@ -103,9 +103,7 @@ public class FungificationBeeEffect extends ThrottledBeeEffect {
 	}
 
 	private static boolean convertCowToMooshroom(Cow cow) {
-		if (cow instanceof MushroomCow) {
-			return false;
-		}
+		// a mooshroom is no Cow since 1.21.5, so the list never holds one
 		Level world = cow.level();
 		cow.discard();
 		MushroomCow mooshroom = new MushroomCow(EntityTypes.MOOSHROOM, world);

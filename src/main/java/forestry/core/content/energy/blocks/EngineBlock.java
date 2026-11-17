@@ -94,7 +94,7 @@ public class EngineBlock extends BaseBlock<EngineBlockType> {
 	}
 
 	@Override
-	public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+	public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
 		EngineBlockEntity tileEngine = TileUtil.getTile(level, pos, EngineBlockEntity.class);
 		if (tileEngine != null) {
 			ForestryEnergyStorage energyStorage = tileEngine.getEnergyManager();

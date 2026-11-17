@@ -26,5 +26,5 @@ public class EnergyBlocks {
 
 	public static final FeatureBlockGroup<EngineBlock, EngineBlockType> ENGINES = REGISTRY.blockGroup(EngineBlock::new, List.of(EngineBlockType.VALUES)).item(SpecialRendererBlockItem::new).identifier("engine", forestry.core.platform.registration.FeatureGroup.IdentifierType.SUFFIX).create();
 
-	public static final FeatureBlock<Block, BlockItem> SOLAR_PANEL = REGISTRY.block(SolarPanelBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.DAYLIGHT_DETECTOR).sound(SoundType.METAL).pushReaction(PushReaction.BLOCK), ForestryBlockItem::new, "solar_panel");
+	public static final FeatureBlock<Block, BlockItem> SOLAR_PANEL = REGISTRY.block(SolarPanelBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.DAYLIGHT_DETECTOR).sound(SoundType.METAL).pushReaction(PushReaction.IMMOVEABLE), ForestryBlockItem::new, "solar_panel");
 }

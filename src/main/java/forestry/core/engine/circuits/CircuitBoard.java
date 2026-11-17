@@ -31,7 +31,7 @@ public class CircuitBoard implements ICircuitBoard {
 	}
 
 	public CircuitBoard(CompoundTag compound) {
-        this.type = EnumCircuitBoardType.values()[compound.getShort("T")];
+        this.type = EnumCircuitBoardType.values()[compound.getShortOr("T", (short) 0)];
 
 		// Layout
 		ICircuitLayout layout = null;

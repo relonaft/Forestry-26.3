@@ -10,6 +10,7 @@ import forestry.core.platform.tile.TileUtil;
 import forestry.core.platform.util.BlockUtil;
 import forestry.core.platform.util.ItemStackUtil;
 import forestry.core.platform.util.SpeciesUtil;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -18,6 +19,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.*;
+import net.minecraft.world.level.FoliageColor;
 import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.EntityBlock;
@@ -155,6 +157,6 @@ public class ForestryLeavesBlock extends AbstractLeavesBlock implements Bonemeal
 				}
 			}
 		}
-		return FoliageColor.getDefaultColor();
+		return FoliageColor.FOLIAGE_DEFAULT;
 	}
 }

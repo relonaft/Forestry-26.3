@@ -21,18 +21,17 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
-import javax.annotation.Nullable;
 
 public class TreeItem extends ItemGE implements IVariableFermentable, ITintedItem {
 	public TreeItem(TreeLifeStage type) {
-		super(new Item.Properties(), type);
+		super(new Item.Properties().cookingFuel(ContextIntProviders.COOKING_TIME_DRY_PLANTS), type);
 	}
 
 	@Override
@@ -127,10 +126,5 @@ public class TreeItem extends ItemGE implements IVariableFermentable, ITintedIte
 			return 1.0f;
 		}
 		return tree.getGenome().getActiveValue(TreeChromosomes.SAPPINESS) * 10;
-	}
-
-	@Override
-	public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-		return 100;
 	}
 }

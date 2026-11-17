@@ -1,7 +1,12 @@
 package forestry.arboriculture;
 
+import forestry.arboriculture.features.CharcoalBlocks;
+import forestry.core.platform.item.DefaultComponents;
 import forestry.core.platform.transfer.Transfers;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.entity.BlockEntityTypes;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import forestry.arboriculture.loot.GrafterLootModifier;
@@ -102,6 +107,7 @@ public class ModuleArboriculture extends BlankForestryModule {
 		modBus.addListener(ModuleArboriculture::registerCapabilities);
 		modBus.addListener(ModuleArboriculture::commonSetup);
 		modBus.addListener(ModuleArboriculture::registerHangingSignBlocks);
+		modBus.addListener(ModuleArboriculture::modifyDefaultComponents);
 		NeoForge.EVENT_BUS.addListener(ModuleArboriculture::modifySnifferLoot);
 	}
 
@@ -112,6 +118,18 @@ public class ModuleArboriculture extends BlankForestryModule {
 	 * any Forestry-owned BlockEntityType for hanging signs would never be used at runtime
 	 * (breaking save validation and tickers).
 	 */
+	private static void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
+		DefaultComponents.cookingFuel(event, CharcoalBlocks.CHARCOAL.item(), DefaultComponents.provider("cooking/time_charcoal_block"));
+		DefaultComponents.cookingFuel(event, CharcoalBlocks.LOG_PILE.item(), DefaultComponents.provider("cooking/time_log_pile"));
+		DefaultComponents.cookingFuel(event, CharcoalBlocks.DECORATIVE_LOG_PILE.item(), DefaultComponents.provider("cooking/time_log_pile"));
+
+		DefaultComponents.compostable(event, ArboricultureItems.TREE_SAPLING.item(), ContextIntProviders.COMPOSTABLE_LOW);
+		DefaultComponents.compostable(event, ArboricultureItems.TREE_POLLEN.item(), ContextIntProviders.COMPOSTABLE_LOW);
+		for (BlockItem leaves : ArboricultureBlocks.LEAVES_DECORATIVE.getItems()) {
+			DefaultComponents.compostable(event, leaves, ContextIntProviders.COMPOSTABLE_LOW);
+		}
+	}
+
 	private static void registerHangingSignBlocks(BlockEntityTypeAddBlocksEvent event) {
 		Block[] hangingSignBlocks = Stream.concat(
 			ArboricultureBlocks.HANGING_SIGN.getList().stream(),

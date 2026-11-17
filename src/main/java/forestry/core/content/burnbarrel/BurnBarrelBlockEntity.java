@@ -7,6 +7,7 @@ import forestry.core.features.CoreTiles;
 import forestry.core.platform.inventory.BurnBarrelInventory;
 import forestry.core.platform.network.IStreamableGui;
 import forestry.core.platform.tile.BaseBlockEntity;
+import forestry.core.platform.util.FuelUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
@@ -91,7 +92,7 @@ public class BurnBarrelBlockEntity extends BaseBlockEntity implements IStreamabl
 				hasResources = true;
 
 				ItemStack stack = getInternalInventory().getItem(nextInputIndex);
-				this.burnTime = stack.getBurnTime(null);
+				this.burnTime = FuelUtil.getBurnTime((ServerLevel) level, this, stack);
 				this.currentMaxBurnTime = this.burnTime;
 				getInternalInventory().setItem(nextInputIndex, stack.copyWithCount(stack.getCount() - 1));
 			}
@@ -147,7 +148,7 @@ public class BurnBarrelBlockEntity extends BaseBlockEntity implements IStreamabl
 		// while SLOT_INPUT_1 is 0. Written the same way as canOutput below
 		for (int i = BurnBarrelInventory.SLOT_INPUT_1 + BurnBarrelInventory.SLOT_INPUT_COUNT - 1; i >= BurnBarrelInventory.SLOT_INPUT_1; i--) {
 			ItemStack stack = getInternalInventory().getItem(i);
-			if (!stack.isEmpty() && stack.getBurnTime(null) > 0) {
+			if (FuelUtil.isFuel(stack)) {
 				return i;
 			}
 		}

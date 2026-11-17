@@ -19,7 +19,7 @@ public class FluidTagFilter extends ReloadableFluidFilter {
 
 	public FluidTagFilter(TagKey<Fluid> tag) {
 		super(() -> {
-			HolderSet.Named<Fluid> set = RecipeUtils.getFluidRegistry().getTag(tag).orElse(null);
+			HolderSet.Named<Fluid> set = RecipeUtils.getFluidRegistry().get(tag).orElse(null);
 			if (set == null || set.size() == 0) {
 				return Set.of();
 			}

@@ -11,7 +11,6 @@ import forestry.api.core.genetics.ISpeciesType;
 import forestry.core.platform.advancements.ForestryAdvancementTriggers;
 import forestry.core.platform.network.packets.PacketGenomeTrackerSync;
 import forestry.core.platform.util.NetworkUtil;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -88,12 +87,6 @@ public abstract class BreedingTracker extends SavedData implements IBreedingTrac
 		}
 	}
 
-	@Override
-	public final CompoundTag save(CompoundTag nbt, HolderLookup.Provider registries) {
-		save(nbt);
-		return nbt;
-	}
-
 	/* HELPER FUNCTIONS TO PREVENT OBFUSCATION OF INTERFACE METHODS */
 	@OverridingMethodsMustInvokeSuper
 	@Override
@@ -137,7 +130,7 @@ public abstract class BreedingTracker extends SavedData implements IBreedingTrac
 		if (nbt.contains(key)) {
 			ListTag nbtList = nbt.getListOrEmpty(key);
 			for (Tag stringTag : nbtList) {
-				values.accept(stringTag.getAsString());
+				stringTag.asString().ifPresent(values);
 			}
 		}
 	}

@@ -10,10 +10,12 @@ import forestry.api.modules.ForestryModule;
 import forestry.api.modules.ForestryModuleIds;
 import forestry.api.modules.IForestryModule;
 import forestry.api.modules.IPacketRegistry;
+import forestry.core.content.resources.EnumCraftingMaterial;
 import forestry.core.content.tools.PipetteFluidHandler;
 import forestry.core.engine.genetics.FlowerTypeManager;
 import forestry.core.engine.genetics.TaxonManager;
 import forestry.apiimpl.plugin.PluginManager;
+import forestry.core.features.CoreBlocks;
 import forestry.core.platform.block.TileStreamUpdateTracker;
 import forestry.core.platform.client.CoreClientHandler;
 import forestry.core.engine.climate.ForestryClimateManager;
@@ -24,6 +26,7 @@ import forestry.core.features.CoreTiles;
 import forestry.core.engine.genetics.GeneticsReloadHandler;
 import forestry.core.content.tools.ItemPipette;
 import forestry.core.content.tools.ItemSpectacles;
+import forestry.core.platform.item.DefaultComponents;
 import forestry.core.platform.loot.ConditionLootModifier;
 import forestry.core.platform.network.PacketIdClient;
 import forestry.core.platform.network.PacketIdServer;
@@ -39,7 +42,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Unit;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import forestry.core.platform.transfer.Transfers;
@@ -47,6 +52,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
@@ -85,6 +91,7 @@ public class ModuleCore extends BlankForestryModule {
 		modBus.addListener(ModuleCore::registerGlobalLootModifiers);
 		modBus.addListener(ModuleCore::registerForestryRegistries);
 		modBus.addListener(ModuleCore::onGatherData);
+		modBus.addListener(ModuleCore::modifyDefaultComponents);
 
 		ModuleUtil.loadFeatureProviders();
 		NeoForge.EVENT_BUS.addListener(ModuleCore::onItemPickup);
@@ -93,6 +100,25 @@ public class ModuleCore extends BlankForestryModule {
 		NeoForge.EVENT_BUS.addListener(ModuleCore::onAddReloadListeners);
 		NeoForge.EVENT_BUS.addListener(ModuleCore::registerCommands);
 		NeoForge.EVENT_BUS.addListener(ModuleCore::onDatapackSync);
+	}
+
+	private static void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
+		DefaultComponents.cookingFuel(event, CoreItems.BITUMINOUS_PEAT.item(), DefaultComponents.provider("cooking/time_bituminous_peat"));
+		DefaultComponents.cookingFuel(event, CoreItems.PEAT.item(), DefaultComponents.provider("cooking/time_peat"));
+		DefaultComponents.cookingFuel(event, CoreBlocks.PLYWOOD_BLOCK.item(), ContextIntProviders.COOKING_TIME_WOOD_BLOCKS);
+		DefaultComponents.cookingFuel(event, CoreBlocks.CORK.item(), ContextIntProviders.COOKING_TIME_WOOD_BLOCKS);
+		DefaultComponents.cookingFuel(event, CoreBlocks.PLYWOOD_SHEET.item(), DefaultComponents.provider("cooking/time_plywood"));
+
+		for (Item fruit : CoreItems.FRUITS.getItems()) {
+			DefaultComponents.compostable(event, fruit, ContextIntProviders.COMPOSTABLE_MEDIUM);
+		}
+		DefaultComponents.compostable(event, CoreItems.MOULDY_WHEAT.item(), ContextIntProviders.COMPOSTABLE_MEDIUM);
+		DefaultComponents.compostable(event, CoreItems.DECAYING_WHEAT.item(), ContextIntProviders.COMPOSTABLE_MEDIUM);
+		DefaultComponents.compostable(event, CoreItems.MULCH.item(), ContextIntProviders.COMPOSTABLE_MEDIUM);
+		DefaultComponents.compostable(event, CoreItems.ASH.item(), ContextIntProviders.COMPOSTABLE_MEDIUM);
+		DefaultComponents.compostable(event, CoreItems.CRAFTING_MATERIALS.item(EnumCraftingMaterial.WOOD_PULP), ContextIntProviders.COMPOSTABLE_MEDIUM);
+		DefaultComponents.compostable(event, CoreItems.PEAT.item(), DefaultComponents.provider("compostable/peat"));
+		DefaultComponents.compostable(event, CoreItems.COMPOST.item(), ContextIntProviders.COMPOSTABLE_ALWAYS_ADD_ONE);
 	}
 
 	private static void onCommonSetup(FMLCommonSetupEvent event) {
@@ -171,7 +197,7 @@ public class ModuleCore extends BlankForestryModule {
 
 	private static void onTagsUpdated(TagsUpdatedEvent event) {
 		if (event.shouldUpdateStaticData()) {
-			event.getRegistryAccess().registry(Registries.BIOME).ifPresent(registry -> ((ForestryClimateManager) IForestryApi.INSTANCE.getClimateManager()).onBiomesReloaded(registry));
+			event.getRegistries().lookup(Registries.BIOME).ifPresent(registry -> ((ForestryClimateManager) IForestryApi.INSTANCE.getClimateManager()).onBiomesReloaded(registry));
 		}
 	}
 

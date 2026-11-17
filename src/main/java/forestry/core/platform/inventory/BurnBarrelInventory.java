@@ -4,6 +4,7 @@ import forestry.api.ForestryTags;
 import forestry.core.content.burnbarrel.BurnBarrelBlock;
 import forestry.core.content.burnbarrel.BurnBarrelBlockEntity;
 import forestry.core.features.CoreItems;
+import forestry.core.platform.util.FuelUtil;
 import forestry.core.platform.util.SlotUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,11 +22,10 @@ public class BurnBarrelInventory extends BlockEntityInventoryAdapter<BurnBarrelB
 		super(tile, SLOT_INPUT_COUNT + SLOT_OUTPUT_COUNT, "Items");
 	}
 
-	// Deviation from 1.20.1: burn times came from ForgeHooks.getBurnTime, which NeoForge moved onto the stack
-	@Override
+		@Override
 	public boolean canSlotAccept(int slotIndex, ItemStack stack) {
 		if (SlotUtil.isSlotInRange(slotIndex, SLOT_INPUT_1, SLOT_INPUT_COUNT)) {
-			return !stack.is(ForestryTags.Items.BURN_BARREL_BLACKLIST) && stack.getBurnTime(null) > 0;
+			return !stack.is(ForestryTags.Items.BURN_BARREL_BLACKLIST) && FuelUtil.isFuel(stack);
 		}
 		return false;
 	}

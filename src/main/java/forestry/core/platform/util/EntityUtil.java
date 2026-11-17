@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 public abstract class EntityUtil {
 	@Nullable
 	public static <T extends Mob> T spawnEntity(Level world, EntityType<T> type, double x, double y, double z) {
-		T entityLiving = type.create(world);
+		T entityLiving = type.create(world, EntitySpawnReason.MOB_SUMMONED);
 		if (entityLiving == null) {
 			return null;
 		}
@@ -25,7 +25,7 @@ public abstract class EntityUtil {
 		living.snapTo(x, y, z, Mth.wrapDegrees(world.getRandom().nextFloat() * 360.0f), 0.0f);
 		living.yHeadRot = living.getYRot();
 		living.yBodyRot = living.getYRot();
-		DifficultyInstance diff = world.getCurrentDifficultyAt(BlockPos.containing(x, y, z));
+		DifficultyInstance diff = ((ServerLevel) world).getCurrentDifficultyAt(BlockPos.containing(x, y, z));
 		//TODO - check SpawnReason
 		living.finalizeSpawn((ServerLevel) world, diff, EntitySpawnReason.MOB_SUMMONED, null);
 		world.addFreshEntity(living);

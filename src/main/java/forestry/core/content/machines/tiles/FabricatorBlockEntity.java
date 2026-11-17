@@ -34,6 +34,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -181,7 +182,7 @@ public class FabricatorBlockEntity extends PoweredBlockEntity implements ISlotPi
 			return ItemStack.EMPTY;
 		}
 
-		return myRecipe.getCraftingGridRecipe().getResultItem(this.level.registryAccess()).copy();
+		return myRecipe.getCraftingGridRecipe().assemble(CraftingInput.EMPTY);
 	}
 
 	/* ISlotPickupWatcher */
@@ -223,7 +224,7 @@ public class FabricatorBlockEntity extends PoweredBlockEntity implements ISlotPi
 
 	private boolean removeFromInventory(IFabricatorRecipe recipe, boolean doRemove) {
 		Container inventory = new InventoryMapper(this, FabricatorInventory.SLOT_INVENTORY_1, FabricatorInventory.SLOT_INVENTORY_COUNT);
-		return InventoryUtil.consumeIngredients(inventory, recipe.getCraftingGridRecipe().getIngredients(), null, true, false, doRemove);
+		return InventoryUtil.consumeIngredients(inventory, recipe.getCraftingGridRecipe().placementInfo().ingredients(), null, true, false, doRemove);
 	}
 
 	@Override

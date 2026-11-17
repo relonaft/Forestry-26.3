@@ -26,7 +26,7 @@ public class PortableAnalyzerItem extends WithScreenItem {
 		List<Component> tooltip = new TooltipList(adder);
 		super.appendHoverText(stack, context, display, adder, advanced);
 		int charges = stack.getOrDefault(CoreDataComponents.ALYZER_CHARGES, 0);
-		tooltip.add(Component.translatable(stack.getDescriptionId() + ".charges", charges).withStyle(ChatFormatting.GOLD));
+		tooltip.add(Component.translatable(stack.getItem().getDescriptionId() + ".charges", charges).withStyle(ChatFormatting.GOLD));
 	}
 
 	@Override

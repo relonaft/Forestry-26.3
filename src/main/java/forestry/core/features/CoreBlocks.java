@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CandleBlock;
@@ -73,7 +74,7 @@ public class CoreBlocks {
 	public static final FeatureBlock<CorkBlock, BlockItem> CORK = REGISTRY.block(CorkBlock::new, () -> Properties.ofFullCopy(Blocks.OAK_PLANKS).sound(SoundType.CHERRY_WOOD).strength(2.0f, 3.0f).ignitedByLava(), ForestryBlockItem::new, "cork");
 
 	/* Lighting */
-	public static final FeatureBlock<ChainBlock, BlockItem> TIN_CHAIN = REGISTRY.block(ChainBlock::new, () -> Properties.ofFullCopy(Blocks.CHAIN), ForestryBlockItem::new, "tin_chain");
+	public static final FeatureBlock<ChainBlock, BlockItem> TIN_CHAIN = REGISTRY.block(ChainBlock::new, () -> Properties.ofFullCopy(Blocks.IRON_CHAIN), ForestryBlockItem::new, "tin_chain");
 	public static final FeatureBlock<LanternBlock, BlockItem> PHOSPHOR_LANTERN = REGISTRY.block(LanternBlock::new, () -> Properties.ofFullCopy(Blocks.SOUL_LANTERN).lightLevel(state -> 13), ForestryBlockItem::new, "phosphor_lantern");
 	public static final FeatureBlock<WaterloggableTorchBlock, ForestryBlockItem<?>> PHOSPHOR_TORCH = REGISTRY.block(WaterloggableTorchBlock::new, () -> Properties.ofFullCopy(Blocks.SOUL_TORCH).lightLevel(state -> 13), null, "phosphor_torch");
 	public static final FeatureBlock<WaterloggableWallTorchBlock, ForestryBlockItem<?>> PHOSPHOR_WALL_TORCH = REGISTRY.block(WaterloggableWallTorchBlock::new, () -> Properties.ofFullCopy(Blocks.SOUL_TORCH).lightLevel(state -> 13), null, "phosphor_wall_torch");
@@ -104,7 +105,7 @@ public class CoreBlocks {
 
 	/* Metal plating */
 	public static final FeatureBlockGroup<Block, MetalPlatingBlockType> METAL_PLATING = REGISTRY.blockGroup((properties, type) -> new Block(properties), List.of(MetalPlatingBlockType.values()))
-		.blockProperties((properties, type) -> Properties.ofFullCopy(Blocks.WAXED_COPPER_BLOCK).mapColor(type.getMapColor()))
+		.blockProperties((properties, type) -> Properties.ofFullCopy(Blocks.COPPER_BLOCK.waxed().unaffected()).mapColor(type.getMapColor()))
 		.item(ForestryBlockItem::new)
 		.identifier("metal_plating")
 		.create();
@@ -125,8 +126,8 @@ public class CoreBlocks {
 		.identifier("big_candle")
 		.create();
 
-	public static final FeatureBlock<CandleBlock, BlockItem> RAINBOW_CANDLE = REGISTRY.block(CandleBlock::new, () -> Properties.ofFullCopy(Blocks.MAGENTA_CANDLE), ForestryBlockItem::new, "rainbow_candle");
-	public static final FeatureBlock<RefractoryCandleBlock, BlockItem> REFRACTORY_CANDLE = REGISTRY.block(RefractoryCandleBlock::new, () -> Properties.ofFullCopy(Blocks.RED_CANDLE)
+	public static final FeatureBlock<CandleBlock, BlockItem> RAINBOW_CANDLE = REGISTRY.block(CandleBlock::new, () -> Properties.ofFullCopy(Blocks.DYED_CANDLE.pick(DyeColor.MAGENTA)), ForestryBlockItem::new, "rainbow_candle");
+	public static final FeatureBlock<RefractoryCandleBlock, BlockItem> REFRACTORY_CANDLE = REGISTRY.block(RefractoryCandleBlock::new, () -> Properties.ofFullCopy(Blocks.DYED_CANDLE.pick(DyeColor.RED))
 		.lightLevel(state -> state.getValue(CandleBlock.LIT) ? state.getValue(CandleBlock.CANDLES) * 2 : 0), ForestryBlockItem::new, "refractory_candle");
 	// todo the cake variants are still missing
 

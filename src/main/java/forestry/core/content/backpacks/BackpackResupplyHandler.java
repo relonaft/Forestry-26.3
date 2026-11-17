@@ -60,7 +60,7 @@ public class BackpackResupplyHandler {
 		Inventory playerInventory = player.getInventory();
 		List<ItemStack> inventory = new LinkedList<>();
 		inventory.addAll(playerInventory.getNonEquipmentItems());
-		inventory.addAll(playerInventory.offhand);
+		inventory.add(player.getOffhandItem());
 
 		for (ItemStack inventoryStack : inventory) {
 			if (playerInventory.hasRemainingSpaceForItem(inventoryStack, itemstack)) {

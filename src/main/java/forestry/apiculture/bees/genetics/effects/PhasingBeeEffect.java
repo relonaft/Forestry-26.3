@@ -13,13 +13,15 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.fox.Fox;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.event.entity.EntityTeleportEvent.ChorusFruit;
 
 import java.util.List;
+import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 
 public class PhasingBeeEffect extends ThrottledBeeEffect {
 	public PhasingBeeEffect() {
@@ -54,13 +56,14 @@ public class PhasingBeeEffect extends ThrottledBeeEffect {
 
 				Vec3 vec3 = entity.position();
 				level.gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(entity));
-				ChorusFruit event = EventHooks.onChorusFruitTeleport(entity, targetX, targetY, targetZ);
+				// the chorus fruit event became the item consumption event, listeners now tell the cause by the item
+				EntityTeleportEvent.ItemConsumption event = EventHooks.onItemConsumptionTeleport(entity, new ItemStack(Items.CHORUS_FRUIT), targetX, targetY, targetZ);
 
 				if (event.isCanceled()) {
 					break;
 				}
 
-				if (entity.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true)) {
+				if (entity.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true, state -> false)) {
 					SoundEvent sound = entity instanceof Fox ? SoundEvents.FOX_TELEPORT : SoundEvents.CHORUS_FRUIT_TELEPORT;
 					level.playSound(null, x, y, z, sound, SoundSource.BLOCKS, 1f, 1f);
 					entity.playSound(sound, 1f, 1f);

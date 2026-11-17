@@ -87,7 +87,7 @@ public class JumboCandleBlock extends Block {
 
 		boolean hasFluid = !fluidState.isEmpty();
 		boolean isLava = fluidState.is(FluidTags.LAVA);
-		boolean isSolid = aboveState.isSolidRender(level, pos.above());
+		boolean isSolid = aboveState.isSolidRender();
 
 		if (state.getValue(LIT)) {
 			if ((hasFluid && !isLava) || isSolid) {
@@ -136,7 +136,7 @@ public class JumboCandleBlock extends Block {
 			&& state.getValue(SHAPE) != CandleShape.BOTTOM
 			&& state.getValue(SHAPE) != CandleShape.MIDDLE
 			&& !player.isShiftKeyDown()
-			&& !level.getBlockState(pos.above()).isSolidRender(level, pos.above())) {
+			&& !level.getBlockState(pos.above()).isSolidRender()) {
 
 			if (stack.is(Items.FLINT_AND_STEEL)) {
 				if (!level.isClientSide()) {

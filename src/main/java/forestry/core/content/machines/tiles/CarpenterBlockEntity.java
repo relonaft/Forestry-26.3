@@ -199,7 +199,7 @@ public class CarpenterBlockEntity extends PoweredBlockEntity implements WorldlyC
 		}
 
 		Container inventory = new InventoryMapper(getInternalInventory(), CarpenterInventory.SLOT_INVENTORY_1, CarpenterInventory.SLOT_INVENTORY_COUNT);
-		return InventoryUtil.consumeIngredients(inventory, this.currentRecipe.getCraftingGridRecipe().getIngredients(), null, true, false, doRemove);
+		return InventoryUtil.consumeIngredients(inventory, this.currentRecipe.getCraftingGridRecipe().placementInfo().ingredients(), null, true, false, doRemove);
 	}
 
 	/* STATE INFORMATION */

@@ -19,6 +19,6 @@ public class TagUtil {
 
 	public static <T> Optional<Holder<T>> getHolder(T value, Registry<T> registry) {
 		return registry.getResourceKey(value)
-			.flatMap(registry::getHolder);
+			.flatMap(key -> registry.get(key).<Holder<T>>map(holder -> holder));
 	}
 }

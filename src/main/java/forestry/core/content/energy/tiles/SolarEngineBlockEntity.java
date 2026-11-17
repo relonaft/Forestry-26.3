@@ -368,7 +368,7 @@ public class SolarEngineBlockEntity extends EngineBlockEntity {
 		super.loadAdditional(nbt, registries);
 		this.activePanels = nbt.getIntOr("active", 0);
 		this.array.clear();
-		for (long pos : nbt.getLongArray("array")) {
+		for (long pos : nbt.getLongArray("array").orElse(new long[0])) {
 			this.array.add(BlockPos.of(pos));
 		}
 

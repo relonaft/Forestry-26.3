@@ -19,7 +19,7 @@ import forestry.api.modules.IPacketRegistry;
 import forestry.apiculture.apiarist.ArmorApiaristHelper;
 import forestry.apiculture.apiarist.ApiaristSuitItem;
 import forestry.apiculture.apiarist.SmokerItem;
-import forestry.apiculture.bees.EnumPollenCluster;
+import forestry.apiculture.bees.PollenClusterItem;
 import forestry.apiculture.bees.genetics.BeeEffectManager;
 import forestry.apiculture.bees.genetics.BeeJubilanceManager;
 import forestry.apiculture.bees.genetics.BeeSpeciesManager;
@@ -33,20 +33,18 @@ import forestry.apiculture.proxy.ApicultureClientHandler;
 import forestry.apiculture.tab.ApicultureCreativeTab;
 import forestry.apiimpl.client.ForestryClientApiImpl;
 import forestry.apiimpl.client.plugin.ClientRegistration;
+import forestry.core.platform.item.DefaultComponents;
 import forestry.core.platform.transfer.Transfers;
 import forestry.core.platform.util.NetworkUtil;
 import forestry.core.platform.util.SpeciesUtil;
 import forestry.modules.BlankForestryModule;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -54,8 +52,8 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 
 import java.util.*;
@@ -70,18 +68,6 @@ public class ModuleApiculture extends BlankForestryModule {
 	public static int maxFlowersSpawnedPerHive = 20;
 
 	private static void onCommonSetup(FMLCommonSetupEvent event) {
-	}
-
-	private static void registerBrewingRecipes(RegisterBrewingRecipesEvent event) {
-		// BREWING RECIPES
-		event.getBuilder().addRecipe(
-			Ingredient.of(PotionContents.createItemStack(Items.POTION, Potions.AWKWARD)),
-			Ingredient.of(ApicultureItems.POLLEN_CLUSTER.stack(EnumPollenCluster.NORMAL, 1)),
-			PotionContents.createItemStack(Items.POTION, Potions.HEALING));
-		event.getBuilder().addRecipe(
-			Ingredient.of(PotionContents.createItemStack(Items.POTION, Potions.AWKWARD)),
-			Ingredient.of(ApicultureItems.POLLEN_CLUSTER.stack(EnumPollenCluster.CRYSTALLINE, 1)),
-			PotionContents.createItemStack(Items.POTION, Potions.REGENERATION));
 	}
 
 	private static void registerCapabilities(RegisterCapabilitiesEvent event) {
@@ -182,12 +168,19 @@ public class ModuleApiculture extends BlankForestryModule {
 		modBus.addListener(ApicultureCreativeTab::addToForestryTab);
 		modBus.addListener(ModuleApiculture::registerCapabilities);
 		modBus.addListener(ModuleApiculture::registerDataMaps);
+		modBus.addListener(ModuleApiculture::modifyDefaultComponents);
 		modBus.addListener(ModuleApiculture::onCommonSetup);
 
-		NeoForge.EVENT_BUS.addListener(ModuleApiculture::registerBrewingRecipes);
 		NeoForge.EVENT_BUS.addListener(SmokerItem::onPlayerTick);
 		NeoForge.EVENT_BUS.addListener(ModuleApiculture::onNetherBeeMate);
 		NeoForge.EVENT_BUS.addListener(ModuleApiculture::modifySnifferLoot);
+	}
+
+	// the brewing recipes with pollen are data now, see data/forestry/recipe/brewing
+	private static void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
+		for (PollenClusterItem pollen : ApicultureItems.POLLEN_CLUSTER.getItems()) {
+			DefaultComponents.compostable(event, pollen, ContextIntProviders.COMPOSTABLE_LOW);
+		}
 	}
 
 	private static void registerDataMaps(RegisterDataMapTypesEvent event) {

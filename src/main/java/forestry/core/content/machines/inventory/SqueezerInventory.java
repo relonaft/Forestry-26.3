@@ -48,7 +48,7 @@ public class SqueezerInventory extends BlockEntityInventoryAdapter<SqueezerBlock
 				return false;
 			}
 
-			RecipeManager recipeManager = this.tile.getLevel().getRecipeManager();
+			RecipeManager recipeManager = RecipeUtils.getRecipeManager();
 			return RecipeUtils.isSqueezerIngredient(recipeManager, stack) || RecipeUtils.getSqueezerContainerRecipe(recipeManager, stack) != null;
 		}
 

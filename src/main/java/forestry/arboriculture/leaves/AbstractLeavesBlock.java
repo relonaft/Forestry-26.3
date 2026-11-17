@@ -19,6 +19,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -58,16 +59,13 @@ public abstract class AbstractLeavesBlock extends ExtendedLeavesBlock implements
 			.noOcclusion()
 			.isValidSpawn(BlockUtil.IS_PARROT_OR_OCELOT)
 			.isSuffocating(BlockUtil.NEVER)
-			.isViewBlocking(BlockUtil.NEVER));
+			.isViewBlocking((state, level, pos, box) -> false)
+			// the same name for all leaves, so the default leaves don't have an other name than the pollinated ones
+			.overrideDescription("block.forestry.leaves"));
 	}
 
 	@Nullable
 	protected abstract ITree getTree(BlockGetter world, BlockPos pos);
-
-	@Override
-	public String getDescriptionId() {
-		return "block.forestry.leaves";// Use the same for all leaves, so the default leaves don't have an other name than the pollinated ones
-	}
 
 	@Override
 	public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state, boolean includeData, Player player) {
@@ -149,7 +147,7 @@ public abstract class AbstractLeavesBlock extends ExtendedLeavesBlock implements
 		if (context.getOptionalParameter(LootContextParams.THIS_ENTITY) instanceof Player player) {
 			profile = player.getGameProfile();
 		}
-		ItemStack tool = context.getOptionalParameter(LootContextParams.TOOL);
+		ItemInstance tool = context.getOptionalParameter(LootContextParams.TOOL);
 		BlockPos pos = BlockUtil.getPos(context);
 		int fortune = 0;
 		if (tool != null) {

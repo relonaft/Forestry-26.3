@@ -38,7 +38,7 @@ public class DecorativeLeavesBlock extends Block implements IColoredBlock, IShea
 			.isValidSpawn(BlockUtil.IS_PARROT_OR_OCELOT)
 			.isSuffocating(BlockUtil.ALWAYS)
 			.isRedstoneConductor(BlockUtil.NEVER)
-			.isViewBlocking(BlockUtil.NEVER));
+			.isViewBlocking((state, level, pos, box) -> false));
 		this.type = type;
 	}
 

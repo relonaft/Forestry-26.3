@@ -14,6 +14,7 @@ import forestry.core.platform.fluids.FluidRecipeFilter;
 import forestry.core.platform.fluids.TankManager;
 import forestry.api.core.IInventoryAdapter;
 import forestry.core.platform.tile.ILiquidTankTile;
+import forestry.core.platform.util.NBTUtilForestry;
 import forestry.core.platform.util.RecipeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -103,7 +104,7 @@ public class AlvearyHygroregulatorBlockEntity extends AbstractAlvearyBlockEntity
         this.heatTicks = compoundNBT.getIntOr("TransferTime", 0);
 
 		if (compoundNBT.contains("CurrentLiquid")) {
-			FluidStack liquid = FluidStack.parseOptional(registries, compoundNBT.getCompound("CurrentLiquid"));
+			FluidStack liquid = NBTUtilForestry.parseFluidOptional(registries, compoundNBT.getCompoundOrEmpty("CurrentLiquid"));
             this.currentRecipe = getHygroRegulatorRecipe(RecipeUtils.getRecipeManager(), liquid);
 		}
 	}
@@ -116,7 +117,7 @@ public class AlvearyHygroregulatorBlockEntity extends AbstractAlvearyBlockEntity
 
 		compoundNBT.putInt("TransferTime", this.heatTicks);
 		if (this.currentRecipe != null) {
-			compoundNBT.put("CurrentLiquid", this.currentRecipe.getInputFluid().save(registries));
+			compoundNBT.put("CurrentLiquid", NBTUtilForestry.saveFluid(this.currentRecipe.getInputFluid(), registries));
 		}
 	}
 

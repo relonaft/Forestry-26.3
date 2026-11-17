@@ -5,13 +5,9 @@ import forestry.api.arboriculture.WoodBlockKind;
 import forestry.arboriculture.features.ArboricultureBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.ItemAbilities;
-import net.neoforged.neoforge.common.ItemAbility;
-import org.jetbrains.annotations.Nullable;
 
 public class ForestryLogBlock extends RotatedPillarBlock implements IWoodTyped {
 	private final WoodBlockKind kind;
@@ -59,30 +55,5 @@ public class ForestryLogBlock extends RotatedPillarBlock implements IWoodTyped {
 			return 0;
 		}
 		return 5;
-	}
-
-	@Override
-	public @Nullable BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
-		if (itemAbility == ItemAbilities.AXE_STRIP) {
-			if (this.woodType instanceof ForestryWoodType type) {
-				if (this.kind == WoodBlockKind.LOG) {
-					return (this.fireproof ? ArboricultureBlocks.STRIPPED_LOGS_FIREPROOF : ArboricultureBlocks.STRIPPED_LOGS)
-						.get(type).defaultState().setValue(AXIS, state.getValue(AXIS));
-				} else if (this.kind == WoodBlockKind.WOOD) {
-					return (this.fireproof ? ArboricultureBlocks.STRIPPED_WOOD_FIREPROOF : ArboricultureBlocks.STRIPPED_WOOD)
-						.get(type).defaultState().setValue(AXIS, state.getValue(AXIS));
-				}
-			} else if (this.woodType instanceof VanillaWoodType type) {
-				// Only case could be that we're fireproof log or fireproof wood
-				if (this.kind == WoodBlockKind.LOG) {
-					return ArboricultureBlocks.STRIPPED_LOGS_VANILLA_FIREPROOF
-						.get(type).defaultState().setValue(AXIS, state.getValue(AXIS));
-				} else if (this.kind == WoodBlockKind.WOOD) {
-					return ArboricultureBlocks.STRIPPED_WOOD_VANILLA_FIREPROOF
-						.get(type).defaultState().setValue(AXIS, state.getValue(AXIS));
-				}
-			}
-		}
-		return super.getToolModifiedState(state, context, itemAbility, simulate);
 	}
 }

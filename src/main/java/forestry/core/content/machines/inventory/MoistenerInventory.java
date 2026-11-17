@@ -28,7 +28,7 @@ public class MoistenerInventory extends BlockEntityInventoryAdapter<MoistenerBlo
 	@Override
 	public boolean canSlotAccept(int slotIndex, ItemStack stack) {
 		if (slotIndex == SLOT_RESOURCE) {
-			return RecipeUtils.getMoistenerRecipe(this.tile.getLevel().getRecipeManager(), stack) != null;
+			return RecipeUtils.getMoistenerRecipe(RecipeUtils.getRecipeManager(), stack) != null;
 		}
 
 		if (SlotUtil.isSlotInRange(slotIndex, SLOT_STASH_1, SLOT_STASH_COUNT)) {

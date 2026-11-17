@@ -50,7 +50,7 @@ public class ItemResearchNote extends ItemForestry {
 		} else {
 			researcherName = note.researcher.name();
 		}
-		return Component.translatable(getDescriptionId(itemstack), researcherName);
+		return Component.translatable(getDescriptionId(), researcherName);
 	}
 
 	@Override

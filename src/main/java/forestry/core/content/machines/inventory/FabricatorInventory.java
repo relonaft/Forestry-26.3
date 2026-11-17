@@ -22,7 +22,7 @@ public class FabricatorInventory extends BlockEntityInventoryAdapter<FabricatorB
 
 	@Override
 	public boolean canSlotAccept(int slotIndex, ItemStack stack) {
-		RecipeManager recipeManager = this.tile.getLevel().getRecipeManager();
+		RecipeManager recipeManager = RecipeUtils.getRecipeManager();
 
 		if (slotIndex == SLOT_METAL) {
 			return RecipeUtils.getFabricatorMeltingRecipe(recipeManager, stack) != null;
