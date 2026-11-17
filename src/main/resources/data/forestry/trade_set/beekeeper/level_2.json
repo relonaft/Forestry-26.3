@@ -1,0 +1,9 @@
+{
+  "amount": 2,
+  "random_sequence": "forestry:trade_set/beekeeper/level_2",
+  "trades": [
+    "forestry:beekeeper/2/emerald_smoker",
+    "forestry:beekeeper/2/emerald_proven_scoop",
+    "forestry:beekeeper/2/propolis_drone"
+  ]
+}

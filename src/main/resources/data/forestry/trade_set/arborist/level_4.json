@@ -1,0 +1,8 @@
+{
+  "amount": 2,
+  "random_sequence": "forestry:trade_set/arborist/level_4",
+  "trades": [
+    "forestry:arborist/4/emerald_pollen",
+    "forestry:arborist/4/emerald_sapling"
+  ]
+}

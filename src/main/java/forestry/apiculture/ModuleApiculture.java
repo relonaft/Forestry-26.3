@@ -16,13 +16,8 @@ import forestry.api.core.genetics.ILifeStage;
 import forestry.api.modules.ForestryModule;
 import forestry.api.modules.ForestryModuleIds;
 import forestry.api.modules.IPacketRegistry;
-import forestry.apiculture.alveary.multiblock.AbstractAlvearyBlockEntity;
-import forestry.apiculture.alveary.multiblock.AlvearyClimatizerBlockEntity;
-import forestry.apiculture.alveary.multiblock.AlvearyHygroregulatorBlockEntity;
 import forestry.apiculture.apiarist.ArmorApiaristHelper;
 import forestry.apiculture.apiarist.ApiaristSuitItem;
-import forestry.apiculture.apiarist.villagers.ApicultureVillagers;
-import forestry.apiculture.apiary.ApiaryBlockEntity;
 import forestry.apiculture.bees.EnumPollenCluster;
 import forestry.apiculture.bees.genetics.BeeEffectManager;
 import forestry.apiculture.bees.genetics.BeeJubilanceManager;
@@ -189,7 +184,6 @@ public class ModuleApiculture extends BlankForestryModule {
 		modBus.addListener(ModuleApiculture::onCommonSetup);
 
 		NeoForge.EVENT_BUS.addListener(ModuleApiculture::registerBrewingRecipes);
-		NeoForge.EVENT_BUS.addListener(ApicultureVillagers::villagerTrades);
 		NeoForge.EVENT_BUS.addListener(ModuleApiculture::onNetherBeeMate);
 		NeoForge.EVENT_BUS.addListener(ModuleApiculture::modifySnifferLoot);
 	}

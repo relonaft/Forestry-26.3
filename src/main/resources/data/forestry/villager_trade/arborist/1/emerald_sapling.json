@@ -1,0 +1,26 @@
+{
+  "wants": {
+    "id": "minecraft:emerald"
+  },
+  "gives": {
+    "id": "forestry:tree_sapling"
+  },
+  "given_item_modifier": [
+    {
+      "type": "forestry:random_organism",
+      "type_id": "forestry:tree_species",
+      "max_complexity": 4
+    },
+    {
+      "type": "minecraft:set_count",
+      "count": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 3
+      }
+    }
+  ],
+  "max_uses": 8,
+  "reputation_discount": 0.0,
+  "xp": 2
+}

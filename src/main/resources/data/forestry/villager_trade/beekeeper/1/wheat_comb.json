@@ -1,0 +1,30 @@
+{
+  "wants": {
+    "id": "minecraft:wheat",
+    "count": {
+      "type": "minecraft:uniform",
+      "min": 8,
+      "max": 12
+    }
+  },
+  "gives": {
+    "id": "forestry:honey_comb"
+  },
+  "given_item_modifier": [
+    {
+      "type": "forestry:random_item",
+      "items": "#forestry:village_combs"
+    },
+    {
+      "type": "minecraft:set_count",
+      "count": {
+        "type": "minecraft:uniform",
+        "min": 2,
+        "max": 4
+      }
+    }
+  ],
+  "max_uses": 8,
+  "reputation_discount": 0.0,
+  "xp": 2
+}

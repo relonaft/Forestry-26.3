@@ -17,4 +17,5 @@ public class ArboricultureLootFunctions {
 
 	// name matches the one generated loot tables reference
 	public static final DeferredHolder<MapCodec<? extends LootItemFunction>, MapCodec<CountBlockFunction>> COUNT = LOOT_FUNCTIONS.register("count_from_block", () -> CountBlockFunction.CODEC);
+	public static final DeferredHolder<MapCodec<? extends LootItemFunction>, MapCodec<RandomWoodFunction>> RANDOM_WOOD = LOOT_FUNCTIONS.register("random_wood", () -> RandomWoodFunction.CODEC);
 }

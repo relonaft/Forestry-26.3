@@ -1,0 +1,8 @@
+{
+  "amount": 2,
+  "random_sequence": "forestry:trade_set/beekeeper/level_4",
+  "trades": [
+    "forestry:beekeeper/4/princess_monastic_drone",
+    "forestry:beekeeper/4/drone_ended_drone"
+  ]
+}

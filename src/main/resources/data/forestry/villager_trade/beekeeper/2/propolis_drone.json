@@ -1,0 +1,30 @@
+{
+  "wants": {
+    "id": "forestry:propolis",
+    "count": {
+      "type": "minecraft:uniform",
+      "min": 2,
+      "max": 4
+    }
+  },
+  "gives": {
+    "id": "forestry:drone_bee"
+  },
+  "given_item_modifier": [
+    {
+      "type": "forestry:random_organism",
+      "type_id": "forestry:bee_species",
+      "species": [
+        "forestry:forest",
+        "forestry:meadows",
+        "forestry:modest",
+        "forestry:wintry",
+        "forestry:tropical",
+        "forestry:marshy"
+      ]
+    }
+  ],
+  "max_uses": 8,
+  "reputation_discount": 0.0,
+  "xp": 6
+}

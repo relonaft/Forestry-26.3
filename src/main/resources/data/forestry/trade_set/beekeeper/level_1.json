@@ -1,0 +1,9 @@
+{
+  "amount": 2,
+  "random_sequence": "forestry:trade_set/beekeeper/level_1",
+  "trades": [
+    "forestry:beekeeper/1/wheat_comb",
+    "forestry:beekeeper/1/carrot_comb",
+    "forestry:beekeeper/1/potato_comb"
+  ]
+}

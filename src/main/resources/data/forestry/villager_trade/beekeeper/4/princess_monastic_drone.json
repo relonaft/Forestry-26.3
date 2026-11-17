@@ -1,0 +1,26 @@
+{
+  "wants": {
+    "id": "forestry:princess_bee"
+  },
+  "additional_wants": {
+    "id": "minecraft:emerald",
+    "count": {
+      "type": "minecraft:uniform",
+      "min": 10,
+      "max": 64
+    }
+  },
+  "gives": {
+    "id": "forestry:drone_bee"
+  },
+  "given_item_modifier": [
+    {
+      "type": "forestry:set_species_nbt",
+      "type_id": "forestry:bee_species",
+      "species_id": "forestry:monastic"
+    }
+  ],
+  "max_uses": 8,
+  "reputation_discount": 0.05,
+  "xp": 15
+}
