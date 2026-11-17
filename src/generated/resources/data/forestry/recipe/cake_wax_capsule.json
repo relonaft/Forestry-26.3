@@ -3,15 +3,10 @@
   "category": "misc",
   "key": {
     "A": {
-      "neoforge:ingredient_type": "neoforge:components",
+      "neoforge:ingredient_type": "forestry:fluid_container",
       "items": "forestry:wax_capsule",
-      "components": {
-        "forestry:fluid_content": {
-          "id": "minecraft:milk",
-          "amount": 1000
-        }
-      },
-      "strict": false
+      "fluid": "minecraft:milk",
+      "amount": 1000
     },
     "B": "minecraft:sugar",
     "C": "minecraft:wheat",

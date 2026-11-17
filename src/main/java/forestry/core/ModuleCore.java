@@ -18,6 +18,7 @@ import forestry.apiimpl.plugin.PluginManager;
 import forestry.core.features.CoreBlocks;
 import forestry.core.platform.block.TileStreamUpdateTracker;
 import forestry.core.platform.client.ClientsideCode;
+import forestry.core.platform.crafting.ForestryIngredientTypes;
 import forestry.core.platform.client.CoreClientHandler;
 import forestry.core.engine.climate.ForestryClimateManager;
 import forestry.core.platform.commands.DiagnosticsCommand;
@@ -94,6 +95,7 @@ public class ModuleCore extends BlankForestryModule {
 	@Override
 	public void registerEvents(IEventBus modBus) {
 		ENTITY_DATA_SERIALIZERS.register(modBus);
+		ForestryIngredientTypes.INGREDIENT_TYPES.register(modBus);
 		modBus.addListener(ModuleCore::onCommonSetup);
 		modBus.addListener(ModuleCore::registerCapabilities);
 		modBus.addListener(ModuleCore::registerGlobalLootModifiers);

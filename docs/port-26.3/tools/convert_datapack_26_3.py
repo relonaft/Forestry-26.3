@@ -43,7 +43,9 @@ RENAMED = {'minecraft:chain': 'minecraft:iron_chain', 'c:slimeballs': 'c:slime_b
 OLD_DEFAULT_COMPONENTS = {'minecraft:attribute_modifiers', 'minecraft:enchantments', 'minecraft:lore', 'minecraft:max_stack_size',
                           'minecraft:rarity', 'minecraft:repair_cost'}
 # the 1.21.1 datagen wrote minecraft:air where a filled container belongs, so these recipes took an empty
-# slot. 1.12 took the container filled with water (bog earth) or milk (cake)
+# slot. 1.12 took the container filled with water (bog earth) or milk (cake). Written as
+# forestry:fluid_container: a components ingredient cannot hold a fluid stack, fluid components are not bound when
+# recipes load
 FILLED_CONTAINERS = {
     'bog_earth_can': ('forestry:can', 'minecraft:water'),
     'bog_earth_wax_capsule': ('forestry:wax_capsule', 'minecraft:water'),
@@ -90,8 +92,7 @@ def ingredient(value, where):
             name = os.path.basename(where)[:-len('.json')]
             if value.get('items') == 'minecraft:air' and name in FILLED_CONTAINERS:
                 item, fluid = FILLED_CONTAINERS[name]
-                return {'neoforge:ingredient_type': 'neoforge:components', 'items': item,
-                        'components': {'forestry:fluid_content': {'id': fluid, 'amount': 1000}}, 'strict': False}
+                return {'neoforge:ingredient_type': 'forestry:fluid_container', 'items': item, 'fluid': fluid, 'amount': 1000}
             if value.get('strict') and OLD_DEFAULT_COMPONENTS & set(value['components']):
                 kept = {k: v for k, v in value['components'].items() if k not in OLD_DEFAULT_COMPONENTS}
                 if not kept:
