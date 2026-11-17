@@ -7,9 +7,7 @@
   "transforms": [
     {
       "from": "#minecraft:dirt",
-      "to": {
-        "Name": "minecraft:coarse_dirt"
-      }
+      "to": "minecraft:coarse_dirt"
     }
   ]
 }

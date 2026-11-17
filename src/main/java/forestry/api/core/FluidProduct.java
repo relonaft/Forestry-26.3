@@ -7,21 +7,36 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 
 /**
  * Default implementation of {@link IFluidProduct}: a fixed fluid output. Used by all of Forestry's own squeezer
- * recipes. Wraps a {@link FluidStack} so fluid, amount, and data components are captured together.
+ * recipes. Wraps a {@link FluidStackTemplate} so fluid, amount, and data components are captured together.
+ * A template, because a recipe is read before the game binds components and a fluid stack cannot be built then.
  *
- * @param stack The fluid stack this product always produces. Must not be empty.
+ * @param template The template of the fluid stack this product always produces.
  */
-public record FluidProduct(FluidStack stack) implements IFluidProduct {
+public record FluidProduct(FluidStackTemplate template) implements IFluidProduct {
 	public FluidProduct {
-		Preconditions.checkNotNull(stack);
-		Preconditions.checkArgument(!stack.isEmpty(), "FluidProduct stack must not be empty");
+		Preconditions.checkNotNull(template);
 	}
 
-	public static final MapCodec<FluidProduct> MAP_CODEC = FluidStack.CODEC.fieldOf("stack").xmap(FluidProduct::new, FluidProduct::stack);
-	public static final StreamCodec<RegistryFriendlyByteBuf, FluidProduct> STREAM_CODEC = FluidStack.STREAM_CODEC.map(FluidProduct::new, FluidProduct::stack);
+	/**
+	 * @param stack The fluid stack this product always produces. Must not be empty.
+	 */
+	public FluidProduct(FluidStack stack) {
+		this(FluidStackTemplate.fromNonEmptyStack(stack));
+	}
+
+	/**
+	 * @return A new fluid stack this product always produces
+	 */
+	public FluidStack stack() {
+		return this.template.create();
+	}
+
+	public static final MapCodec<FluidProduct> MAP_CODEC = FluidStackTemplate.CODEC.fieldOf("stack").xmap(FluidProduct::new, FluidProduct::template);
+	public static final StreamCodec<RegistryFriendlyByteBuf, FluidProduct> STREAM_CODEC = FluidStackTemplate.STREAM_CODEC.map(FluidProduct::new, FluidProduct::template);
 	/**
 	 * The default product type. The dispatch codec {@link IFluidProduct#CODEC} treats this type
 	 * specially: products of this type serialize without a {@code "type"} key, and a missing {@code "type"} key on
@@ -31,12 +46,12 @@ public record FluidProduct(FluidStack stack) implements IFluidProduct {
 
 	@Override
 	public FluidStack createFluidStack() {
-		return this.stack.copy();
+		return this.template.create();
 	}
 
 	@Override
 	public FluidStack createRandomFluidStack(RandomSource random) {
-		return this.stack.copy();
+		return this.template.create();
 	}
 
 	@Override
@@ -49,6 +64,6 @@ public record FluidProduct(FluidStack stack) implements IFluidProduct {
 	}
 
 	public static FluidProduct of(Fluid fluid, int amount) {
-		return new FluidProduct(new FluidStack(fluid, amount));
+		return new FluidProduct(new FluidStackTemplate(fluid, amount));
 	}
 }

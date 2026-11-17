@@ -21,7 +21,7 @@ public class MoistenerRecipe implements IMoistenerRecipe {
 	private static final MapCodec<MoistenerRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Identifier.CODEC.fieldOf("id").forGetter(MoistenerRecipe::getId),
 		Ingredient.CODEC.fieldOf("resource").forGetter(MoistenerRecipe::getInput),
-		ItemStackTemplate.CODEC.xmap(ItemStackTemplate::create, ItemStackTemplate::fromNonEmptyStack).fieldOf("product").forGetter(MoistenerRecipe::getProduct),
+		ItemStackTemplate.CODEC.fieldOf("product").forGetter(recipe -> recipe.product),
 		Codec.INT.fieldOf("time").forGetter(MoistenerRecipe::getTimePerItem)
 	).apply(instance, MoistenerRecipe::new));
 	private static final StreamCodec<RegistryFriendlyByteBuf, MoistenerRecipe> STREAM_CODEC = StreamCodec.of(
@@ -33,9 +33,14 @@ public class MoistenerRecipe implements IMoistenerRecipe {
 	private final Identifier id;
 	private final int timePerItem;
 	private final Ingredient resource;
-	private final ItemStack product;
+	private final ItemStackTemplate product;
 
 	public MoistenerRecipe(Identifier id, Ingredient resource, ItemStack product, int timePerItem) {
+		this(id, resource, ItemStackTemplate.fromNonEmptyStack(product), timePerItem);
+	}
+
+	// holds templates, a stack cannot be built while the datapack loads
+	public MoistenerRecipe(Identifier id, Ingredient resource, ItemStackTemplate product, int timePerItem) {
 		Preconditions.checkNotNull(id, "Recipe identifier cannot be null");
 		Preconditions.checkNotNull(resource, "Resource cannot be null");
 		Preconditions.checkNotNull(product, "Product cannot be null");
@@ -58,12 +63,12 @@ public class MoistenerRecipe implements IMoistenerRecipe {
 
 	@Override
 	public ItemStack getProduct() {
-		return product;
+		return this.product.create();
 	}
 
 	@Override
 	public ItemStack getResultItem() {
-		return this.product;
+		return this.product.create();
 	}
 
 	@Override
@@ -84,7 +89,7 @@ public class MoistenerRecipe implements IMoistenerRecipe {
 	private static MoistenerRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
 		Identifier recipeId = Identifier.STREAM_CODEC.decode(buffer);
 		Ingredient resource = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
-		ItemStack product = ItemStack.STREAM_CODEC.decode(buffer);
+		ItemStackTemplate product = ItemStackTemplate.STREAM_CODEC.decode(buffer);
 		int timePerItem = ByteBufCodecs.VAR_INT.decode(buffer);
 
 		return new MoistenerRecipe(recipeId, resource, product, timePerItem);
@@ -93,7 +98,7 @@ public class MoistenerRecipe implements IMoistenerRecipe {
 	private static void toNetwork(RegistryFriendlyByteBuf buffer, MoistenerRecipe recipe) {
 		Identifier.STREAM_CODEC.encode(buffer, recipe.id);
 		Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.resource);
-		ItemStack.STREAM_CODEC.encode(buffer, recipe.product);
+		ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.product);
 		ByteBufCodecs.VAR_INT.encode(buffer, recipe.timePerItem);
 	}
 }

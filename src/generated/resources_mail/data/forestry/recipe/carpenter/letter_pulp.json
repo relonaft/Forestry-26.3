@@ -1,6 +1,5 @@
 {
   "type": "forestry:carpenter",
-  "box": [],
   "id": "forestry:carpenter/letter_pulp",
   "liquid": {
     "amount": 250,

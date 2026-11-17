@@ -1,6 +1,5 @@
 {
   "type": "forestry:carpenter",
-  "box": [],
   "id": "forestry:carpenter/hardened_casing",
   "liquid": {
     "amount": 5000,

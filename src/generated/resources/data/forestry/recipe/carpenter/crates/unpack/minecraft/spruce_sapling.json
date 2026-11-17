@@ -1,6 +1,5 @@
 {
   "type": "forestry:carpenter",
-  "box": [],
   "id": "forestry:carpenter/crates/unpack/minecraft/spruce_sapling",
   "recipe": {
     "category": "misc",

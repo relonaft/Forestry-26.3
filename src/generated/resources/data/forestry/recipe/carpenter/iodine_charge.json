@@ -1,6 +1,5 @@
 {
   "type": "forestry:carpenter",
-  "box": [],
   "id": "forestry:carpenter/iodine_charge",
   "liquid": {
     "amount": 1000,
