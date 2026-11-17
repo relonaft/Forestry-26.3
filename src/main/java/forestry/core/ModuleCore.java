@@ -17,6 +17,7 @@ import forestry.core.engine.genetics.TaxonManager;
 import forestry.apiimpl.plugin.PluginManager;
 import forestry.core.features.CoreBlocks;
 import forestry.core.platform.block.TileStreamUpdateTracker;
+import forestry.core.platform.client.ClientsideCode;
 import forestry.core.platform.client.CoreClientHandler;
 import forestry.core.engine.climate.ForestryClimateManager;
 import forestry.core.platform.commands.DiagnosticsCommand;
@@ -37,17 +38,22 @@ import forestry.core.platform.util.NetworkUtil;
 import forestry.modules.BlankForestryModule;
 import forestry.modules.ForestryModuleManager;
 import forestry.modules.ModuleUtil;
+import java.util.ArrayList;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import forestry.core.platform.transfer.Transfers;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -100,6 +106,9 @@ public class ModuleCore extends BlankForestryModule {
 		NeoForge.EVENT_BUS.addListener(ModuleCore::onAddReloadListeners);
 		NeoForge.EVENT_BUS.addListener(ModuleCore::registerCommands);
 		NeoForge.EVENT_BUS.addListener(ModuleCore::onDatapackSync);
+		if (FMLEnvironment.getDist() == Dist.CLIENT) {
+			NeoForge.EVENT_BUS.addListener(ClientsideCode::onRecipesReceived);
+		}
 	}
 
 	private static void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
@@ -234,7 +243,7 @@ public class ModuleCore extends BlankForestryModule {
 		// RecipeManager is fully populated. Run on the game executor since this mutates shared species-type state.
 		RecipeManager recipeManager = event.getServerResources().getRecipeManager();
 		event.addListener(ForestryConstants.forestry("mutations"), (sharedState, backgroundExecutor, prepBarrier, gameExecutor) -> {
-			return prepBarrier.wait(Unit.INSTANCE).thenRunAsync(() -> GeneticsReloadHandler.rebuildMutations(recipeManager), gameExecutor);
+			return prepBarrier.wait(Unit.INSTANCE).thenRunAsync(() -> GeneticsReloadHandler.rebuildMutations(recipeManager.recipeMap()), gameExecutor);
 		});
 	}
 
@@ -248,10 +257,25 @@ public class ModuleCore extends BlankForestryModule {
 			NetworkUtil.sendToPlayer(flowerTypes, player);
 		});
 
+		// a 26.3 client gets only the recipe types asked for here
+		event.sendRecipes(clientRecipeTypes());
+
 		// send necessary data from each module (currently, this is where each module sends its respective bee/tree/butterfly species)
 		for (IForestryModule module : IForestryApi.INSTANCE.getModuleManager().getLoadedModules()) {
 			module.sendDatapackData(event);
 		}
+	}
+
+	// JEI, the machine slots, the worktable and the client mutation list read these
+	private static List<RecipeType<?>> clientRecipeTypes() {
+		List<RecipeType<?>> types = new ArrayList<>();
+		types.add(RecipeType.CRAFTING);
+		for (RecipeType<?> type : BuiltInRegistries.RECIPE_TYPE) {
+			if (ForestryConstants.MOD_ID.equals(BuiltInRegistries.RECIPE_TYPE.getKey(type).getNamespace())) {
+				types.add(type);
+			}
+		}
+		return types;
 	}
 
 	private static void registerCommands(RegisterCommandsEvent event) {

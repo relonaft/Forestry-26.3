@@ -7,9 +7,9 @@ import forestry.core.content.worktable.recipes.MemorizedRecipe;
 import forestry.core.content.worktable.screens.WorktableMenu;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -35,7 +35,7 @@ class WorktableRecipeTransferHandler implements IRecipeTransferHandler<Worktable
 	}
 
 	@Override
-	public RecipeType<RecipeHolder<CraftingRecipe>> getRecipeType() {
+	public IRecipeType<RecipeHolder<CraftingRecipe>> getRecipeType() {
 		return RecipeTypes.CRAFTING;
 	}
 

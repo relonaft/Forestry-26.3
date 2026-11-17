@@ -22,7 +22,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
-import java.util.Arrays;
 
 public class SmelterRecipeCategory extends ForestryRecipeCategory<ISmelterRecipe> {
 	private static final Identifier TEXTURE = ForestryConstants.forestry(Constants.TEXTURE_PATH_GUI + "/smelter.png");
@@ -61,9 +60,9 @@ public class SmelterRecipeCategory extends ForestryRecipeCategory<ISmelterRecipe
 		int oY = 5;
 
 		for (SizedIngredient input : recipe.getInputs()) {
-			// getItems already applies the count. Copy anyway, the array behind it is cached
+			// one stack per item of the ingredient, with the count of the recipe
 			builder.addSlot(RecipeIngredientRole.INPUT, oX + cellX, oY + cellY).addItemStacks(
-				Arrays.stream(input.getItems()).map(ItemStack::copy).toList()
+				input.ingredient().items().map(item -> new ItemStack(item, input.count())).toList()
 			);
 
 			cellX += 18;

@@ -25,6 +25,7 @@ import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -49,7 +50,7 @@ public class FabricatorRecipeCategory extends ForestryRecipeCategory<IFabricator
 
 	private static Map<Fluid, List<IFabricatorSmeltingRecipe>> getSmeltingInputs() {
 		Map<Fluid, List<IFabricatorSmeltingRecipe>> smeltingInputs = new HashMap<>();
-		RecipeUtils.getRecipes(RecipeUtils.getRecipeManager(), FactoryRecipeTypes.FABRICATOR_SMELTING)
+		RecipeUtils.getRecipes(RecipeUtils.getRecipeMap(), FactoryRecipeTypes.FABRICATOR_SMELTING)
 			.forEach(smelting -> {
 				Fluid fluid = smelting.getResultFluid().getFluid();
 				if (!smeltingInputs.containsKey(fluid)) {
@@ -78,7 +79,7 @@ public class FabricatorRecipeCategory extends ForestryRecipeCategory<IFabricator
 		Fluid recipeFluid = recipeLiquid.getFluid();
 		List<IFabricatorSmeltingRecipe> smeltingRecipes = getSmeltingInputs().get(recipeFluid);
 		List<ItemStack> smeltingInput = smeltingRecipes.stream()
-			.flatMap(s -> Arrays.stream(s.getInput().getItems()))
+			.flatMap(s -> s.getInput().items().map(ItemStack::new))
 			.toList();
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 6, 32)
@@ -90,7 +91,7 @@ public class FabricatorRecipeCategory extends ForestryRecipeCategory<IFabricator
 		JeiUtil.setCraftingItems(craftingSlots, craftingGridRecipe, this.craftingGridHelper);
 
 		// using Catalyst tells JEI that it is not actually part of the recipe
-		builder.addSlot(RecipeIngredientRole.CATALYST, 6, 5)
+		builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 6, 5)
 			.addItemStacks(smeltingInput);
 
 		// todo why is plan unused
@@ -99,6 +100,6 @@ public class FabricatorRecipeCategory extends ForestryRecipeCategory<IFabricator
 		//		.addIngredients(plan);
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 119, 37)
-			.addItemStack(craftingGridRecipe.getResultItem(RecipeUtils.getRegistryAccess()));
+			.addItemStack(craftingGridRecipe.assemble(CraftingInput.EMPTY));
 	}
 }

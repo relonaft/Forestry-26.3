@@ -7,7 +7,6 @@ import forestry.core.platform.config.Constants;
 import forestry.core.platform.recipes.jei.ForestryRecipeCategory;
 import forestry.core.platform.recipes.jei.ForestryRecipeType;
 import forestry.core.platform.util.JeiUtil;
-import forestry.core.platform.util.RecipeUtils;
 import forestry.core.content.machines.features.FactoryBlocks;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -24,6 +23,7 @@ import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.neoforged.neoforge.fluids.FluidStack;
 
@@ -61,20 +61,20 @@ public class CarpenterRecipeCategory extends ForestryRecipeCategory<ICarpenterRe
 	public void setRecipe(IRecipeLayoutBuilder builder, ICarpenterRecipe recipe, IFocusGroup focuses) {
 		CraftingRecipe craftingGridRecipe = recipe.getCraftingGridRecipe();
 
-		ItemStack processingIngredient = craftingGridRecipe.getResultItem(RecipeUtils.getRegistryAccess()).copy();
+		ItemStack processingIngredient = craftingGridRecipe.assemble(CraftingInput.EMPTY).copy();
 		processingIngredient.setCount(1);
 		builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 71, 35)
 			.addItemStack(processingIngredient);
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 120 - 9, 56 - 16)
-			.addItemStack(craftingGridRecipe.getResultItem(RecipeUtils.getRegistryAccess()));
+			.addItemStack(craftingGridRecipe.assemble(CraftingInput.EMPTY));
 
 		List<IRecipeSlotBuilder> craftingSlots = JeiUtil.layoutSlotGrid(builder, RecipeIngredientRole.INPUT, 3, 3, 1, 4, 18);
 		JeiUtil.setCraftingItems(craftingSlots, craftingGridRecipe, this.craftingGridHelper);
 
 		// crate comes last to match the internal inventory layout of the carpenter
-		builder.addSlot(RecipeIngredientRole.INPUT, 74, 4)
-			.addIngredients(recipe.getBox());
+		IRecipeSlotBuilder boxSlot = builder.addSlot(RecipeIngredientRole.INPUT, 74, 4);
+		recipe.getBox().ifPresent(boxSlot::addIngredients);
 
 		IRecipeSlotBuilder tankSlot = builder.addSlot(RecipeIngredientRole.INPUT, 141, 1)
 			.setFluidRenderer(10000, false, 16, 58)

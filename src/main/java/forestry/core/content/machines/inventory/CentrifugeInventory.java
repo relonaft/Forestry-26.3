@@ -18,7 +18,7 @@ public class CentrifugeInventory extends BlockEntityInventoryAdapter<CentrifugeB
 
 	@Override
 	public boolean canSlotAccept(int slotIndex, ItemStack stack) {
-		return slotIndex == SLOT_RESOURCE && RecipeUtils.getCentrifugeRecipe(RecipeUtils.getRecipeManager(), stack) != null;
+		return slotIndex == SLOT_RESOURCE && RecipeUtils.getCentrifugeRecipe(RecipeUtils.getRecipeMap(), stack) != null;
 	}
 
 	@Override

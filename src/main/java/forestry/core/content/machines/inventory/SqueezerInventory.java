@@ -15,7 +15,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import forestry.core.platform.transfer.IFluidHandler;
@@ -48,7 +48,7 @@ public class SqueezerInventory extends BlockEntityInventoryAdapter<SqueezerBlock
 				return false;
 			}
 
-			RecipeManager recipeManager = RecipeUtils.getRecipeManager();
+			RecipeMap recipeManager = RecipeUtils.getRecipeMap();
 			return RecipeUtils.isSqueezerIngredient(recipeManager, stack) || RecipeUtils.getSqueezerContainerRecipe(recipeManager, stack) != null;
 		}
 

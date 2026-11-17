@@ -24,7 +24,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
 import forestry.core.platform.transfer.IFluidHandler;
@@ -70,7 +70,7 @@ public class AlvearyHygroregulatorBlockEntity extends AbstractAlvearyBlockEntity
 			FluidStack fluid = this.liquidTank.getFluid();
 
 			if (!fluid.isEmpty()) {
-				this.currentRecipe = getHygroRegulatorRecipe(RecipeUtils.getRecipeManager(), fluid);
+				this.currentRecipe = getHygroRegulatorRecipe(RecipeUtils.getRecipeMap(), fluid);
 
 				if (this.currentRecipe != null) {
 					this.liquidTank.drainInternal(this.currentRecipe.getInputFluid().getAmount(), IFluidHandler.FluidAction.EXECUTE);
@@ -105,7 +105,7 @@ public class AlvearyHygroregulatorBlockEntity extends AbstractAlvearyBlockEntity
 
 		if (compoundNBT.contains("CurrentLiquid")) {
 			FluidStack liquid = NBTUtilForestry.parseFluidOptional(registries, compoundNBT.getCompoundOrEmpty("CurrentLiquid"));
-            this.currentRecipe = getHygroRegulatorRecipe(RecipeUtils.getRecipeManager(), liquid);
+            this.currentRecipe = getHygroRegulatorRecipe(RecipeUtils.getRecipeMap(), liquid);
 		}
 	}
 
@@ -138,7 +138,7 @@ public class AlvearyHygroregulatorBlockEntity extends AbstractAlvearyBlockEntity
 	}
 
 	@Nullable
-	private static IHygroregulatorRecipe getHygroRegulatorRecipe(RecipeManager manager, FluidStack input) {
+	private static IHygroregulatorRecipe getHygroRegulatorRecipe(RecipeMap manager, FluidStack input) {
 		return RecipeUtils.getMatchingRecipe(manager, ApicultureRecipeTypes.HYGROREGULATOR, recipe -> FluidStack.isSameFluidSameComponents(input, recipe.getInputFluid()) && input.getAmount() >= recipe.getInputFluid().getAmount());
 	}
 }

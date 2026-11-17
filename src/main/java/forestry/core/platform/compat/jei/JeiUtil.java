@@ -6,6 +6,7 @@ import forestry.api.core.genetics.ISpecies;
 import forestry.api.core.genetics.ISpeciesType;
 import forestry.core.platform.util.ModUtil;
 import forestry.core.platform.registration.FeatureItem;
+import java.util.Optional;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -102,18 +103,29 @@ public class JeiUtil {
 	public static void setCraftingItems(List<IRecipeSlotBuilder> craftingSlots, CraftingRecipe craftingGridRecipe, ICraftingGridHelper craftingGridHelper) {
 		int width = 0;
 		int height = 0;
+		List<Optional<Ingredient>> ingredients;
 		if (craftingGridRecipe instanceof ShapedRecipe shapedRecipe) {
 			width = shapedRecipe.getWidth();
 			height = shapedRecipe.getHeight();
+			ingredients = shapedRecipe.getIngredients();
+		} else {
+			ingredients = craftingGridRecipe.placementInfo().ingredients().stream().map(Optional::of).toList();
 		}
-		setCraftingItems(craftingSlots, craftingGridRecipe.getIngredients(), width, height, craftingGridHelper);
+		List<List<ItemStack>> itemStacks = ingredients.stream()
+			.map(ingredient -> ingredient.map(JeiUtil::getItems).orElse(List.of()))
+			.toList();
+		craftingGridHelper.setInputs(craftingSlots, VanillaTypes.ITEM_STACK, itemStacks, width, height);
 	}
 
 	public static void setCraftingItems(List<IRecipeSlotBuilder> craftingSlots, List<Ingredient> ingredients, int width, int height, ICraftingGridHelper craftingGridHelper) {
 		List<List<ItemStack>> itemStacks = ingredients.stream()
-			.map(ingredient -> List.of(ingredient.getItems()))
+			.map(JeiUtil::getItems)
 			.toList();
 		craftingGridHelper.setInputs(craftingSlots, VanillaTypes.ITEM_STACK, itemStacks, width, height);
+	}
+
+	public static List<ItemStack> getItems(Ingredient ingredient) {
+		return ingredient.items().map(ItemStack::new).toList();
 	}
 
 	public static NonNullList<ItemStack> getFirstItemStacks(IRecipeSlotsView recipeSlots) {
@@ -152,7 +164,7 @@ public class JeiUtil {
 	private static void drawCentered(GuiGraphicsExtractor graphics, Font font, String line, float x, float y, int color) {
 		int width = font.width(line);
 
-		graphics.text(font, line, x - (width / 2f), y, color, false);
+		graphics.text(font, line, Math.round(x - width / 2f), Math.round(y), color, false);
 	}
 	// End of JEI Bees
 

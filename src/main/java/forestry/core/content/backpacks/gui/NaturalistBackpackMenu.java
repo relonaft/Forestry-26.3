@@ -58,7 +58,7 @@ public class NaturalistBackpackMenu extends ItemInventoryMenu<BackpackInventory>
 
 	public static NaturalistBackpackMenu fromNetwork(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
 		Identifier typeId = buffer.readIdentifier();
-		ItemStack parent = playerInventory.getSelected();
+		ItemStack parent = playerInventory.getSelectedItem();
 
 		return makeContainer(windowId, playerInventory.player, parent, typeId);
 	}

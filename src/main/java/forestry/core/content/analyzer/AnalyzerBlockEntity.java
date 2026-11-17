@@ -3,6 +3,7 @@ package forestry.core.content.analyzer;
 import forestry.api.core.ForestryError;
 import forestry.api.core.genetics.IIndividual;
 import forestry.api.core.genetics.capability.IIndividualHandlerItem;
+import forestry.core.platform.client.ClientsideCode;
 import forestry.core.platform.config.Constants;
 import forestry.core.features.CoreTiles;
 import forestry.core.platform.fluids.FilteredTank;
@@ -16,7 +17,6 @@ import forestry.core.platform.util.GeneticsUtil;
 import forestry.core.platform.util.InventoryUtil;
 import forestry.core.platform.util.NetworkUtil;
 import forestry.core.platform.util.SpeciesUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -159,7 +159,8 @@ public class AnalyzerBlockEntity extends PoweredBlockEntity implements WorldlyCo
             this.individualOnDisplayClient = itemStack;
 			//TODO
 			BlockPos pos = getBlockPos();
-			Minecraft.getInstance().levelRenderer.setSectionDirty(pos.getX(), pos.getY(), pos.getZ());
+			// deviation: the old call passed block coordinates where section coordinates were expected
+			ClientsideCode.markForUpdate(pos);
 			//			world.markForRerender(getPos());
 		}
 	}

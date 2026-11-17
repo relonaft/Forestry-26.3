@@ -24,7 +24,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-import java.util.Arrays;
 import java.util.List;
 import forestry.api.ForestryDataMaps;
 import forestry.core.platform.recipes.jei.JeiDataMaps;
@@ -76,7 +75,7 @@ public class FermenterRecipeCategory extends ForestryRecipeCategory<IFermenterRe
 
 		final int baseAmount = Math.round(recipe.getFermentationValue() * recipe.getModifier());
 		List<FluidStack> outputs =
-			Arrays.stream(recipe.getInputItem().getItems())
+			recipe.getInputItem().items().map(ItemStack::new)
 				.map(fermentable -> {
 					int amount = baseAmount;
 					if (fermentable.getItem() instanceof IVariableFermentable variableFermentable) {
