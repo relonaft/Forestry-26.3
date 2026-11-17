@@ -1,0 +1,15 @@
+{
+  "amount": 2,
+  "random_sequence": "forestry:trade_set/beekeeper/level_3",
+  "trades": [
+    "forestry:beekeeper/3/princess_emerald",
+    "forestry:beekeeper/3/emerald_proven_frame",
+    "forestry:beekeeper/3/acacia_log_apiary",
+    "forestry:beekeeper/3/birch_log_apiary",
+    "forestry:beekeeper/3/dark_oak_log_apiary",
+    "forestry:beekeeper/3/jungle_log_apiary",
+    "forestry:beekeeper/3/oak_log_apiary",
+    "forestry:beekeeper/3/spruce_log_apiary",
+    "forestry:beekeeper/3/mangrove_log_apiary"
+  ]
+}

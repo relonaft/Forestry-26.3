@@ -24,7 +24,6 @@ import forestry.arboriculture.features.ArboricultureEntities;
 import forestry.arboriculture.features.ArboricultureItems;
 import forestry.arboriculture.wood.ForestryBoatDispenserBehavior;
 import forestry.arboriculture.network.PacketRipeningUpdate;
-import forestry.arboriculture.villagers.ArboricultureVillagers;
 import forestry.modules.BlankForestryModule;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.Identifier;
@@ -98,7 +97,6 @@ public class ModuleArboriculture extends BlankForestryModule {
 	public void registerEvents(IEventBus modBus) {
 		modBus.addListener(ModuleArboriculture::registerGlobalLootModifiers);
 		modBus.addListener(ArboricultureCreativeTab::addToForestryTab);
-		NeoForge.EVENT_BUS.addListener(ArboricultureVillagers::villagerTrades);
 
 		modBus.addListener(ModuleArboriculture::registerCapabilities);
 		modBus.addListener(ModuleArboriculture::commonSetup);

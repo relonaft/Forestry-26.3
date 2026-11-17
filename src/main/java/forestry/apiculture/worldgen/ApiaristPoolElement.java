@@ -64,7 +64,7 @@ public class ApiaristPoolElement extends SinglePoolElement {
 	public void handleDataMarker(LevelAccessor level, StructureTemplate.StructureBlockInfo info, BlockPos pos, Rotation rotation, RandomSource random, BoundingBox box) {
 		// yes this is nullable, shut up intellij
 		if (info.nbt() != null) {
-			if (StructureMode.valueOf(info.nbt().getString("mode")) == StructureMode.DATA) {
+			if (StructureMode.valueOf(info.nbt().getStringOr("mode", "")) == StructureMode.DATA) {
 				String marker = info.nbt().getStringOr("metadata", "");
 
 				if ("apiary".equals(marker)) {

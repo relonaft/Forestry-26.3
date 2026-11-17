@@ -14,6 +14,7 @@ import forestry.arboriculture.leaves.DefaultFruitLeavesBlock;
 import forestry.core.platform.util.SpeciesUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -36,25 +37,26 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 public class GrafterLootModifier extends LootModifier {
 	public static final MapCodec<GrafterLootModifier> CODEC = RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, GrafterLootModifier::new));
 
-	public GrafterLootModifier(LootItemCondition[] conditionsIn) {
-		super(conditionsIn);
+	public GrafterLootModifier(Optional<Holder<LootItemCondition>> condition, int priority) {
+		super(condition, priority);
 	}
 
 	@Override
 	protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-		BlockState state = context.getParamOrNull(LootContextParams.BLOCK_STATE);
+		BlockState state = context.getOptional(LootContextParams.BLOCK_STATE);
 		if (state == null || !state.is(BlockTags.LEAVES)) {
 			return generatedLoot;
 		}
-		ItemStack harvestingTool = context.getParamOrNull(LootContextParams.TOOL);
-		if (harvestingTool == null || harvestingTool.isEmpty()) {
+		// the tool parameter can be an immutable template, which cannot take damage
+		if (!(context.getOptional(LootContextParams.TOOL) instanceof ItemStack harvestingTool) || harvestingTool.isEmpty()) {
 			return generatedLoot;
 		}
-		Entity entity = context.getParamOrNull(LootContextParams.THIS_ENTITY);
+		Entity entity = context.getOptional(LootContextParams.THIS_ENTITY);
 		if (!(entity instanceof Player player)) {
 			return generatedLoot;
 		}
@@ -70,12 +72,12 @@ public class GrafterLootModifier extends LootModifier {
 
 	public void handleLoot(List<ItemStack> generatedLoot, Player player, ItemStack harvestingTool, BlockState state, LootContext context) {
 		Level world = player.level();
-		BlockEntity tileEntity = context.getParamOrNull(LootContextParams.BLOCK_ENTITY);
+		BlockEntity tileEntity = context.getOptional(LootContextParams.BLOCK_ENTITY);
 		ITree tree = getTree(state, tileEntity);
 		if (tree == null) {
 			return;
 		}
-		Vec3 origin = context.getParamOrNull(LootContextParams.ORIGIN);
+		Vec3 origin = context.getOptional(LootContextParams.ORIGIN);
 		if (origin == null) {
 			return;
 		}

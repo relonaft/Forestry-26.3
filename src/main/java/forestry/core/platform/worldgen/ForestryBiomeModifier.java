@@ -11,6 +11,7 @@ import forestry.api.core.HumidityType;
 import forestry.api.core.TemperatureType;
 import forestry.core.platform.config.ForestryConfig;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.GenerationStep;
@@ -34,7 +35,7 @@ public record ForestryBiomeModifier(Optional<Holder<PlacedFeature>> hive, Option
 	).apply(instance, ForestryBiomeModifier::new));
 
 	@Override
-	public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
+	public void modify(RegistryAccess registries, Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
 		if (phase == Phase.ADD) {
 			// server configs are loaded, so ores can be added
 			if (biome.is(BiomeTags.IS_OVERWORLD)) {

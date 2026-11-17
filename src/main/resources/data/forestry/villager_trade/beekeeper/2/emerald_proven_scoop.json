@@ -1,0 +1,16 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": {
+      "type": "minecraft:uniform",
+      "min": 1,
+      "max": 4
+    }
+  },
+  "gives": {
+    "id": "forestry:proven_scoop"
+  },
+  "max_uses": 8,
+  "reputation_discount": 0.05,
+  "xp": 6
+}
