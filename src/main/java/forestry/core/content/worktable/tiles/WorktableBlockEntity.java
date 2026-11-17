@@ -17,6 +17,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -167,7 +168,7 @@ public class WorktableBlockEntity extends BaseBlockEntity implements ICrafterWor
 		for (ItemStack remainingItem : remainingItems) {
 			if (remainingItem != null && !remainingItem.isEmpty()) {
 				if (!InventoryUtil.tryAddStack(this, remainingItem, true)) {
-					player.drop(remainingItem, false);
+					player.drop(remainingItem, false, Prediction.SERVER_ONLY);
 				}
 			}
 		}

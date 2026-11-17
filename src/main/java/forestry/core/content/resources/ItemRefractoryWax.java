@@ -39,7 +39,7 @@ public class ItemRefractoryWax extends ItemForestry {
 				NetworkUtil.sendNetworkPacket(new PacketRefractoryWax(pos), pos, level);
 			}
 
-			return InteractionResult.sidedSuccess(level.isClientSide());
+			return InteractionResult.SUCCESS;
 		}
 
 		return InteractionResult.PASS;

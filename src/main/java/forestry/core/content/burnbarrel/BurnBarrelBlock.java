@@ -91,7 +91,7 @@ public class BurnBarrelBlock extends ForestryBlock implements EntityBlock {
 				barrel.openGui((ServerPlayer) player, InteractionHand.MAIN_HAND, pos);
 			}
 		}
-		return InteractionResult.sidedSuccess(level.isClientSide());
+		return InteractionResult.SUCCESS;
 	}
 
 	// Deviation from 1.20.1: Block#use split into useItemOn and useWithoutItem. The barrel lights from a held flint

@@ -17,7 +17,7 @@ import java.util.List;
 public class BackpackResupplyHandler {
 	private static NonNullList<ItemStack> getBackpacks(Inventory playerInventory) {
 		NonNullList<ItemStack> backpacks = NonNullList.create();
-		for (ItemStack itemStack : playerInventory.items) {
+		for (ItemStack itemStack : playerInventory.getNonEquipmentItems()) {
 			if (itemStack.getItem() instanceof BackpackItem) {
 				backpacks.add(itemStack);
 			}
@@ -59,7 +59,7 @@ public class BackpackResupplyHandler {
 		}
 		Inventory playerInventory = player.getInventory();
 		List<ItemStack> inventory = new LinkedList<>();
-		inventory.addAll(playerInventory.items);
+		inventory.addAll(playerInventory.getNonEquipmentItems());
 		inventory.addAll(playerInventory.offhand);
 
 		for (ItemStack inventoryStack : inventory) {

@@ -18,6 +18,7 @@ import forestry.api.modules.ForestryModuleIds;
 import forestry.api.modules.IPacketRegistry;
 import forestry.apiculture.apiarist.ArmorApiaristHelper;
 import forestry.apiculture.apiarist.ApiaristSuitItem;
+import forestry.apiculture.apiarist.SmokerItem;
 import forestry.apiculture.bees.EnumPollenCluster;
 import forestry.apiculture.bees.genetics.BeeEffectManager;
 import forestry.apiculture.bees.genetics.BeeJubilanceManager;
@@ -184,6 +185,7 @@ public class ModuleApiculture extends BlankForestryModule {
 		modBus.addListener(ModuleApiculture::onCommonSetup);
 
 		NeoForge.EVENT_BUS.addListener(ModuleApiculture::registerBrewingRecipes);
+		NeoForge.EVENT_BUS.addListener(SmokerItem::onPlayerTick);
 		NeoForge.EVENT_BUS.addListener(ModuleApiculture::onNetherBeeMate);
 		NeoForge.EVENT_BUS.addListener(ModuleApiculture::modifySnifferLoot);
 	}

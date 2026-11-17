@@ -108,7 +108,7 @@ public class FungificationBeeEffect extends ThrottledBeeEffect {
 		Level world = cow.level();
 		cow.discard();
 		MushroomCow mooshroom = new MushroomCow(EntityType.MOOSHROOM, world);
-		mooshroom.moveTo(cow.getX(), cow.getY(), cow.getZ(), cow.getYRot(), cow.getXRot());
+		mooshroom.snapTo(cow.getX(), cow.getY(), cow.getZ(), cow.getYRot(), cow.getXRot());
 		mooshroom.setHealth(cow.getHealth());
 		mooshroom.yBodyRot = cow.yBodyRot;
 		world.addFreshEntity(mooshroom);

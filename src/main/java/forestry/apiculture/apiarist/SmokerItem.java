@@ -15,16 +15,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 public class SmokerItem extends ItemForestry {
 	public SmokerItem() {
 		super(new Properties().stacksTo(1));
 	}
 
-	@Override
-	public void inventoryTick(ItemStack stack, Level level, Entity entity, int itemSlot, boolean isSelected) {
-		if (level.isClientSide() && isSelected && level.getRandom().nextInt(40) == 0) {
-			addSmoke(level, entity, 1);
+	// until 1.21.5 this was inventoryTick, which now runs on the server only
+	public static void onPlayerTick(PlayerTickEvent.Post event) {
+		Player player = event.getEntity();
+		Level level = player.level();
+		if (level.isClientSide() && player.getMainHandItem().getItem() instanceof SmokerItem && level.getRandom().nextInt(40) == 0) {
+			addSmoke(level, player, 1);
 		}
 	}
 

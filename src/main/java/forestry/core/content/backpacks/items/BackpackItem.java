@@ -82,7 +82,7 @@ public class BackpackItem extends WithScreenItem implements ITintedItem {
 	public InteractionResult useOn(UseOnContext ctx) {
 		Level level = ctx.getLevel();
 		if (getInventoryHit(level, ctx.getClickedPos(), ctx.getClickedFace()) != null) {
-			return InteractionResult.sidedSuccess(level.isClientSide());
+			return InteractionResult.SUCCESS;
 		}
 		return InteractionResult.PASS;
 	}

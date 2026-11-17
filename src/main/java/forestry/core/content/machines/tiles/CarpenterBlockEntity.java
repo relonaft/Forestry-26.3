@@ -116,7 +116,7 @@ public class CarpenterBlockEntity extends PoweredBlockEntity implements WorldlyC
 				setStepsPerWorkCycle(recipeTime * STEPS_PER_RECIPE_TIME);
 				setEnergyPerWorkCycle(recipeTime * ENERGY_PER_RECIPE_TIME);
 
-				ItemStack craftingResult = this.currentRecipe.getResultItem(registryAccess);
+				ItemStack craftingResult = this.currentRecipe.getResultItem();
                 this.craftPreviewInventory.setItem(0, craftingResult);
 			} else {
                 this.craftPreviewInventory.setItem(0, ItemStack.EMPTY);
@@ -158,7 +158,7 @@ public class CarpenterBlockEntity extends PoweredBlockEntity implements WorldlyC
 		}
 
 		if (this.currentRecipe != null) {
-			ItemStack pendingProduct = this.currentRecipe.getResultItem(this.level.registryAccess());
+			ItemStack pendingProduct = this.currentRecipe.getResultItem();
 			InventoryUtil.tryAddStack(this, pendingProduct, CarpenterInventory.SLOT_PRODUCT, CarpenterInventory.SLOT_PRODUCT_COUNT, true);
 		}
 		return true;
@@ -218,7 +218,7 @@ public class CarpenterBlockEntity extends PoweredBlockEntity implements WorldlyC
 			hasLiquidResources = removeLiquidResources(false);
 			hasItemResources = removeItemResources(false);
 
-			ItemStack pendingProduct = this.currentRecipe.getResultItem(this.level.registryAccess());
+			ItemStack pendingProduct = this.currentRecipe.getResultItem();
 			canAdd = InventoryUtil.tryAddStack(this, pendingProduct, CarpenterInventory.SLOT_PRODUCT, CarpenterInventory.SLOT_PRODUCT_COUNT, true, false);
 		}
 

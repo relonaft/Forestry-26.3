@@ -283,7 +283,7 @@ public class HiveBlockEntity extends BlockEntity implements IHiveTile, IActivata
 
 	@Override
 	public int getBlockLightValue() {
-		return this.level.isDay() ? 15 : 0; // hives may have the sky obstructed but should still be active
+		return this.level.isBrightOutside() ? 15 : 0; // hives may have the sky obstructed but should still be active
 	}
 
 	@Override

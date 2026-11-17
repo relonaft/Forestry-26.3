@@ -35,7 +35,7 @@ public class ClientsideCode {
 	}
 
 	public static Registry<Fluid> getFluidRegistry() {
-		return Minecraft.getInstance().level.registryAccess().registryOrThrow(Registries.FLUID);
+		return Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.FLUID);
 	}
 
 	public static void markForUpdate(BlockPos pos) {

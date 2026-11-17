@@ -53,7 +53,7 @@ public class FilteredTank extends StandardTank {
 		this.filters = () -> BuiltInRegistries.FLUID.getDataMap(dataMap).keySet().stream()
 				.map(ResourceKey::identifier)
 				.collect(Collectors.toSet());
-		setValidator(stack -> !stack.isEmpty() && stack.getFluidHolder().getData(dataMap) != null);
+		setValidator(stack -> !stack.isEmpty() && stack.typeHolder().getData(dataMap) != null);
 		return this;
 	}
 
@@ -84,7 +84,7 @@ public class FilteredTank extends StandardTank {
 
 		if (Screen.hasShiftDown() || filters.size() < 5) {
 			for (Identifier filterName : filters) {
-				Fluid fluidFilter = BuiltInRegistries.FLUID.get(filterName);
+				Fluid fluidFilter = BuiltInRegistries.FLUID.getValue(filterName);
 				if (fluidFilter == Fluids.EMPTY) {
 					continue;
 				}

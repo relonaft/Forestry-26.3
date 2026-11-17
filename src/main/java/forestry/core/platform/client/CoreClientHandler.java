@@ -310,7 +310,7 @@ public class CoreClientHandler implements IClientModuleHandler {
 
 					int renderDistance = minecraft.options.renderDistance().get();
 					BlockPos playerPos = minecraft.player.blockPosition();
-					ChunkPos playerChunkPos = new ChunkPos(playerPos);
+					ChunkPos playerChunkPos = ChunkPos.containing(playerPos);
 
 					Color color = RenderUtil.getRainbowColor(minecraft.level.getGameTime(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
 
