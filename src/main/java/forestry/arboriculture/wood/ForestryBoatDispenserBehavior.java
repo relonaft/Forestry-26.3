@@ -29,7 +29,7 @@ public class ForestryBoatDispenserBehavior extends DefaultDispenseItemBehavior {
 		Direction direction = source.state().getValue(DispenserBlock.FACING);
 		Level level = source.level();
 		Vec3 center = source.center();
-		double offset = 0.5625D + (double) EntityTypes.BOAT.getWidth() / 2.0D;
+		double offset = 0.5625D + (double) EntityTypes.OAK_BOAT.getWidth() / 2.0D;
 		double x = center.x() + (double) direction.getStepX() * offset;
 		double y = center.y() + (double) ((float) direction.getStepY() * 1.125F);
 		double z = center.z() + (double) direction.getStepZ() * offset;

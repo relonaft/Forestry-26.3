@@ -1,6 +1,7 @@
 package forestry.arboriculture;
 
 import forestry.core.platform.transfer.Transfers;
+import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import forestry.arboriculture.loot.GrafterLootModifier;
@@ -116,7 +117,7 @@ public class ModuleArboriculture extends BlankForestryModule {
 			ArboricultureBlocks.HANGING_SIGN.getList().stream(),
 			ArboricultureBlocks.WALL_HANGING_SIGN.getList().stream()
 		).toArray(Block[]::new);
-		event.modify(BlockEntityType.HANGING_SIGN, hangingSignBlocks);
+		event.modify(BlockEntityTypes.HANGING_SIGN, hangingSignBlocks);
 	}
 
 	private static void modifySnifferLoot(LootTableLoadEvent event) {

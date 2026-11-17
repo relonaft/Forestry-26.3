@@ -6,6 +6,7 @@ import forestry.arboriculture.features.ArboricultureBlocks;
 import forestry.arboriculture.features.ArboricultureTiles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WallSignBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -20,7 +21,7 @@ public class ForestryWallSignBlock extends WallSignBlock implements IWoodTyped {
 	private final ForestryWoodType type;
 
 	public ForestryWallSignBlock(ForestryWoodType type) {
-		super(type.getWoodType(), Properties.of().forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0F).lootFrom(ArboricultureBlocks.SIGN.get(type)::block).ignitedByLava());
+		super(type.getWoodType(), wallVariant(ArboricultureBlocks.SIGN.get(type).block()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0F).ignitedByLava());
 
 		this.type = type;
 	}
@@ -49,5 +50,10 @@ public class ForestryWallSignBlock extends WallSignBlock implements IWoodTyped {
 	@Override
 	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
 		return new SignBlockEntity(ArboricultureTiles.SIGN.tileType(), pos, state);
+	}
+
+	// same as Blocks.wallVariant, the wall block drops and is named like the standing block
+	private static Properties wallVariant(Block standing) {
+		return Properties.of().overrideLootTable(standing.getLootTable()).overrideDescription(standing.getDescriptionId());
 	}
 }
