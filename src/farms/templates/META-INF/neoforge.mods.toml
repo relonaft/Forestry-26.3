@@ -9,7 +9,7 @@ modId = "forestryfarms"
 version = "${version}"
 displayName = "Forestry: Farms"
 displayURL = "https://github.com/relonaft/Forestry-26.3"
-logoFile = "forestry-ce-logo-banner.png"
+bannerFile = "forestry-ce-logo-banner.png"
 authors = "thedarkcolour, SirSengir, mezz, Nedelosk"
 description = '''
 Multifarms, planters and the farming logic.

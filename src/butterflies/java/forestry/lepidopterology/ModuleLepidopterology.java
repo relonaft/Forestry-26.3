@@ -1,12 +1,15 @@
 package forestry.lepidopterology;
 
 import forestry.api.ForestryConstants;
+import forestry.core.platform.item.DefaultComponents;
 import forestry.lepidopterology.network.LepidopterologyPacketIds;
 import forestry.api.modules.IPacketRegistry;
 import forestry.lepidopterology.butterflies.genetics.ButterflySpeciesManager;
 import forestry.lepidopterology.network.ButterflySpeciesSyncPacket;
 import forestry.core.platform.util.NetworkUtil;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import forestry.api.client.IClientModuleHandler;
@@ -44,6 +47,12 @@ public class ModuleLepidopterology extends BlankForestryModule {
 	public void registerEvents(IEventBus modBus) {
 		NeoForge.EVENT_BUS.addListener(ModuleLepidopterology::onEntityTravelToDimension);
 		modBus.addListener(ModuleLepidopterology::onAttributeCreate);
+		modBus.addListener(ModuleLepidopterology::modifyDefaultComponents);
+	}
+
+	// the cocoon compost chance was the compostables data map of this jar until 26.1
+	private static void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
+		DefaultComponents.compostable(event, LepidopterologyItems.COCOON_GE.item(), ContextIntProviders.COMPOSTABLE_LOW);
 	}
 
 	public static void onEntityTravelToDimension(EntityTravelToDimensionEvent event) {

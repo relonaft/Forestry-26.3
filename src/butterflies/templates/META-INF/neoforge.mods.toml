@@ -9,7 +9,7 @@ modId = "forestrybutterflies"
 version = "${version}"
 displayName = "Forestry: Butterflies"
 displayURL = "https://github.com/relonaft/Forestry-26.3"
-logoFile = "forestry-ce-logo-banner.png"
+bannerFile = "forestry-ce-logo-banner.png"
 authors = "thedarkcolour, SirSengir, mezz, Nedelosk"
 description = '''
 Butterflies, cocoons and the lepidopterist chain.

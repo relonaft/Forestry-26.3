@@ -9,7 +9,7 @@ modId = "forestrymail"
 version = "${version}"
 displayName = "Forestry: Mail"
 displayURL = "https://github.com/relonaft/Forestry-26.3"
-logoFile = "forestry-ce-logo-banner.png"
+bannerFile = "forestry-ce-logo-banner.png"
 authors = "thedarkcolour, SirSengir, mezz, Nedelosk"
 description = '''
 Letters, the post office and trade stations.
