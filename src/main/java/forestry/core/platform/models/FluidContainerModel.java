@@ -84,8 +84,7 @@ public class FluidContainerModel implements ItemModel {
 			particleSprite = coverSprite;
 		}
 
-		// one sub model per layer: the fluid sprite is on the block atlas, the others on the item atlas, and a
-		// single layer cannot mix atlases
+		// one sub model per layer, a layer cannot mix the block and the item atlas
 		List<ItemModel> layers = new ArrayList<>();
 		ModelRenderProperties properties = new ModelRenderProperties(false, particleSprite, this.transforms);
 

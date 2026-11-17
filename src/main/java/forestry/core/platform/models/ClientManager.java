@@ -96,7 +96,7 @@ public enum ClientManager {
 
 		@Override
 		public int colorInWorld(BlockState state, BlockAndTintGetter level, BlockPos pos) {
-			// the block renderer multiplies by ARGB, so the alpha that the old block colours left at 0 must be set
+			// the block renderer reads ARGB, the old block colours left alpha at 0
 			if (state.getBlock() instanceof IColoredBlock coloredBlock) {
 				return ARGB.opaque(coloredBlock.colorMultiplier(state, level, pos, this.tintIndex));
 			}

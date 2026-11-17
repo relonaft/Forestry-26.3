@@ -93,7 +93,7 @@ public class RenderUtil {
 	}
 
 	public static int getFluidColor(Fluid fluid) {
-		// the tint of a fluid is part of its fluid model now. No tint source is white, the old default
+		// a fluid model without a tint source is white, the old default
 		FluidTintSource tint = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState()).fluidTintSource();
 		int color = tint != null ? tint.color(fluid.defaultFluidState()) : 0xFFFFFFFF;
 		ForestryFluids definition = ForestryFluids.getFluidDefinition(fluid);

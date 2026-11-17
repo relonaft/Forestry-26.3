@@ -1,0 +1,26 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "forestry:cocoon_age",
+    "entries": [
+      {
+        "threshold": 1.0,
+        "model": {
+          "type": "minecraft:model",
+          "model": "forestry:item/cocoon_middle"
+        }
+      },
+      {
+        "threshold": 2.0,
+        "model": {
+          "type": "minecraft:model",
+          "model": "forestry:item/cocoon_late"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "forestry:item/cocoon_early"
+    }
+  }
+}

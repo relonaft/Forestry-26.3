@@ -1,0 +1,24 @@
+{
+  "model": {
+    "type": "forestry:bee_ge",
+    "stage": "queen",
+    "tints": [
+      {
+        "type": "forestry:item_tint",
+        "index": 0
+      },
+      {
+        "type": "forestry:item_tint",
+        "index": 1
+      },
+      {
+        "type": "forestry:item_tint",
+        "index": 2
+      },
+      {
+        "type": "forestry:item_tint",
+        "index": 3
+      }
+    ]
+  }
+}

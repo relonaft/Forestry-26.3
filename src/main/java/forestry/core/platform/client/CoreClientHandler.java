@@ -188,9 +188,7 @@ public class CoreClientHandler implements IClientModuleHandler {
 			if (!(type instanceof FeatureFluid.ForestryFluidType forestryType)) {
 				continue;
 			}
-			// forced translucent, the layer these fluids were registered on. No tint source:
-			// forestryType.getColor() double-tints placed fluids, since the still/flowing textures
-			// are already tinted
+			// translucent like the old render layer, no tint source since the textures are tinted already
 			event.register(new FluidModel.Unbaked(
 				new Material(forestryType.getStillTexture(), true),
 				new Material(forestryType.getFlowingTexture(), true),

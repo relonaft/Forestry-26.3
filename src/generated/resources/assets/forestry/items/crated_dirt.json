@@ -1,0 +1,15 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "forestry:item/filled_crate"
+      },
+      {
+        "type": "minecraft:model",
+        "model": "forestry:item/crated_dirt"
+      }
+    ]
+  }
+}

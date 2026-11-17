@@ -38,7 +38,7 @@ public class StorageClientHandler implements IClientModuleHandler {
 		event.register(BackpackMenuTypes.NATURALIST_BACKPACK.menuType(), NaturalistInventoryScreen<NaturalistBackpackMenu>::new);
 	}
 
-	// replaces the "mode" item property that backpack models selected their overrides with
+	// replaces the "mode" item property of the backpack overrides
 	public record BackpackModeProperty() implements RangeSelectItemModelProperty {
 		public static final MapCodec<BackpackModeProperty> MAP_CODEC = MapCodec.unit(new BackpackModeProperty());
 
