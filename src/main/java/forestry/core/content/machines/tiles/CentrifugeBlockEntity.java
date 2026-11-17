@@ -126,7 +126,7 @@ public class CentrifugeBlockEntity extends PoweredBlockEntity implements ISocket
 
 	private void checkRecipe() {
 		ItemStack resource = getItem(CentrifugeInventory.SLOT_RESOURCE);
-		ICentrifugeRecipe matchingRecipe = RecipeUtils.getCentrifugeRecipe(getLevel().getRecipeManager(), resource);
+		ICentrifugeRecipe matchingRecipe = RecipeUtils.getCentrifugeRecipe(RecipeUtils.getRecipeManager(), resource);
 
 		if (this.currentRecipe != matchingRecipe) {
 			this.currentRecipe = matchingRecipe;

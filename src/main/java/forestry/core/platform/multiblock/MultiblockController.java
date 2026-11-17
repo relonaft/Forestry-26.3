@@ -520,7 +520,7 @@ public abstract class MultiblockController implements IMultiblockController, Wor
 	public static void markChunkDirty(Level level, BlockPos pos) {
 		net.minecraft.world.level.chunk.LevelChunk chunk = level.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
 		if (chunk != null) {
-			chunk.setUnsaved(true);
+			chunk.markUnsaved();
 		}
 	}
 

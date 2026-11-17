@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.cow.Cow;
 import net.minecraft.world.entity.animal.cow.MushroomCow;
@@ -107,7 +108,7 @@ public class FungificationBeeEffect extends ThrottledBeeEffect {
 		}
 		Level world = cow.level();
 		cow.discard();
-		MushroomCow mooshroom = new MushroomCow(EntityType.MOOSHROOM, world);
+		MushroomCow mooshroom = new MushroomCow(EntityTypes.MOOSHROOM, world);
 		mooshroom.snapTo(cow.getX(), cow.getY(), cow.getZ(), cow.getYRot(), cow.getXRot());
 		mooshroom.setHealth(cow.getHealth());
 		mooshroom.yBodyRot = cow.yBodyRot;

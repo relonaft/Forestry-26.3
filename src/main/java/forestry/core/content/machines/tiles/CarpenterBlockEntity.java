@@ -108,7 +108,7 @@ public class CarpenterBlockEntity extends PoweredBlockEntity implements WorldlyC
 		}
 
 		if (this.currentRecipe == null || !this.currentRecipe.matches(this.resourceTank.getFluid(), getBoxStack(), this.craftingInventory, this.level)) {
-			ICarpenterRecipe recipe = RecipeUtils.getCarpenterRecipe(this.level.getRecipeManager(), this.resourceTank.getFluid(), getBoxStack(), this.craftingInventory, this.level);
+			ICarpenterRecipe recipe = RecipeUtils.getCarpenterRecipe(RecipeUtils.getRecipeManager(), this.resourceTank.getFluid(), getBoxStack(), this.craftingInventory, this.level);
 			this.currentRecipe = recipe;
 
 			if (recipe != null) {

@@ -180,13 +180,13 @@ public class SqueezerBlockEntity extends PoweredBlockEntity implements ISocketab
 			if (this.currentRecipe != null && containsSets) {
 				matchingRecipe = this.currentRecipe;
 			} else {
-				matchingRecipe = RecipeUtils.getSqueezerRecipe(getLevel().getRecipeManager(), resources);
+				matchingRecipe = RecipeUtils.getSqueezerRecipe(RecipeUtils.getRecipeManager(), resources);
 			}
 
 			if (matchingRecipe == null) {
 				for (ItemStack resource : resources) {
 					if (matchingRecipe == null) {
-						matchingRecipe = RecipeUtils.getSqueezerContainerRecipe(getLevel().getRecipeManager(), resource);
+						matchingRecipe = RecipeUtils.getSqueezerContainerRecipe(RecipeUtils.getRecipeManager(), resource);
 					}
 				}
 			}

@@ -144,7 +144,7 @@ public class StillBlockEntity extends PoweredBlockEntity implements WorldlyConta
 
 		if (this.currentRecipe == null || !this.currentRecipe.matches(recipeLiquid)) {
 			Level level = Objects.requireNonNull(this.level);
-			this.currentRecipe = RecipeUtils.getStillRecipe(level.getRecipeManager(), recipeLiquid);
+			this.currentRecipe = RecipeUtils.getStillRecipe(RecipeUtils.getRecipeManager(), recipeLiquid);
 
 			int recipeTime = this.currentRecipe == null ? 0 : this.currentRecipe.getCyclesPerUnit();
 			setEnergyPerWorkCycle(ENERGY_PER_RECIPE_TIME * recipeTime);

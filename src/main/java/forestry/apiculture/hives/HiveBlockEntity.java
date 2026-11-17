@@ -35,7 +35,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 import net.minecraft.world.entity.player.Player;
@@ -332,7 +332,7 @@ public class HiveBlockEntity extends BlockEntity implements IHiveTile, IActivata
 					return true;
 				} else if (input instanceof Enemy) {
 					// don't attack semi-passive vanilla mobs
-					return !(input instanceof EnderMan) && !(input instanceof ZombifiedPiglin);
+					return !(input instanceof Enderman) && !(input instanceof ZombifiedPiglin);
 				}
 			}
 			return false;

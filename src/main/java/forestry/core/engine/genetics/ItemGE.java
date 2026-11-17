@@ -44,7 +44,8 @@ public abstract class ItemGE extends ItemForestry implements IIndividualItem {
 	protected final ILifeStage stage;
 
 	protected ItemGE(Item.Properties properties, ILifeStage stage) {
-		super(properties.setNoRepair());
+		// setNoRepair is gone, an item is repairable only when its properties say so
+		super(properties);
 
 		this.stage = stage;
 	}

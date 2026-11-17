@@ -65,7 +65,7 @@ public class DumpCommand {
 	}
 
 	private static int climates(CommandContext<CommandSourceStack> ctx) {
-		List<Holder.Reference<Biome>> biomes = ctx.getSource().getLevel().registryAccess().lookupOrThrow(Registries.BIOME).holders()
+		List<Holder.Reference<Biome>> biomes = ctx.getSource().getLevel().registryAccess().lookupOrThrow(Registries.BIOME).listElements()
 			.toList();
 		Forestry.LOGGER.debug("Listing Forestry climates for {} biomes", biomes.size());
 
@@ -92,7 +92,7 @@ public class DumpCommand {
 	}
 
 	private static Table<HumidityType, TemperatureType, List<Identifier>> createClimatesTable(CommandContext<CommandSourceStack> ctx) {
-		List<Holder.Reference<Biome>> biomes = ctx.getSource().getLevel().registryAccess().lookupOrThrow(Registries.BIOME).holders().toList();
+		List<Holder.Reference<Biome>> biomes = ctx.getSource().getLevel().registryAccess().lookupOrThrow(Registries.BIOME).listElements().toList();
 		Table<HumidityType, TemperatureType, List<Identifier>> climates = HashBasedTable.create(HumidityType.VALUES.size(), TemperatureType.VALUES.size());
 		IClimateManager manager = IForestryApi.INSTANCE.getClimateManager();
 

@@ -111,7 +111,7 @@ public class ForestryFluidBlock extends LiquidBlock {
 						world.setBlockAndUpdate(new BlockPos(x, y, z), Blocks.FIRE.defaultBlockState());
 						return;
 					}
-				} else if (blockState.blocksMotion()) {
+				} else if (!blockState.is(Blocks.COBWEB) && !blockState.is(Blocks.BAMBOO_SAPLING) && blockState.isSolid()) {
 					return;
 				}
 			}

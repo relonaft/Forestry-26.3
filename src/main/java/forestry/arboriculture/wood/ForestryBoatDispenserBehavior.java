@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -28,7 +29,7 @@ public class ForestryBoatDispenserBehavior extends DefaultDispenseItemBehavior {
 		Direction direction = source.state().getValue(DispenserBlock.FACING);
 		Level level = source.level();
 		Vec3 center = source.center();
-		double offset = 0.5625D + (double) EntityType.BOAT.getWidth() / 2.0D;
+		double offset = 0.5625D + (double) EntityTypes.BOAT.getWidth() / 2.0D;
 		double x = center.x() + (double) direction.getStepX() * offset;
 		double y = center.y() + (double) ((float) direction.getStepY() * 1.125F);
 		double z = center.z() + (double) direction.getStepZ() * offset;

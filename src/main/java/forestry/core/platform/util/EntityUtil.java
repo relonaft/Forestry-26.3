@@ -4,9 +4,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
@@ -27,7 +27,7 @@ public abstract class EntityUtil {
 		living.yBodyRot = living.getYRot();
 		DifficultyInstance diff = world.getCurrentDifficultyAt(BlockPos.containing(x, y, z));
 		//TODO - check SpawnReason
-		living.finalizeSpawn((ServerLevel) world, diff, MobSpawnType.MOB_SUMMONED, null);
+		living.finalizeSpawn((ServerLevel) world, diff, EntitySpawnReason.MOB_SUMMONED, null);
 		world.addFreshEntity(living);
 		//TODO - right sound?
 		living.playAmbientSound();

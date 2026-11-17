@@ -2,7 +2,9 @@ package forestry.api.apiculture;
 
 import forestry.api.core.IError;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelData;
 
@@ -68,7 +70,11 @@ public interface IActivityType {
 		if (!dimension.hasSkyLight()) {
 			return NIGHT_TIME;
 		}
-		// Level.getDayTime is the overworld time in every dimension, so it ignores a fixed time
-		return dimension.fixedTime().orElseGet(() -> level.getLevelData().getDayTime());
+		// deviation: since 1.21.11 a dimension type only says that its time is fixed, not which time. The clock of
+		// the dimension is used, which reads 0 for a dimension without a clock
+		if (level instanceof Level full) {
+			return full.getDefaultClockTime();
+		}
+		return level instanceof ServerLevelAccessor server ? server.getLevel().getDefaultClockTime() : NIGHT_TIME;
 	}
 }

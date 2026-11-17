@@ -69,7 +69,7 @@ public class AlvearyHygroregulatorBlockEntity extends AbstractAlvearyBlockEntity
 			FluidStack fluid = this.liquidTank.getFluid();
 
 			if (!fluid.isEmpty()) {
-				this.currentRecipe = getHygroRegulatorRecipe(this.level.getRecipeManager(), fluid);
+				this.currentRecipe = getHygroRegulatorRecipe(RecipeUtils.getRecipeManager(), fluid);
 
 				if (this.currentRecipe != null) {
 					this.liquidTank.drainInternal(this.currentRecipe.getInputFluid().getAmount(), IFluidHandler.FluidAction.EXECUTE);

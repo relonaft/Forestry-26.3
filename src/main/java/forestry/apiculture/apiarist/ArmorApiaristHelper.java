@@ -4,6 +4,7 @@ import forestry.api.ForestryCapabilities;
 import forestry.api.apiculture.IArmorApiaristHelper;
 import forestry.api.apiculture.IBeeProtection;
 import forestry.api.apiculture.genetics.IBeeEffect;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
@@ -24,8 +25,8 @@ public class ArmorApiaristHelper implements IArmorApiaristHelper {
 	public int wearsItems(LivingEntity entity, @Nullable IBeeEffect cause, boolean doProtect) {
 		int count = 0;
 
-		for (ItemStack armorItem : entity.getAllSlots()) {
-			if (isArmorApiarist(armorItem, entity, cause, doProtect)) {
+		for (EquipmentSlot slot : EquipmentSlot.VALUES) {
+			if (isArmorApiarist(entity.getItemBySlot(slot), entity, cause, doProtect)) {
 				count++;
 			}
 		}

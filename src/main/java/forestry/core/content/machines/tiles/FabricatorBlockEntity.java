@@ -139,7 +139,7 @@ public class FabricatorBlockEntity extends PoweredBlockEntity implements ISlotPi
 			return;
 		}
 
-		IFabricatorSmeltingRecipe smelt = RecipeUtils.getFabricatorMeltingRecipe(this.level.getRecipeManager(), smeltResource);
+		IFabricatorSmeltingRecipe smelt = RecipeUtils.getFabricatorMeltingRecipe(RecipeUtils.getRecipeManager(), smeltResource);
 		if (smelt == null || smelt.getMeltingPoint() > this.heat) {
 			return;
 		}
@@ -169,7 +169,7 @@ public class FabricatorBlockEntity extends PoweredBlockEntity implements ISlotPi
 		IInventoryAdapter inventory = getInternalInventory();
 		ItemStack plan = inventory.getItem(FabricatorInventory.SLOT_PLAN);
 		FluidStack liquid = this.moltenTank.getFluid();
-		IFabricatorRecipe recipe = RecipeUtils.getFabricatorRecipe(this.level.getRecipeManager(), this.level, liquid, plan, this.craftingInventory);
+		IFabricatorRecipe recipe = RecipeUtils.getFabricatorRecipe(RecipeUtils.getRecipeManager(), this.level, liquid, plan, this.craftingInventory);
 		if (!liquid.isEmpty() && recipe != null && !(FluidStack.isSameFluidSameComponents(liquid, recipe.getResultFluid()) && liquid.getAmount() >= recipe.getResultFluid().getAmount())) {
 			return null;
 		}
@@ -233,14 +233,14 @@ public class FabricatorBlockEntity extends PoweredBlockEntity implements ISlotPi
 		boolean hasResources = true;
 
 		ItemStack plan = getItem(FabricatorInventory.SLOT_PLAN);
-		IFabricatorRecipe recipe = RecipeUtils.getFabricatorRecipe(this.level.getRecipeManager(), this.level, this.moltenTank.getFluid(), plan, this.craftingInventory);
+		IFabricatorRecipe recipe = RecipeUtils.getFabricatorRecipe(RecipeUtils.getRecipeManager(), this.level, this.moltenTank.getFluid(), plan, this.craftingInventory);
 		if (recipe != null) {
 			hasResources = removeFromInventory(recipe, false);
 			FluidStack toDrain = recipe.getResultFluid();
 			FluidStack drained = this.moltenTank.drainInternal(toDrain, IFluidHandler.FluidAction.SIMULATE);
 			hasLiquidResources = !drained.isEmpty() && FluidStack.matches(drained, toDrain);
 		} else {
-			hasRecipe = RecipeUtils.getFabricatorMeltingRecipe(this.level.getRecipeManager(), getItem(FabricatorInventory.SLOT_METAL)) != null;
+			hasRecipe = RecipeUtils.getFabricatorMeltingRecipe(RecipeUtils.getRecipeManager(), getItem(FabricatorInventory.SLOT_METAL)) != null;
 		}
 
 		IErrorLogic errorLogic = getErrorLogic();
@@ -261,7 +261,7 @@ public class FabricatorBlockEntity extends PoweredBlockEntity implements ISlotPi
 
 	public int getMeltingPoint() {
 		if (!this.getItem(FabricatorInventory.SLOT_METAL).isEmpty()) {
-			IFabricatorSmeltingRecipe meltingRecipe = RecipeUtils.getFabricatorMeltingRecipe(getLevel().getRecipeManager(), this.getItem(FabricatorInventory.SLOT_METAL));
+			IFabricatorSmeltingRecipe meltingRecipe = RecipeUtils.getFabricatorMeltingRecipe(RecipeUtils.getRecipeManager(), this.getItem(FabricatorInventory.SLOT_METAL));
 			return meltingRecipe == null ? 0 : meltingRecipe.getMeltingPoint();
 		} else if (this.moltenTank.getFluidAmount() > 0) {
 			return this.meltingPoint;

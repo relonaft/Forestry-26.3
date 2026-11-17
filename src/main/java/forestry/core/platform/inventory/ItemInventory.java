@@ -15,6 +15,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.ItemContainerContents;
 import forestry.core.platform.transfer.IItemHandler;
 import forestry.core.platform.transfer.InvWrapper;
@@ -88,7 +89,7 @@ public abstract class ItemInventory implements Container, IFilterSlotDelegate {
 		ItemContainerContents container = itemStack.get(DataComponents.CONTAINER);
 		if (container != null) {
 			int occupied = 0;
-			for (ItemStack ignored : container.nonEmptyItemsCopy()) {
+			for (ItemStackTemplate ignored : container.nonEmptyItems()) {
 				occupied++;
 			}
 			return occupied;

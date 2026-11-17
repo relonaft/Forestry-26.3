@@ -3,6 +3,8 @@ package forestry.arboriculture.wood;
 import forestry.api.arboriculture.IWoodType;
 import forestry.api.arboriculture.WoodBlockKind;
 import forestry.core.platform.registration.FeatureBlockGroup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -184,13 +186,13 @@ public enum WoodAccess {
 		register(VanillaWoodType.CHERRY, WoodBlockKind.PRESSURE_PLATE, false, Blocks.CHERRY_PRESSURE_PLATE.defaultBlockState(), () -> Items.CHERRY_PRESSURE_PLATE);
 
 		// Log tags
-		registerLogTag(VanillaWoodType.OAK, false, BlockTags.OAK_LOGS, ItemTags.OAK_LOGS);
-		registerLogTag(VanillaWoodType.SPRUCE, false, BlockTags.SPRUCE_LOGS, ItemTags.SPRUCE_LOGS);
-		registerLogTag(VanillaWoodType.BIRCH, false, BlockTags.BIRCH_LOGS, ItemTags.BIRCH_LOGS);
+		registerLogTag(VanillaWoodType.OAK, false, vanillaLogs("oak_logs"), ItemTags.OAK_LOGS);
+		registerLogTag(VanillaWoodType.SPRUCE, false, vanillaLogs("spruce_logs"), ItemTags.SPRUCE_LOGS);
+		registerLogTag(VanillaWoodType.BIRCH, false, vanillaLogs("birch_logs"), ItemTags.BIRCH_LOGS);
 		registerLogTag(VanillaWoodType.JUNGLE, false, BlockTags.JUNGLE_LOGS, ItemTags.JUNGLE_LOGS);
-		registerLogTag(VanillaWoodType.ACACIA, false, BlockTags.ACACIA_LOGS, ItemTags.ACACIA_LOGS);
-		registerLogTag(VanillaWoodType.DARK_OAK, false, BlockTags.DARK_OAK_LOGS, ItemTags.DARK_OAK_LOGS);
-		registerLogTag(VanillaWoodType.CHERRY, false, BlockTags.CHERRY_LOGS, ItemTags.CHERRY_LOGS);
+		registerLogTag(VanillaWoodType.ACACIA, false, vanillaLogs("acacia_logs"), ItemTags.ACACIA_LOGS);
+		registerLogTag(VanillaWoodType.DARK_OAK, false, vanillaLogs("dark_oak_logs"), ItemTags.DARK_OAK_LOGS);
+		registerLogTag(VanillaWoodType.CHERRY, false, vanillaLogs("cherry_logs"), ItemTags.CHERRY_LOGS);
 		for (VanillaWoodType type : VanillaWoodType.VALUES) {
 			registerLogTag(type, true, type.fireproofBlockTag, type.fireproofItemTag);
 		}
@@ -306,5 +308,10 @@ public enum WoodAccess {
 		public Map<IWoodType, BlockState> getBlock(boolean fireproof) {
 			return fireproof ? this.fireproofBlocks : this.normalBlocks;
 		}
+	}
+
+	// BlockTags lost most of its per-wood log constants, the tags themselves still ship
+	private static TagKey<Block> vanillaLogs(String name) {
+		return TagKey.create(Registries.BLOCK, Identifier.withDefaultNamespace(name));
 	}
 }

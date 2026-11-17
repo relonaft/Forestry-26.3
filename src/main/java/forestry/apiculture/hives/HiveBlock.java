@@ -21,6 +21,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -93,7 +94,7 @@ public class HiveBlock extends Block implements EntityBlock {
 	@Override
 	public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
 		BlockPos pos = BlockPos.containing(builder.getParameter(LootContextParams.ORIGIN));
-		ItemStack tool = builder.getParameter(LootContextParams.TOOL);
+		ItemInstance tool = builder.getParameter(LootContextParams.TOOL);
 
 		if (tool.is(ForestryTags.Items.SCOOPS)) {
 			HolderLookup.RegistryLookup<Enchantment> enchantments = builder.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);

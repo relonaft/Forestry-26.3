@@ -7,6 +7,8 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.Consumables;
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 
 public class ItemAmbrosia extends ItemForestryFood {
 
@@ -16,8 +18,9 @@ public class ItemAmbrosia extends ItemForestryFood {
 				.alwaysEdible()
 				.nutrition(Constants.FOOD_AMBROSIA_HEAL)
 				.saturationModifier(0.6f)
-				.effect(new MobEffectInstance(MobEffects.REGENERATION, 40, 0), 1.0F)
-				.build()));
+				.build(),
+				// the effect of a food is part of its consumable component since 1.21.2
+				Consumables.defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.REGENERATION, 40, 0), 1.0F)).build()));
 	}
 
 	@Override
