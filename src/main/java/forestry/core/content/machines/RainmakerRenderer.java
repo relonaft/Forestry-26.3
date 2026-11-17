@@ -1,8 +1,9 @@
 package forestry.core.content.machines;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import forestry.api.ForestryConstants;
 import forestry.core.platform.util.RenderUtil;
 import net.minecraft.client.model.geom.ModelPart;
@@ -11,28 +12,42 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.special.NoDataSpecialModelRenderer;
+import net.minecraft.client.renderer.special.SpecialModelRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import forestry.core.platform.render.ForestryModelLayers;
+import org.joml.Vector3fc;
+
+import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 // This is called Mill because it used to be for the Forester and Treetap blocks in older versions of Forestry
-public class RainmakerRenderer implements BlockEntityRenderer<MillBlockEntity> {
+public class RainmakerRenderer implements BlockEntityRenderer<MillBlockEntity, RainmakerRenderer.State> {
 	private enum Textures {PEDESTAL, EXTENSION, BLADE, CHARGE}
 
 	private final Identifier[] textures;
+	private final ModelPart root;
 	private final ModelPart pedestal;
 	private final ModelPart column;
 	private final ModelPart extension;
 	private final ModelPart blade;
 
 	public RainmakerRenderer(BlockEntityRendererProvider.Context ctx, String baseTexture) {
-		ModelPart root = ctx.bakeLayer(ForestryModelLayers.MILL_LAYER);
+		this(ctx.bakeLayer(ForestryModelLayers.MILL_LAYER), baseTexture);
+	}
 
+	private RainmakerRenderer(ModelPart root, String baseTexture) {
+		this.root = root;
 		this.pedestal = root.getChild(Textures.PEDESTAL.name());
 		this.column = root.getChild(Textures.CHARGE.name());
 		this.extension = root.getChild(Textures.EXTENSION.name());
@@ -66,27 +81,42 @@ public class RainmakerRenderer implements BlockEntityRenderer<MillBlockEntity> {
 	}
 
 	@Override
-	public void render(MillBlockEntity mill, float partialTick, PoseStack stack, MultiBufferSource buffers, int light, int overlay) {
+	public State createRenderState() {
+		return new State();
+	}
+
+	@Override
+	public void extractRenderState(MillBlockEntity mill, State state, float partialTick, Vec3 cameraPos, @Nullable ModelFeatureRenderer.CrumblingOverlay breakProgress) {
+		BlockEntityRenderer.super.extractRenderState(mill, state, partialTick, cameraPos, breakProgress);
+		state.charge = mill.charge;
+		state.step = getBladeStep(mill, partialTick) / 16f;
+	}
+
+	@Override
+	public void submit(State state, PoseStack stack, SubmitNodeCollector collector, CameraRenderState camera) {
+		submit(stack, collector, state.charge, state.step, state.lightCoords, OverlayTexture.NO_OVERLAY, 0, state.breakProgress);
+	}
+
+	private void submit(PoseStack stack, SubmitNodeCollector collector, int charge, float step, int light, int overlay, int outlineColor, @Nullable ModelFeatureRenderer.CrumblingOverlay breakProgress) {
 		stack.pushPose();
 
 		// todo implement and add rotated voxel shape
 		Direction orientation = Direction.SOUTH;//mill.getBlockState().getValue(BlockBase.FACING);
 		RenderUtil.rotateByHorizontalDirection(stack, orientation);
 
-		this.pedestal.render(stack, buffers.getBuffer(RenderType.entityCutout(this.textures[Textures.PEDESTAL.ordinal()])), light, overlay, 0xFFFFFFFF);
-		this.column.render(stack, buffers.getBuffer(RenderType.entityCutout(this.textures[Textures.CHARGE.ordinal() + mill.charge])), light, overlay, 0xFFFFFFFF);
-		this.extension.render(stack, buffers.getBuffer(RenderType.entityCutout(this.textures[Textures.EXTENSION.ordinal()])), light, overlay, 0xFFFFFFFF);
+		RenderUtil.submitPart(collector, stack, this.pedestal, this.textures[Textures.PEDESTAL.ordinal()], light, overlay, outlineColor, breakProgress);
+		RenderUtil.submitPart(collector, stack, this.column, this.textures[Textures.CHARGE.ordinal() + charge], light, overlay, outlineColor, breakProgress);
+		RenderUtil.submitPart(collector, stack, this.extension, this.textures[Textures.EXTENSION.ordinal()], light, overlay, outlineColor, breakProgress);
 
-		float step = getBladeStep(mill, partialTick) / 16f;
-		VertexConsumer buffer = buffers.getBuffer(RenderType.entityCutout(this.textures[Textures.BLADE.ordinal()]));
+		Identifier bladeTexture = this.textures[Textures.BLADE.ordinal()];
 		stack.pushPose();
 		stack.translate(step, 0, 0);
-		this.blade.render(stack, buffer, light, overlay, 0xFFFFFFFF);
+		RenderUtil.submitPart(collector, stack, this.blade, bladeTexture, light, overlay, outlineColor, breakProgress);
 		stack.popPose();
 		stack.translate(1, 0, 1);
-		stack.mulPose(Axis.YP.rotation(Mth.PI));
+		stack.rotate(Axis.YP.rotation(Mth.PI));
 		stack.translate(step, 0, 0);
-		this.blade.render(stack, buffer, light, overlay, 0xFFFFFFFF);
+		RenderUtil.submitPart(collector, stack, this.blade, bladeTexture, light, overlay, outlineColor, breakProgress);
 
 		stack.popPose();
 	}
@@ -108,6 +138,38 @@ public class RainmakerRenderer implements BlockEntityRenderer<MillBlockEntity> {
 			return 3.99f - (progress - 0.5f) * 2f * 3.99f;
 		} else {
 			return progress * 2f * 3.99f;
+		}
+	}
+
+	public static class State extends BlockEntityRenderState {
+		public int charge;
+		public float step;
+	}
+
+	// the item form, uncharged with the blades at rest
+	public record Special(RainmakerRenderer renderer) implements NoDataSpecialModelRenderer {
+		@Override
+		public void submit(PoseStack stack, SubmitNodeCollector collector, int light, int overlay, boolean hasFoil, int outlineColor) {
+			this.renderer.submit(stack, collector, 0, 0f, light, overlay, outlineColor, null);
+		}
+
+		@Override
+		public void getExtents(Consumer<Vector3fc> output) {
+			this.renderer.root.getExtentsForGui(new PoseStack(), output);
+		}
+
+		public record Unbaked(String texture) implements NoDataSpecialModelRenderer.Unbaked {
+			public static final MapCodec<Unbaked> MAP_CODEC = Codec.STRING.fieldOf("texture").xmap(Unbaked::new, Unbaked::texture);
+
+			@Override
+			public MapCodec<Unbaked> type() {
+				return MAP_CODEC;
+			}
+
+			@Override
+			public Special bake(SpecialModelRenderer.BakingContext ctx) {
+				return new Special(new RainmakerRenderer(ctx.entityModelSet().bakeLayer(ForestryModelLayers.MILL_LAYER), this.texture));
+			}
 		}
 	}
 }

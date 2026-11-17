@@ -10,6 +10,7 @@ public class SpecialRendererBlock<P extends IBlockType> extends BaseBlock<P> {
 
 	@Override
 	public RenderShape getRenderShape(BlockState state) {
-		return RenderShape.ENTITYBLOCK_ANIMATED;
+		// ENTITYBLOCK_ANIMATED is gone, the block model holds only the particle texture
+		return RenderShape.MODEL;
 	}
 }

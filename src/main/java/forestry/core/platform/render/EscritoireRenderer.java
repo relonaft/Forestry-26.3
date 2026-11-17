@@ -3,27 +3,41 @@ package forestry.core.platform.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import forestry.core.content.escritoire.EscritoireBlockEntity;
 import forestry.core.platform.util.RenderUtil;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
 
-public class EscritoireRenderer implements BlockEntityRenderer<EscritoireBlockEntity> {
-	private final ItemRenderer itemRenderer;
+import javax.annotation.Nullable;
+
+public class EscritoireRenderer implements BlockEntityRenderer<EscritoireBlockEntity, DisplayStackRenderState> {
+	private final ItemModelResolver itemModelResolver;
 
 	public EscritoireRenderer(BlockEntityRendererProvider.Context ctx) {
-		this.itemRenderer = ctx.getItemRenderer();
+		this.itemModelResolver = ctx.itemModelResolver();
 	}
 
 	@Override
-	public void render(EscritoireBlockEntity escritoire, float partialTick, PoseStack stack, MultiBufferSource buffers, int light, int overlay) {
-		ItemStack displayStack = escritoire.getIndividualOnDisplay();
-		if (!displayStack.isEmpty()) {
+	public DisplayStackRenderState createRenderState() {
+		return new DisplayStackRenderState();
+	}
+
+	@Override
+	public void extractRenderState(EscritoireBlockEntity escritoire, DisplayStackRenderState state, float partialTick, Vec3 cameraPos, @Nullable ModelFeatureRenderer.CrumblingOverlay breakProgress) {
+		BlockEntityRenderer.super.extractRenderState(escritoire, state, partialTick, cameraPos, breakProgress);
+		RenderUtil.extractDisplayStack(state, this.itemModelResolver, escritoire.getIndividualOnDisplay(), escritoire.getLevel(), partialTick);
+	}
+
+	@Override
+	public void submit(DisplayStackRenderState state, PoseStack stack, SubmitNodeCollector collector, CameraRenderState camera) {
+		if (!state.item.isEmpty()) {
 			stack.pushPose();
 			stack.translate(0.5, 0.9, 0.5);
 			stack.scale(0.75f, 0.75f, 0.75f);
-			RenderUtil.renderDisplayStack(stack, this.itemRenderer, displayStack, escritoire.getLevel(), partialTick, buffers, light);
+			RenderUtil.submitDisplayStack(stack, collector, state);
 			stack.popPose();
 		}
 	}

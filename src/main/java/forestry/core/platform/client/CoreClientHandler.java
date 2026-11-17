@@ -1,9 +1,11 @@
 package forestry.core.platform.client;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.renderpearl.api.vertex.VertexFormat;
+import com.mojang.renderpearl.api.pipeline.BlendFunction;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.CompareOp;
+import com.mojang.renderpearl.api.pipeline.DepthStencilState;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import forestry.api.ForestryConstants;
 import forestry.api.client.IClientModuleHandler;
 import forestry.api.client.IForestryClientApi;
@@ -12,14 +14,12 @@ import forestry.apiimpl.client.ForestryClientApiImpl;
 import forestry.apiimpl.plugin.PluginManager;
 import forestry.core.engine.circuits.SolderingIronScreen;
 import forestry.core.platform.config.Constants;
-import forestry.core.engine.genetics.GeneticsReloadHandler;
 import forestry.core.features.*;
 import forestry.core.platform.fluids.ForestryFluids;
 import forestry.core.platform.gui.*;
 import forestry.core.content.analyzer.*;
 import forestry.core.content.burnbarrel.BurnBarrelScreen;
 import forestry.core.content.escritoire.*;
-import forestry.core.platform.item.SpecialRendererBlockItem;
 import forestry.core.platform.models.ClientManager;
 import forestry.core.platform.models.FluidContainerModel;
 import forestry.core.platform.models.ForestryItemTint;
@@ -38,46 +38,51 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockTintSources;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.resources.model.sprite.Material;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.LayeringTransform;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Unit;
+import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.*;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
-import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.OptionalDouble;
 
 public class CoreClientHandler implements IClientModuleHandler {
-	public static BlockEntityWithoutLevelRenderer bewlr;
-	// Copied from RenderStateShard.java (just LINES but with NO_DEPTH_TEST)
-	public static final RenderType RENDER_TYPE_LINES_XRAY = RenderType.create("lines_xray", DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.LINES, 256, false, false, RenderType.CompositeState.builder()
-		.setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
-		.setLineState(new RenderStateShard.LineStateShard(OptionalDouble.empty()))
-		.setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
-		.setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-		.setOutputState(RenderStateShard.OUTLINE_TARGET)
-		.setWriteMaskState(RenderStateShard.COLOR_WRITE)
-		.setCullState(RenderStateShard.NO_CULL)
-		.setDepthTestState(RenderStateShard.NO_DEPTH_TEST)
-		.createCompositeState(false));
+	// Copied from RenderPipelines.java (just LINES_TRANSLUCENT but with no depth test)
+	// deviation: drawn to the main target, a 26.3 render type cannot pick the outline target without its blur
+	public static final RenderPipeline PIPELINE_LINES_XRAY = RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
+		.withLocation(ForestryConstants.forestry("pipeline/lines_xray"))
+		.withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+		.withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
+		.build();
+	public static final RenderType RENDER_TYPE_LINES_XRAY = RenderType.create("lines_xray", RenderSetup.builder(PIPELINE_LINES_XRAY)
+		.setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+		.createRenderSetup());
+
+	private static final ContextKey<List<SpectacleHighlight>> SPECTACLE_HIGHLIGHTS = new ContextKey<>(ForestryConstants.forestry("spectacle_highlights"));
+
+	private record SpectacleHighlight(BlockPos pos, int color) {
+	}
 
 	@Override
 	public void registerEvents(IEventBus modBus) {
-		modBus.addListener(CoreClientHandler::onClientSetup);
 		modBus.addListener(CoreClientHandler::registerMenuScreens);
 		modBus.addListener(CoreClientHandler::registerModelLoaders);
 		modBus.addListener(CoreClientHandler::registerItemModels);
@@ -85,21 +90,17 @@ public class CoreClientHandler implements IClientModuleHandler {
 		modBus.addListener(CoreClientHandler::setupLayers);
 		modBus.addListener(CoreClientHandler::clientSetupRenderers);
 		modBus.addListener(CoreClientHandler::registerReloadListeners);
+		modBus.addListener(CoreClientHandler::registerAtlases);
+		modBus.addListener(CoreClientHandler::registerRenderPipelines);
 		modBus.addListener(CoreClientHandler::registerBlockColors);
 		modBus.addListener(CoreClientHandler::registerItemTintSources);
 		modBus.addListener(CoreClientHandler::registerParticleFactory);
-		modBus.addListener(CoreClientHandler::registerClientExtensions);
+		modBus.addListener(CoreClientHandler::registerSpecialRenderers);
 		modBus.addListener(CoreClientHandler::registerFluidModels);
-		NeoForge.EVENT_BUS.addListener(CoreClientHandler::onClientTick);
-		// HIGH priority so the client mutation index is rebuilt before NORMAL-priority consumers (e.g. JEI, which can
-		// start synchronously during RecipesUpdatedEvent on a dedicated-server connection) read it.
-		NeoForge.EVENT_BUS.addListener(EventPriority.HIGH, CoreClientHandler::onRecipesUpdated);
+		NeoForge.EVENT_BUS.addListener(CoreClientHandler::extractSpectacleHighlights);
+		NeoForge.EVENT_BUS.addListener(CoreClientHandler::submitSpectacleHighlights);
 
 		ModuleUtil.getModBus(ForestryConstants.MOD_ID).addListener(EventPriority.HIGHEST, ((ForestryClientApiImpl) IForestryClientApi.INSTANCE)::initializeTextureManager);
-	}
-
-	private static void onClientSetup(FMLClientSetupEvent event) {
-		bewlr = new ForestryBewlr(Minecraft.getInstance().getBlockEntityRenderDispatcher());
 	}
 
 	private static void registerMenuScreens(RegisterMenuScreensEvent event) {
@@ -151,30 +152,32 @@ public class CoreClientHandler implements IClientModuleHandler {
 		event.registerBlockEntityRenderer(FactoryBlockEntities.RAINMAKER.tileType(), ctx -> new RainmakerRenderer(ctx, Constants.TEXTURE_PATH_BLOCK + "/rainmaker_"));
 	}
 
-	private static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
-		event.registerReloadListener(((ForestryTextureManager) IForestryClientApi.INSTANCE.getTextureManager()).getSpriteUploader());
-		event.registerReloadListener(ColourProperties.INSTANCE);
+	private static void registerReloadListeners(AddClientReloadListenersEvent event) {
+		event.addListener(ForestryConstants.forestry("colour_properties"), ColourProperties.INSTANCE);
 
-		event.registerReloadListener((prepBarrier, resourceManager, prepProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
-			return prepBarrier.wait(Unit.INSTANCE).thenRunAsync(ModelBlockCached::clear, gameExecutor);
+		event.addListener(ForestryConstants.forestry("model_cache"), (currentReload, taskExecutor, prepBarrier, reloadExecutor) -> {
+			return prepBarrier.wait(Unit.INSTANCE).thenRunAsync(ModelBlockCached::clear, reloadExecutor);
 		});
+	}
+
+	// replaces the sprite uploader reload listener, the vanilla atlas manager stitches the atlas now
+	private static void registerAtlases(RegisterTextureAtlasesEvent event) {
+		event.register(ForestrySpriteUploader.ATLAS_CONFIG);
+	}
+
+	private static void registerRenderPipelines(RegisterRenderPipelinesEvent event) {
+		event.registerPipeline(PIPELINE_LINES_XRAY);
 	}
 
 	private static void registerParticleFactory(RegisterParticleProvidersEvent event) {
 		event.registerSpriteSet(CoreParticles.REFRACTORY_WAX.get(), RefractoryWaxParticle::new);
 	}
 
-	private static void registerClientExtensions(RegisterClientExtensionsEvent event) {
-		// Replaces the deprecated per-instance Item#initializeClient override on ItemBlockTesr.
-		IClientItemExtensions tesrExtensions = new IClientItemExtensions() {
-			@Override
-			public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-				return bewlr;
-			}
-		};
-		for (SpecialRendererBlockItem<?> item : SpecialRendererBlockItem.getInstances()) {
-			event.registerItem(tesrExtensions, item);
-		}
+	// which items use them is listed in their item model definitions under assets/forestry/items
+	private static void registerSpecialRenderers(RegisterSpecialModelRendererEvent event) {
+		event.register(ForestryConstants.forestry("naturalist_chest"), NaturalistChestRenderer.Special.Unbaked.MAP_CODEC);
+		event.register(ForestryConstants.forestry("engine"), EngineRenderer.Special.Unbaked.MAP_CODEC);
+		event.register(ForestryConstants.forestry("rainmaker"), RainmakerRenderer.Special.Unbaked.MAP_CODEC);
 	}
 
 	private static void registerFluidModels(RegisterFluidModelsEvent event) {
@@ -208,74 +211,68 @@ public class CoreClientHandler implements IClientModuleHandler {
 		event.register(Identifier.fromNamespaceAndPath(ForestryConstants.MOD_ID, "item_tint"), ForestryItemTint.MAP_CODEC);
 	}
 
-	private static void onRecipesUpdated(RecipesUpdatedEvent event) {
-		// Recipes sync to the client automatically; rebuild the client-side mutation index for JEI/analyzer display.
-		// Species (BeeSpeciesSyncPacket) arrive separately and are rebuilt there, always before this fires.
-		GeneticsReloadHandler.rebuildMutations(event.getRecipeManager());
-	}
+	private static void extractSpectacleHighlights(ExtractLevelRenderStateEvent event) {
+		Minecraft minecraft = Minecraft.getInstance();
+		Player player = minecraft.player;
 
-	private static void onClientTick(RenderLevelStageEvent event) {
-		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-			Minecraft minecraft = Minecraft.getInstance();
-			Player player = minecraft.player;
+		if (player != null) {
+			if (GeneticsUtil.hasNaturalistEye(player)) {
+				// Draw lines around pollinated leaves and wild hives
+				List<SpectacleHighlight> highlights = new ArrayList<>();
 
-			if (player != null) {
-				if (GeneticsUtil.hasNaturalistEye(player)) {
-					// Draw lines around pollinated leaves and wild hives
-					PoseStack stack = event.getPoseStack();
+				int renderDistance = minecraft.options.renderDistance().get();
+				BlockPos playerPos = player.blockPosition();
+				ChunkPos playerChunkPos = ChunkPos.containing(playerPos);
 
-					Vec3 cameraPos = event.getCamera().getPosition();
+				long gameTime = event.getLevel().getGameTime();
+				float partialTick = event.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 
-					RENDER_TYPE_LINES_XRAY.setupRenderState();
+				// Steady rainbow outline (pollinated leaves, assembled multiblock anchors)...
+				int rainbow = ARGB.opaque(RenderUtil.getRainbowColor(gameTime, partialTick).getRGB());
+				// ...and a pulsing white outline for work-in-progress markers (unformed multiblock parts).
+				int flashing = ARGB.colorFromFloat(RenderUtil.getFlashingAlpha(gameTime, partialTick), 1.0F, 1.0F, 1.0F);
 
-					MultiBufferSource.BufferSource buffers = minecraft.renderBuffers().bufferSource();
-					VertexConsumer lines = buffers.getBuffer(RENDER_TYPE_LINES_XRAY);
+				// Iterate through all chunks in render distance
+				for (int chunkX = playerChunkPos.x() - renderDistance; chunkX <= playerChunkPos.x() + renderDistance; chunkX++) {
+					for (int chunkZ = playerChunkPos.z() - renderDistance; chunkZ <= playerChunkPos.z() + renderDistance; chunkZ++) {
+						LevelChunk chunk = event.getLevel().getChunk(chunkX, chunkZ);
 
-					int renderDistance = minecraft.options.renderDistance().get();
-					BlockPos playerPos = minecraft.player.blockPosition();
-					ChunkPos playerChunkPos = ChunkPos.containing(playerPos);
-
-					Color color = RenderUtil.getRainbowColor(minecraft.level.getGameTime(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
-
-					// Steady rainbow outline (pollinated leaves, assembled multiblock anchors)...
-					float r = color.getRed() / 255f;
-					float g = color.getGreen() / 255f;
-					float b = color.getBlue() / 255f;
-					// ...and a pulsing white outline for work-in-progress markers (unformed multiblock parts).
-					float flashAlpha = RenderUtil.getFlashingAlpha(minecraft.level.getGameTime(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
-
-					// Iterate through all chunks in render distance
-					for (int chunkX = playerChunkPos.x - renderDistance; chunkX <= playerChunkPos.x + renderDistance; chunkX++) {
-						for (int chunkZ = playerChunkPos.z - renderDistance; chunkZ <= playerChunkPos.z + renderDistance; chunkZ++) {
-							LevelChunk chunk = minecraft.level.getChunk(chunkX, chunkZ);
-
-							// Get all block entities in the chunk
-							for (BlockEntity be : chunk.getBlockEntities().values()) {
-								if (be instanceof ISpectacleBlock naturalist && naturalist.isHighlighted(player)) {
-									BlockPos pos = be.getBlockPos();
-
-									boolean flashing = naturalist.usesFlashingHighlight(player);
-									float cr = flashing ? 1.0F : r;
-									float cg = flashing ? 1.0F : g;
-									float cb = flashing ? 1.0F : b;
-									float ca = flashing ? flashAlpha : 1.0F;
-
-									stack.pushPose();
-									// Translate the matrix stack to avoid floating point precision errors
-									stack.translate(pos.getX() - cameraPos.x, pos.getY() - cameraPos.y, pos.getZ() - cameraPos.z);
-
-									// render at origin (inflate slightly to avoid weirdness with selection box)
-									LevelRenderer.renderLineBox(stack, lines, -0.001, -0.001, -0.001, 1.001, 1.001, 1.001, cr, cg, cb, ca);
-
-									stack.popPose();
-								}
+						// Get all block entities in the chunk
+						for (BlockEntity be : chunk.getBlockEntities().values()) {
+							if (be instanceof ISpectacleBlock naturalist && naturalist.isHighlighted(player)) {
+								highlights.add(new SpectacleHighlight(be.getBlockPos(), naturalist.usesFlashingHighlight(player) ? flashing : rainbow));
 							}
 						}
 					}
-
-					buffers.endBatch();
-					RENDER_TYPE_LINES_XRAY.clearRenderState();
 				}
+
+				event.getRenderState().setRenderData(SPECTACLE_HIGHLIGHTS, highlights);
+			}
+		}
+	}
+
+	private static void submitSpectacleHighlights(SubmitCustomGeometryEvent event) {
+		LevelRenderState levelState = event.getLevelRenderState();
+		List<SpectacleHighlight> highlights = levelState.getRenderData(SPECTACLE_HIGHLIGHTS);
+
+		if (highlights != null) {
+			PoseStack stack = event.getPoseStack();
+			SubmitNodeCollector collector = event.getSubmitNodeCollector();
+			Vec3 cameraPos = levelState.cameraRenderState.pos;
+			float width = Minecraft.getInstance().gameRenderer.gameRenderState().windowRenderState.appropriateLineWidth;
+
+			for (SpectacleHighlight highlight : highlights) {
+				BlockPos pos = highlight.pos();
+				int color = highlight.color();
+
+				stack.pushPose();
+				// Translate the matrix stack to avoid floating point precision errors
+				stack.translate(pos.getX() - cameraPos.x, pos.getY() - cameraPos.y, pos.getZ() - cameraPos.z);
+
+				// render at origin (inflate slightly to avoid weirdness with selection box)
+				collector.submitCustomGeometry(stack, RENDER_TYPE_LINES_XRAY, (pose, buffer) -> RenderUtil.lineBox(pose, buffer, -0.001F, 1.001F, color, width));
+
+				stack.popPose();
 			}
 		}
 	}
