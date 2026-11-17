@@ -205,13 +205,13 @@ neoForge {
 			loadedMods = [mods.forestry, mods.forestrybutterflies, mods.forestryfarms, mods.forestrymail]
 		}
 
-		// Multiblock inventory-conservation GameTest suite. Runs ONLY via `gradlew runGameTestServer`; the
-		// enabled-namespaces property is what makes NeoForge execute the @GameTestHolder("forestry") classes, so the
-		// tests are completely inert in normal client/server play.
+		// Multiblock inventory-conservation GameTest suite. Runs ONLY via `gradlew runGameTestServer`. NeoForge
+		// 26.3 no longer reads neoforge.enabledGameTestNamespaces: the server runs every test instance in the
+		// registry, so the selector is what keeps minecraft:always_pass out of the count
 		gameTestServer {
 			type = "gameTestServer"
 			gameDirectory.set(project.layout.projectDirectory.dir('run/gametest'))
-			systemProperty 'neoforge.enabledGameTestNamespaces', 'forestry'
+			programArguments.addAll('--tests', 'forestry:*')
 			// Forwards `-Pforestry.genomeBaseline=generate` to the forked gametest JVM so GenomeBaselineTest
 			// can (re)generate its golden-master snapshot. Empty/absent => assert mode.
 			systemProperty 'forestry.genomeBaseline', providers.gradleProperty('forestry.genomeBaseline').getOrElse('')

@@ -4,11 +4,8 @@ import forestry.api.ForestryConstants;
 import forestry.core.platform.multiblock.MultiblockController;
 import forestry.core.platform.multiblock.MultiblockIndex;
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.LevelAccessor;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;

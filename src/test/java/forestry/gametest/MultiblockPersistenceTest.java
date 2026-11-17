@@ -8,7 +8,6 @@ import forestry.apiculture.bees.BeeHousingInventory;
 import forestry.core.platform.multiblock.MultiblockController;
 import forestry.core.platform.util.SpeciesUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
@@ -17,9 +16,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import forestry.core.platform.transfer.IItemHandler;
+import forestry.core.platform.transfer.Transfers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +42,9 @@ public final class MultiblockPersistenceTest {
 			BlockPos holder = holderOf(helper, members);
 			MultiblockTestSupport.insertItem(level, members, MultiblockTestSupport.ALVEARY_INV_SIZE, PRODUCT_SLOT, new ItemStack(Items.HONEYCOMB, 7));
 			LevelChunk holderChunk = level.getChunkAt(holder);
-			holderChunk.setUnsaved(false);
+			holderChunk.tryMarkSaved();
 
-			IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, members.getLast(), null);
+			IItemHandler handler = Transfers.viewItems(level.getCapability(Capabilities.Item.BLOCK, members.getLast(), null));
 			helper.assertTrue(handler != null, "alveary exposes no item handler");
 			ItemStack extracted = handler.extractItem(PRODUCT_SLOT, 1, false);
 			helper.assertTrue(extracted.getCount() == 1, "extraction through the item handler failed");
@@ -69,16 +67,16 @@ public final class MultiblockPersistenceTest {
 
 		helper.runAfterDelay(5, () -> {
 			BlockPos holder = holderOf(helper, members);
-			ChunkPos holderChunkPos = new ChunkPos(holder);
+			ChunkPos holderChunkPos = ChunkPos.containing(holder);
 			BlockPos remote = members.stream()
-				.filter(pos -> !new ChunkPos(pos).equals(holderChunkPos))
+				.filter(pos -> !ChunkPos.containing(pos).equals(holderChunkPos))
 				.findFirst()
 				.orElse(null);
 			helper.assertTrue(remote != null, "alveary does not straddle a chunk border");
 
 			LevelChunk holderChunk = level.getChunkAt(holder);
-			holderChunk.setUnsaved(false);
-			level.getChunkAt(remote).setUnsaved(false);
+			holderChunk.tryMarkSaved();
+			level.getChunkAt(remote).tryMarkSaved();
 
 			// the same calls a menu slot makes when a player places an item
 			Container container = (Container) level.getBlockEntity(remote);
@@ -113,7 +111,7 @@ public final class MultiblockPersistenceTest {
 				queen.setMate(queen.getGenome());
 				queen.setHealth(0);
 				MultiblockTestSupport.insertItem(level, members, MultiblockTestSupport.ALVEARY_INV_SIZE, BeeHousingInventory.SLOT_QUEEN, queen.createStack(BeeLifeStage.QUEEN));
-				holderChunk[0].setUnsaved(false);
+				holderChunk[0].tryMarkSaved();
 			})
 			// the queen dies on the next tick and her offspring move into the inventory on the tick after. The next
 			// tick's eager save can write a dirty chunk and clear its flag, so check it after every tick

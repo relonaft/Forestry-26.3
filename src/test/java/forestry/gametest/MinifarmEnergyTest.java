@@ -2,13 +2,11 @@ package forestry.gametest;
 
 import forestry.core.platform.tile.PoweredBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import forestry.api.ForestryConstants;
 import forestry.agriculture.features.FarmingBlocks;
@@ -98,7 +96,7 @@ public class MinifarmEnergyTest {
 	private static AbstractMinifarmBlockEntity placeFarm(GameTestHelper helper) {
 		helper.setBlock(FARM_POS, FarmingBlocks.MANAGED_MINIFARM.get(MinifarmBlockType.ARBORETUM).defaultState());
 
-		if (helper.getBlockEntity(FARM_POS) instanceof AbstractMinifarmBlockEntity farm) {
+		if (helper.getBlockEntity(FARM_POS, BlockEntity.class) instanceof AbstractMinifarmBlockEntity farm) {
 			return farm;
 		}
 

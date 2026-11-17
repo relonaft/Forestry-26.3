@@ -15,14 +15,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import forestry.api.ForestryConstants;
 
@@ -98,7 +95,7 @@ public class CreativeTabBaselineTest {
 				.toList();
 
 		for (Identifier tabId : tabIds) {
-			CreativeModeTab tab = BuiltInRegistries.CREATIVE_MODE_TAB.get(tabId);
+			CreativeModeTab tab = BuiltInRegistries.CREATIVE_MODE_TAB.getValue(tabId);
 			if (tab == null) {
 				lines.add(tabId + " !! not resolvable from the registry");
 				continue;

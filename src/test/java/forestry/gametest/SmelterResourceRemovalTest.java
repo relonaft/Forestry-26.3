@@ -3,14 +3,12 @@ package forestry.gametest;
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import forestry.api.ForestryConstants;
 import forestry.core.content.machines.blocks.FactoryBlockType;
@@ -112,7 +110,7 @@ public class SmelterResourceRemovalTest {
 
 	private static SmelterInventory smelter(GameTestHelper helper) {
 		helper.setBlock(SMELTER_POS, FactoryBlocks.PLAIN.get(FactoryBlockType.SMELTER).block());
-		SmelterBlockEntity smelter = (SmelterBlockEntity) helper.getBlockEntity(SMELTER_POS);
+		SmelterBlockEntity smelter = (SmelterBlockEntity) helper.getBlockEntity(SMELTER_POS, BlockEntity.class);
 		return (SmelterInventory) smelter.getInternalInventory();
 	}
 

@@ -3,13 +3,10 @@ package forestry.gametest;
 import java.util.Collection;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import forestry.api.ForestryConstants;
 import forestry.core.content.soil.BogEarthBlock;
@@ -25,7 +22,7 @@ import forestry.core.features.CoreBlocks;
  * <p>
  * The tests drive {@link BlockState#randomTick} directly instead of waiting on the level to roll random ticks, because
  * the in-world rate would make the suite take minutes. {@code randomTick} then gates itself on a further 1 in 13 roll
- * off {@code level.random}, which the test cannot seed, so the loop counts state CHANGES and not calls. The number of
+ * off {@code level.getRandom()}, which the test cannot seed, so the loop counts state CHANGES and not calls. The number of
  * calls is random but the number of changes is not, which is what {@link #EXPECTED_ADVANCES} asserts.
  * <p>
  * A whole test method body runs inside a single server tick. No fluid tick fires while it runs, so a placed water
@@ -129,7 +126,7 @@ public class BogEarthMaturationTest {
 				break;
 			}
 
-			before.randomTick(level, pos, level.random);
+			before.randomTick(level, pos, level.getRandom());
 
 			// block states are singletons, so identity separates a tick that acted from one the 1 in 13 roll rejected
 			BlockState after = helper.getBlockState(BOG_POS);
@@ -153,7 +150,7 @@ public class BogEarthMaturationTest {
 		BlockPos pos = helper.absolutePos(BOG_POS);
 
 		for (int i = 0; i < MAX_RANDOM_TICKS; i++) {
-			helper.getBlockState(BOG_POS).randomTick(level, pos, level.random);
+			helper.getBlockState(BOG_POS).randomTick(level, pos, level.getRandom());
 		}
 
 		helper.assertBlockPresent(CoreBlocks.BOG_EARTH.block(), BOG_POS);

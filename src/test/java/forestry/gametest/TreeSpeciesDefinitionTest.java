@@ -4,11 +4,8 @@ import java.util.Map;
 
 import com.mojang.serialization.JsonOps;
 
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.resources.RegistryOps;

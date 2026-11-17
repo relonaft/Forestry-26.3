@@ -11,11 +11,8 @@ import java.util.TreeSet;
 
 import com.google.gson.JsonObject;
 
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.util.GsonHelper;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import forestry.api.IForestryApi;
 import forestry.api.ForestryConstants;

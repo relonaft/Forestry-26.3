@@ -9,7 +9,6 @@ import forestry.apiculture.features.ApicultureBlocks;
 import forestry.agriculture.multifarm.blocks.MultifarmBlockType;
 import forestry.agriculture.multifarm.blocks.MultifarmMaterialType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
@@ -19,8 +18,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.*;
 

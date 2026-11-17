@@ -2,14 +2,11 @@ package forestry.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import forestry.agriculture.features.FarmingBlocks;
 import forestry.agriculture.minifarm.blocks.MinifarmBlockType;
@@ -47,7 +44,7 @@ public class MushroomFarmTest {
 		helper.setBlock(SOIL_POS, Blocks.MYCELIUM);
 		helper.setBlock(MUSHROOM_POS, mushroom);
 
-		BlockEntity blockEntity = helper.getBlockEntity(FARM_POS);
+		BlockEntity blockEntity = helper.getBlockEntity(FARM_POS, BlockEntity.class);
 		if (!(blockEntity instanceof IFarmHousing housing)) {
 			helper.fail("Expected an IFarmHousing at " + FARM_POS);
 			return;

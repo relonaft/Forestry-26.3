@@ -11,7 +11,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -20,9 +19,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.RecipeManager;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.minecraft.world.item.crafting.RecipeMap;
 
 import forestry.api.ForestryConstants;
 import forestry.api.core.IProduct;
@@ -151,7 +148,7 @@ public class CentrifugeProductDispatchTest {
 	/** The built-in centrifuge recipes must still expose and resolve their products through the migrated path. */
 	@GameTest(template = "empty")
 	public static void centrifugeRecipesResolveProducts(GameTestHelper helper) {
-		RecipeManager manager = helper.getLevel().getRecipeManager();
+		RecipeMap manager = helper.getLevel().recipeAccess().recipeMap();
 
 		ICentrifugeRecipe honeyComb = RecipeUtils.getRecipes(manager, FactoryRecipeTypes.CENTRIFUGE)
 			.filter(recipe -> recipe.getId().equals(ForestryConstants.forestry("centrifuge/honey_comb")))

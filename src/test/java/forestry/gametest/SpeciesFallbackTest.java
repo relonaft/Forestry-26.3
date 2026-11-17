@@ -6,11 +6,8 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import forestry.api.ForestryConstants;
 import forestry.api.apiculture.genetics.IBeeSpecies;
@@ -85,7 +82,7 @@ public class SpeciesFallbackTest {
 		} finally {
 			// Restore the live state from the real, already-loaded definitions so later tests aren't affected.
 			ApicultureReloadHandler.rebuildSpecies(realDefinitions);
-			GeneticsReloadHandler.rebuildMutations(helper.getLevel().getServer().getRecipeManager());
+			GeneticsReloadHandler.rebuildMutations(helper.getLevel().getServer().getRecipeManager().recipeMap());
 		}
 
 		helper.succeed();
@@ -130,7 +127,7 @@ public class SpeciesFallbackTest {
 		} finally {
 			// Restore the live state so later tests in this same server session see the full built-in set again.
 			ApicultureReloadHandler.rebuildSpecies(realDefinitions);
-			GeneticsReloadHandler.rebuildMutations(helper.getLevel().getServer().getRecipeManager());
+			GeneticsReloadHandler.rebuildMutations(helper.getLevel().getServer().getRecipeManager().recipeMap());
 		}
 
 		helper.succeed();
