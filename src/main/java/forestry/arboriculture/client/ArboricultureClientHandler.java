@@ -11,13 +11,10 @@ import forestry.arboriculture.features.ArboricultureTiles;
 import forestry.arboriculture.models.*;
 import forestry.core.platform.models.ClientManager;
 import net.minecraft.client.model.object.boat.BoatModel;
-import net.minecraft.client.model.ChestBoatModel;
-import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.renderer.blockentity.SignRenderer;
+import net.minecraft.client.renderer.blockentity.StandingSignRenderer;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.bus.api.IEventBus;
 
 public class ArboricultureClientHandler implements IClientModuleHandler {
@@ -28,13 +25,6 @@ public class ArboricultureClientHandler implements IClientModuleHandler {
 		modBus.addListener(ArboricultureClientHandler::registerItemModels);
 		modBus.addListener(ArboricultureClientHandler::registerEntityRenderers);
 		modBus.addListener(ArboricultureClientHandler::registerModelLayers);
-		modBus.addListener(ArboricultureClientHandler::beforeResourceLoad);
-	}
-
-	private static void beforeResourceLoad(RegisterClientReloadListenersEvent event) {
-		for (ForestryWoodType type : ForestryWoodType.VALUES) {
-			Sheets.addWoodType(type.getWoodType());
-		}
 	}
 
 	private static void registerItemModels(RegisterItemModelsEvent event) {
@@ -55,18 +45,16 @@ public class ArboricultureClientHandler implements IClientModuleHandler {
 	private static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
 		event.registerEntityRenderer(ArboricultureEntities.BOAT.entityType(), ctx -> new ForestryBoatRenderer(ctx, false));
 		event.registerEntityRenderer(ArboricultureEntities.CHEST_BOAT.entityType(), ctx -> new ForestryBoatRenderer(ctx, true));
-		event.registerBlockEntityRenderer(ArboricultureTiles.SIGN.tileType(), SignRenderer::new);
+		// draws the text only, the sign itself is a block model since Sheets.addWoodType is gone
+		event.registerBlockEntityRenderer(ArboricultureTiles.SIGN.tileType(), StandingSignRenderer::new);
 		// HANGING_SIGN BE renderer is provided by vanilla; Forestry's hanging-sign blocks reuse
 		// vanilla's BlockEntityType.HANGING_SIGN via BlockEntityTypeAddBlocksEvent.
 	}
 
 	private static void registerModelLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
 		for (ForestryWoodType type : ForestryWoodType.VALUES) {
-			event.registerLayerDefinition(ForestryBoatRenderer.createBoatModelLocation(type, false), BoatModel::createBodyModel);
-			event.registerLayerDefinition(ForestryBoatRenderer.createBoatModelLocation(type, true), ChestBoatModel::createBodyModel);
-			// Vanilla / NeoForge auto-registers hanging-sign and standing-sign layers for any
-			// WoodType added via Sheets.addWoodType (see beforeResourceLoad). Registering them
-			// manually here causes a duplicate-key crash at boot.
+			event.registerLayerDefinition(ForestryBoatRenderer.createBoatModelLocation(type, false), BoatModel::createBoatModel);
+			event.registerLayerDefinition(ForestryBoatRenderer.createBoatModelLocation(type, true), BoatModel::createChestBoatModel);
 		}
 	}
 

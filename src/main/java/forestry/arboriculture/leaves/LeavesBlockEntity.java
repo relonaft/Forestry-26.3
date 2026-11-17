@@ -28,6 +28,7 @@ import forestry.core.platform.network.packets.PacketTileStream;
 import forestry.core.platform.util.ColourUtil;
 import forestry.core.platform.util.NetworkUtil;
 import forestry.core.platform.util.SpeciesUtil;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -240,7 +241,9 @@ public class LeavesBlockEntity extends TileTreeContainer implements IFruitBearer
 
 	@OnlyIn(Dist.CLIENT)
 	public int getFoliageColour() {
-		final int baseColor = IForestryClientApi.INSTANCE.getTreeManager().getTint(this.species).get(this.level, this.worldPosition);
+		// only the client level is a BlockAndTintGetter now
+		BlockAndTintGetter tintLevel = this.level instanceof BlockAndTintGetter clientLevel ? clientLevel : null;
+		final int baseColor = IForestryClientApi.INSTANCE.getTreeManager().getTint(this.species).get(tintLevel, this.worldPosition);
 
 		ITree tree = getTree();
 		if (isDestroyed(tree, this.damage)) {
