@@ -57,8 +57,6 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
@@ -101,7 +99,6 @@ public class EntityButterfly extends PathfinderMob implements IEntityButterfly {
 	private IButterflySpecies species;
 	private float size = DEFAULT_BUTTERFLY_SIZE;
 	private EnumButterflyState state = DEFAULT_STATE;
-	@OnlyIn(Dist.CLIENT)
 	private Identifier textureResource;
 
 	public EntityButterfly(EntityType<EntityButterfly> type, Level world) {
@@ -432,7 +429,6 @@ public class EntityButterfly extends PathfinderMob implements IEntityButterfly {
 		return this.species != null;
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	public Identifier getTexture() {
 		return this.textureResource;
 	}

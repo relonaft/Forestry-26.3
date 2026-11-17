@@ -35,9 +35,7 @@ import forestry.core.features.CoreItems;
  * changed whenever it generates energy, and the client keeps whatever a socket click last pushed to it, so the
  * gap only opens on a relog or an idle engine.
  * <p>
- * The sync test asserts on what the server writes, not on a round trip. {@code readData} is annotated
- * {@code @OnlyIn(Dist.CLIENT)} and is stripped in this dedicated server run, so reading the payload back here
- * would exercise the empty superclass method rather than the engine's.
+ * The sync test asserts on what the server writes, not on a round trip.
  */
 @GameTestHolder(ForestryConstants.MOD_ID)
 @PrefixGameTestTemplate(false)

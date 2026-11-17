@@ -11,8 +11,6 @@ import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +84,6 @@ public class MailboxInfoToast implements Toast {
 
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	public enum Icons {
 		PLAYER_LETTER(0, 0),
 		TRADE_LETTER(0, 1);

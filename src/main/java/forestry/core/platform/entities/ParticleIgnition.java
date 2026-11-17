@@ -3,12 +3,9 @@ package forestry.core.platform.entities;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.NoRenderParticle;
 import net.minecraft.core.particles.ParticleTypes;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 //TODO particles
 // draws nothing itself, only emits vanilla smoke along its path
-@OnlyIn(Dist.CLIENT)
 public class ParticleIgnition extends NoRenderParticle {
 	private final float ignitionParticleScale;
 

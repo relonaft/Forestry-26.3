@@ -13,8 +13,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * Base logic class for multiblock-connected tile entities.
@@ -112,7 +110,6 @@ public abstract class MultiblockTileEntityBase<T extends IMultiblockLogic> exten
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
 	public final void onDataPacket(Connection network, ValueInput input) {
 		CompoundTag nbtData = ValueIoHelper.toTag(input);
 		// an empty tag was not loaded before 1.21.6 either

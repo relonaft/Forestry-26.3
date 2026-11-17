@@ -13,7 +13,6 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -72,7 +71,6 @@ public class FilteredTank extends StandardTank {
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
 	protected void refreshTooltip() {
 		if (hasFluid()) {
 			super.refreshTooltip();

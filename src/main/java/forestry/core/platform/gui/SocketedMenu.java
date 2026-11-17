@@ -6,8 +6,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public abstract class SocketedMenu<T extends BlockEntity & ISocketable> extends BlockEntityMenu<T> implements IContainerSocketed {
 
@@ -19,7 +17,6 @@ public abstract class SocketedMenu<T extends BlockEntity & ISocketable> extends 
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
 	public void handleChipsetClick(int slot) {
         this.helper.handleChipsetClick(slot);
 	}
@@ -30,7 +27,6 @@ public abstract class SocketedMenu<T extends BlockEntity & ISocketable> extends 
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
 	public void handleSolderingIronClick(int slot) {
         this.helper.handleSolderingIronClick(slot);
 	}

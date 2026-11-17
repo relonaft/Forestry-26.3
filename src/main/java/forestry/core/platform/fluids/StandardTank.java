@@ -8,8 +8,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import forestry.core.platform.transfer.FluidTank;
@@ -26,7 +24,6 @@ public class StandardTank extends FluidTank implements IStreamable {
 	//Used to bypass a second validator test
 	private boolean internalTest;
 
-	@OnlyIn(Dist.CLIENT)
 	@Nullable
 	protected ToolTip toolTip;
 

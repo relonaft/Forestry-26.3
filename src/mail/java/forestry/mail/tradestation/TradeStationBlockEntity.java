@@ -34,8 +34,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class TradeStationBlockEntity extends BaseBlockEntity implements IOwnedTile {
 	private final OwnerHandler ownerHandler = new OwnerHandler();
@@ -92,7 +90,6 @@ public class TradeStationBlockEntity extends BaseBlockEntity implements IOwnedTi
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
 	public void readData(RegistryFriendlyByteBuf data) {
 		super.readData(data);
         this.ownerHandler.readData(data);

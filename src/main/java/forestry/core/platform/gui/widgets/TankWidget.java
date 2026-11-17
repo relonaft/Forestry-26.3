@@ -20,8 +20,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.fluids.FluidStack;
 import forestry.core.platform.transfer.IFluidTank;
@@ -32,7 +30,6 @@ import javax.annotation.Nullable;
 /**
  * Slot for liquid tanks
  */
-@OnlyIn(Dist.CLIENT)
 public class TankWidget extends Widget {
 	// the tank was drawn with blending turned off
 	private static final RenderPipeline NO_BLEND = RenderPipelines.GUI_OPAQUE_TEXTURED_BACKGROUND;

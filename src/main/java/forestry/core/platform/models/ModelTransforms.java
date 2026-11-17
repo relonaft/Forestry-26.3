@@ -2,14 +2,11 @@ package forestry.core.platform.models;
 
 import net.minecraft.client.resources.model.cuboid.ItemTransform;
 import net.minecraft.client.resources.model.cuboid.ItemTransforms;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Vector3f;
 
 /**
  * Shared item-transform tables for Forestry's baked models.
  */
-@OnlyIn(Dist.CLIENT)
 public class ModelTransforms {
 	// copied from "minecraft:block/block.json" model
 	public static final ItemTransforms BLOCK = new ItemTransforms(

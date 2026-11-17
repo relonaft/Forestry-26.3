@@ -23,8 +23,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import forestry.core.platform.tile.IItemStackDisplay;
 import forestry.core.platform.tile.BaseBlockEntity;
 
@@ -121,7 +119,6 @@ public class EscritoireBlockEntity extends BaseBlockEntity implements WorldlyCon
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
 	public void readData(RegistryFriendlyByteBuf data) {
 		super.readData(data);
         this.individualOnDisplayClient = ItemStack.OPTIONAL_STREAM_CODEC.decode(data);

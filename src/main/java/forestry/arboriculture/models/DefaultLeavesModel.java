@@ -17,13 +17,10 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.model.data.ModelData;
 
 import java.util.Objects;
 
-@OnlyIn(Dist.CLIENT)
 public class DefaultLeavesModel extends ModelBlockCached<DefaultLeavesBlock, DefaultLeavesModel.Key> {
 	public DefaultLeavesModel() {
 		super(DefaultLeavesBlock.class);

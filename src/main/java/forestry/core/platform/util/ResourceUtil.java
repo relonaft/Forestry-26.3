@@ -6,14 +6,11 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * Util methods used at the installation of the game or at the reloading or baking of resources like models or
  * textures.
  */
-@OnlyIn(Dist.CLIENT)
 public class ResourceUtil {
 
 	public static TextureAtlasSprite getMissingTexture() {

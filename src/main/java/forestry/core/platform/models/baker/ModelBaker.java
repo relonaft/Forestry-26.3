@@ -12,8 +12,6 @@ import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -25,7 +23,6 @@ import java.util.List;
  * A model baker to make custom block models with more than one texture layer.
  */
 //Todo: Test if baker can be replaced with model loaders
-@OnlyIn(Dist.CLIENT)
 public final class ModelBaker {
 	// baked at render time, after the vanilla baker and its interner are gone
 	private static final net.minecraft.client.resources.model.ModelBaker.Interner INTERNER = new net.minecraft.client.resources.model.ModelBaker.Interner() {

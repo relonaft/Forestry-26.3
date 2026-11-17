@@ -18,14 +18,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.model.data.ModelData;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-@OnlyIn(Dist.CLIENT)
 public class LeavesModel extends ModelBlockCached<ForestryLeavesBlock, LeavesModel.Key> {
 
 	public LeavesModel() {

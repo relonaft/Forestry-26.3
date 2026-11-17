@@ -25,8 +25,6 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public abstract class AbstractBeeHousingBlockEntity extends BaseBlockEntity implements IBeeHousing, IOwnedTile, IClimateProvider, IGuiBeeHousingDelegate, IStreamableGui {
 	private final String hintKey;
@@ -83,7 +81,6 @@ public abstract class AbstractBeeHousingBlockEntity extends BaseBlockEntity impl
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
 	public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
 		super.handleUpdateTag(tag, registries);
         this.beeLogic.read(tag, registries);
@@ -118,7 +115,6 @@ public abstract class AbstractBeeHousingBlockEntity extends BaseBlockEntity impl
 		}
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	public static void doPollenFX(Level world, double xCoord, double yCoord, double zCoord) {
 		double fxX = xCoord + 0.5F;
 		double fxY = yCoord + 0.25F;

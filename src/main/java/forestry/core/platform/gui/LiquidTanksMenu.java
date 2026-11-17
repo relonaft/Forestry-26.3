@@ -6,8 +6,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import forestry.core.platform.transfer.IFluidTank;
 
 import javax.annotation.Nullable;
@@ -26,7 +24,6 @@ public abstract class LiquidTanksMenu<T extends BlockEntity & ILiquidTankTile> e
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
 	public void handlePipetteClickClient(int slot, Player player) {
         this.helper.handlePipetteClickClient(slot, player);
 	}

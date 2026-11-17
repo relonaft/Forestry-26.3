@@ -2,8 +2,6 @@ package forestry.core.platform.fluids;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidStack;
 import forestry.core.platform.transfer.IFluidTank;
 import forestry.core.platform.transfer.IFluidHandler;
@@ -29,6 +27,5 @@ public interface ITankManager extends IFluidHandler, ITransactional {
 	/**
 	 * For updating tanks on the client
 	 */
-	@OnlyIn(Dist.CLIENT)
 	void processTankUpdate(int tankIndex, @Nullable FluidStack contents);
 }

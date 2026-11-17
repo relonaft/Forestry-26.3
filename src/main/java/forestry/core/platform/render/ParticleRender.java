@@ -13,11 +13,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 
-@OnlyIn(Dist.CLIENT)
 public class ParticleRender {
 	// deviation: dust color is packed 8-bit rgb since 1.21.2, was (0.9, 0.75, 0.0)
 	private static final DustParticleOptions HONEY_DUST = new DustParticleOptions(0xE6BF00, 1.0F);
