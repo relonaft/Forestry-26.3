@@ -37,6 +37,7 @@ import forestry.modules.ModuleUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockTintSources;
 import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.feature.CustomFeatureRenderer;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -56,6 +57,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.fluid.FluidTintSource;
+import net.neoforged.neoforge.client.submit.RenderPhaseKeys;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.bus.api.EventPriority;
@@ -270,7 +272,10 @@ public class CoreClientHandler implements IClientModuleHandler {
 				stack.translate(pos.getX() - cameraPos.x, pos.getY() - cameraPos.y, pos.getZ() - cameraPos.z);
 
 				// render at origin (inflate slightly to avoid weirdness with selection box)
-				collector.submitCustomGeometry(stack, RENDER_TYPE_LINES_XRAY, (pose, buffer) -> RenderUtil.lineBox(pose, buffer, -0.001F, 1.001F, color, width));
+				// not submitCustomGeometry: a blended type goes to the translucent phase, which has no OIT pipeline for it and
+				// crashes with improved transparency on
+				collector.submitSpecial(RenderPhaseKeys.ALWAYS_ON_TOP, new CustomFeatureRenderer.Submit(stack.last().copy(), RENDER_TYPE_LINES_XRAY,
+					(pose, buffer) -> RenderUtil.lineBox(pose, buffer, -0.001F, 1.001F, color, width)));
 
 				stack.popPose();
 			}

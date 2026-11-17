@@ -93,8 +93,7 @@ neoForge {
 	version = "$forgeVersion"
 
 	accessTransformers = files('src/main/resources/META-INF/accesstransformer.cfg')
-	// todo port: turn back on once the entries are checked against 26.3
-	validateAccessTransformers = false
+	validateAccessTransformers = true
 
 	mods {
 		// One mod id per jar. A jar loads as a mod only if it carries neoforge.mods.toml, so this

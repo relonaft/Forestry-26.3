@@ -58,7 +58,8 @@ public class RenderUtil {
 		// deviation: 26.3 hides the ground transform, its scale is measured from the model bounds
 		resolver.updateForTopItem(UNTRANSFORMED_ITEM, displayStack, ItemDisplayContext.NONE, level, null, 1);
 		double height = UNTRANSFORMED_ITEM.getModelBoundingBox().getYsize();
-		state.groundScale = height > 0 ? (float) (state.item.getModelBoundingBox().getYsize() / height) : 1f;
+		// a model without bounds falls back to the ground scale of item/generated
+		state.groundScale = height > 0 ? (float) (state.item.getModelBoundingBox().getYsize() / height) : 0.5f;
 		state.smoothTick = ((float) (int) level.getGameTime()) + partialTick;
 	}
 
