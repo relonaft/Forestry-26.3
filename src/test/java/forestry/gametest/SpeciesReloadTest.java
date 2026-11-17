@@ -3,11 +3,8 @@ package forestry.gametest;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import forestry.api.ForestryConstants;
 import forestry.api.apiculture.genetics.IBeeSpecies;
@@ -73,7 +70,7 @@ public class SpeciesReloadTest {
 		// Species and mutations are always rebuilt together in production (species-before-mutations, since the
 		// mutation index keys species by object identity - see GeneticsReloadHandler's class doc). Re-pairing them
 		// here keeps the live state consistent for any other GameTest that runs later in this same server session.
-		GeneticsReloadHandler.rebuildMutations(helper.getLevel().getServer().getRecipeManager());
+		GeneticsReloadHandler.rebuildMutations(helper.getLevel().getServer().getRecipeManager().recipeMap());
 
 		IBeeSpeciesType type = SpeciesUtil.BEE_TYPE.get();
 		List<IBeeSpecies> allSpecies = type.getAllSpecies();

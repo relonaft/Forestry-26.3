@@ -16,7 +16,6 @@ import com.mojang.serialization.JsonOps;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -30,8 +29,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import io.netty.buffer.Unpooled;
 
@@ -155,7 +152,7 @@ public class BeeEffectSystemTest {
 	@GameTest(template = "empty")
 	public static void transformIdentityGuardSkipsNoOps(GameTestHelper helper) {
 		BlockState coarseDirt = Blocks.COARSE_DIRT.defaultBlockState();
-		if (!coarseDirt.is(BuiltInRegistries.BLOCK.getOrCreateTag(BlockTags.DIRT))) {
+		if (!coarseDirt.is(BuiltInRegistries.BLOCK.getOrThrow(BlockTags.DIRT))) {
 			helper.fail("#minecraft:dirt no longer contains coarse_dirt; SIFTER's identity guard assumption is void");
 			return;
 		}

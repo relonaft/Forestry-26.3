@@ -1,18 +1,16 @@
 package forestry.gametest;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import forestry.core.platform.transfer.FluidUtil;
 import forestry.core.platform.transfer.IFluidHandler;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import forestry.api.ForestryConstants;
 import forestry.core.content.energy.blocks.EngineBlockType;
@@ -36,7 +34,7 @@ public class PipetteTankDrainTest {
 	public static void pipetteDrainsCombustionCoolantTank(GameTestHelper helper) {
 		helper.setBlock(ENGINE_POS, EnergyBlocks.ENGINES.get(EngineBlockType.COMBUSTION).defaultState());
 
-		if (!(helper.getBlockEntity(ENGINE_POS) instanceof CombustionEngineBlockEntity engine)) {
+		if (!(helper.getBlockEntity(ENGINE_POS, BlockEntity.class) instanceof CombustionEngineBlockEntity engine)) {
 			helper.fail("Expected a CombustionEngineBlockEntity at " + ENGINE_POS);
 			return;
 		}
@@ -49,7 +47,7 @@ public class PipetteTankDrainTest {
 	public static void pipetteDrainsBiogasHeatingTank(GameTestHelper helper) {
 		helper.setBlock(ENGINE_POS, EnergyBlocks.ENGINES.get(EngineBlockType.BIOGAS).defaultState());
 
-		if (!(helper.getBlockEntity(ENGINE_POS) instanceof BiogasEngineBlockEntity engine)) {
+		if (!(helper.getBlockEntity(ENGINE_POS, BlockEntity.class) instanceof BiogasEngineBlockEntity engine)) {
 			helper.fail("Expected a BiogasEngineBlockEntity at " + ENGINE_POS);
 			return;
 		}
@@ -62,7 +60,7 @@ public class PipetteTankDrainTest {
 	public static void pipetteClickIgnoresInvalidTankIndex(GameTestHelper helper) {
 		helper.setBlock(ENGINE_POS, EnergyBlocks.ENGINES.get(EngineBlockType.COMBUSTION).defaultState());
 
-		if (!(helper.getBlockEntity(ENGINE_POS) instanceof CombustionEngineBlockEntity engine)) {
+		if (!(helper.getBlockEntity(ENGINE_POS, BlockEntity.class) instanceof CombustionEngineBlockEntity engine)) {
 			helper.fail("Expected a CombustionEngineBlockEntity at " + ENGINE_POS);
 			return;
 		}

@@ -64,6 +64,17 @@ var portExcludes = ['forestry/**/data/**', 'forestry/core/platform/compat/patcho
 sourceSets.main.java.exclude portExcludes
 contentModules.each { sourceSets[it].java.exclude portExcludes }
 
+// todo port: the service files still name classes that portExcludes keeps out of the compile, and FML
+// refuses to start on a service entry whose class is missing
+tasks.withType(ProcessResources).configureEach {
+	exclude 'META-INF/services/forestry.core.data.IForestryDataProvider'
+	// a filter is not a task input, without this an up-to-date task keeps the unfiltered file
+	inputs.property('portServiceFilter', '.compat.kubejs.')
+	filesMatching('META-INF/services/forestry.api.plugin.IForestryPlugin') {
+		filter { String line -> line.contains('.compat.kubejs.') ? null : line }
+	}
+}
+
 // Everything requires core, and nothing else. Arboriculture moving into core dissolved the only
 // cross-content edge the split ever had - three TreeUtil imports for butterfly pollination
 sourceSets.butterflies.compileClasspath += sourceSets.main.output
@@ -205,13 +216,13 @@ neoForge {
 			loadedMods = [mods.forestry, mods.forestrybutterflies, mods.forestryfarms, mods.forestrymail]
 		}
 
-		// Multiblock inventory-conservation GameTest suite. Runs ONLY via `gradlew runGameTestServer`; the
-		// enabled-namespaces property is what makes NeoForge execute the @GameTestHolder("forestry") classes, so the
-		// tests are completely inert in normal client/server play.
+		// Multiblock inventory-conservation GameTest suite. Runs ONLY via `gradlew runGameTestServer`. NeoForge
+		// 26.3 no longer reads neoforge.enabledGameTestNamespaces: the server runs every test instance in the
+		// registry, so the selector is what keeps minecraft:always_pass out of the count
 		gameTestServer {
 			type = "gameTestServer"
 			gameDirectory.set(project.layout.projectDirectory.dir('run/gametest'))
-			systemProperty 'neoforge.enabledGameTestNamespaces', 'forestry'
+			programArguments.addAll('--tests', 'forestry:*')
 			// Forwards `-Pforestry.genomeBaseline=generate` to the forked gametest JVM so GenomeBaselineTest
 			// can (re)generate its golden-master snapshot. Empty/absent => assert mode.
 			systemProperty 'forestry.genomeBaseline', providers.gradleProperty('forestry.genomeBaseline').getOrElse('')
@@ -433,7 +444,11 @@ repositories {
 	maven {
 		name = 'jei'
 		url = 'https://maven.blamejared.com/'
-		content { includeGroup 'mezz.jei' }
+		content {
+			includeGroup 'mezz.jei'
+			// runtime dependency of JEI 31, without it no dev run resolves its classpath
+			includeGroup 'net.mezzdev.config'
+		}
 	}
 	maven {
 		name = 'Curios'

@@ -2,13 +2,11 @@ package forestry.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import forestry.api.ForestryConstants;
 import forestry.mail.blocks.MailBlockType;
@@ -113,7 +111,7 @@ public class PostOfficeStampVaultTest {
 		BlockPos pos = new BlockPos(8, 2, 8);
 		helper.setBlock(pos, MailBlocks.BASE.get(MailBlockType.STAMP_COLLETOR).defaultState());
 
-		if (!(helper.getBlockEntity(pos) instanceof StampCollectorBlockEntity collector)) {
+		if (!(helper.getBlockEntity(pos, BlockEntity.class) instanceof StampCollectorBlockEntity collector)) {
 			helper.fail("Expected a StampCollectorBlockEntity at " + pos);
 			return;
 		}

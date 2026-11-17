@@ -1,11 +1,9 @@
 package forestry.gametest;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.Tag;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import forestry.api.ForestryConstants;
 import forestry.api.arboriculture.ITreeSpecies;
@@ -60,7 +58,7 @@ public class SaplingGrowthTest {
 
 		BlockPos rel = new BlockPos(2, 1, 2);
 		helper.setBlock(rel, ArboricultureBlocks.SAPLING_GE.block());
-		if (!(helper.getBlockEntity(rel) instanceof SaplingBlockEntity tile)) {
+		if (!(helper.getBlockEntity(rel, BlockEntity.class) instanceof SaplingBlockEntity tile)) {
 			helper.fail("Expected a TileSapling at " + rel);
 			return;
 		}

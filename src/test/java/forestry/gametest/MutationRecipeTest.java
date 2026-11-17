@@ -13,7 +13,6 @@ import com.mojang.serialization.MapCodec;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -23,11 +22,10 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import com.google.gson.JsonElement;
 
@@ -187,7 +185,8 @@ public class MutationRecipeTest {
 			Map.of()
 		);
 
-		MutationRecipe.Serializer serializer = (MutationRecipe.Serializer) GeneticsRecipeTypes.BEE_MUTATION.serializer();
+		@SuppressWarnings("unchecked")
+		RecipeSerializer<MutationRecipe> serializer = (RecipeSerializer<MutationRecipe>) GeneticsRecipeTypes.BEE_MUTATION.serializer();
 
 		// NBT codec.
 		MapCodec<MutationRecipe> mapCodec = serializer.codec();

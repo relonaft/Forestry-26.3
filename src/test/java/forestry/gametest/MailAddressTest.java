@@ -8,13 +8,10 @@ import java.util.UUID;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import forestry.api.ForestryConstants;
 import forestry.api.mail.IMailAddress;
@@ -119,7 +116,7 @@ public class MailAddressTest {
 		MailAddress trader = new MailAddress("Emporium");
 		MailAddress player = new MailAddress(new GameProfile(UUID.nameUUIDFromBytes("Steve".getBytes(StandardCharsets.UTF_8)), "Steve"));
 
-		if (!trader.getPlayerProfile().getName().isEmpty()) {
+		if (!trader.getPlayerProfile().name().isEmpty()) {
 			helper.fail("Trader address handed out a player profile");
 			return;
 		}

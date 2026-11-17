@@ -1,7 +1,6 @@
 package forestry.gametest;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -9,10 +8,9 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 import forestry.core.platform.transfer.IFluidHandler;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import forestry.api.ForestryConstants;
 import forestry.core.content.machines.blocks.FactoryBlockType;
@@ -128,7 +126,7 @@ public class SqueezerBottlingTest {
 
 	private static SqueezerBlockEntity squeezerWith(GameTestHelper helper, Fluid fluid, int amount) {
 		helper.setBlock(SQUEEZER_POS, FactoryBlocks.PLAIN.get(FactoryBlockType.SQUEEZER).block());
-		SqueezerBlockEntity squeezer = (SqueezerBlockEntity) helper.getBlockEntity(SQUEEZER_POS);
+		SqueezerBlockEntity squeezer = (SqueezerBlockEntity) helper.getBlockEntity(SQUEEZER_POS, BlockEntity.class);
 
 		// The product tank refuses external fills by design, so seed it the way workCycle() does.
 		tank(squeezer).fillInternal(new FluidStack(fluid, amount), IFluidHandler.FluidAction.EXECUTE);

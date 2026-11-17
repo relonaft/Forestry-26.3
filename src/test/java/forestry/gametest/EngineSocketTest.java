@@ -2,14 +2,11 @@ package forestry.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import forestry.api.ForestryConstants;
 import forestry.api.IForestryApi;
@@ -77,7 +74,7 @@ public class EngineSocketTest {
 		BiogasEngineBlockEntity engine = engineAt(helper);
 		LevelChunk chunk = helper.getLevel().getChunkAt(engine.getBlockPos());
 
-		chunk.setUnsaved(false);
+		chunk.tryMarkSaved();
 		engine.setSocket(SOCKET, engineChipset(helper));
 
 		helper.assertTrue(chunk.isUnsaved(),
@@ -95,7 +92,7 @@ public class EngineSocketTest {
 		engine.setSocket(SOCKET, engineChipset(helper));
 
 		LevelChunk chunk = helper.getLevel().getChunkAt(engine.getBlockPos());
-		chunk.setUnsaved(false);
+		chunk.tryMarkSaved();
 		engine.setSocket(SOCKET, ItemStack.EMPTY);
 
 		helper.assertTrue(chunk.isUnsaved(), "emptying the socket left the chunk clean");
@@ -127,7 +124,7 @@ public class EngineSocketTest {
 
 	private static BiogasEngineBlockEntity engineAt(GameTestHelper helper) {
 		helper.setBlock(ENGINE_POS, EnergyBlocks.ENGINES.get(EngineBlockType.BIOGAS).block());
-		return (BiogasEngineBlockEntity) helper.getBlockEntity(ENGINE_POS);
+		return (BiogasEngineBlockEntity) helper.getBlockEntity(ENGINE_POS, BlockEntity.class);
 	}
 
 	/**

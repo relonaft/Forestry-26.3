@@ -6,11 +6,8 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableMap;
 
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import forestry.api.ForestryConstants;
 import forestry.api.arboriculture.ITreeSpecies;
@@ -90,7 +87,7 @@ public class TreeSpeciesFallbackTest {
 			// mutation assertions) still see the full built-in tree species set, and re-pair the mutation index with
 			// the restored species (rebuildMutations rebuilds all species types, mirroring TreeSpeciesReloadTest).
 			((SpeciesType<ITreeSpecies, ?>) type).setSpecies(snapshot);
-			GeneticsReloadHandler.rebuildMutations(helper.getLevel().getServer().getRecipeManager());
+			GeneticsReloadHandler.rebuildMutations(helper.getLevel().getServer().getRecipeManager().recipeMap());
 		}
 
 		helper.succeed();

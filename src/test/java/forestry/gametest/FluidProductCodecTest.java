@@ -1,14 +1,11 @@
 package forestry.gametest;
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.DataResult;
@@ -25,7 +22,7 @@ public class FluidProductCodecTest {
 	public static void referenceImplProducesStack(GameTestHelper helper) {
 		FluidProduct product = FluidProduct.of(Fluids.WATER, 1000);
 		FluidStack stack = product.createFluidStack();
-		FluidStack random = product.createRandomFluidStack(helper.getLevel().random);
+		FluidStack random = product.createRandomFluidStack(helper.getLevel().getRandom());
 		if (stack.getFluid() != Fluids.WATER || stack.getAmount() != 1000) {
 			helper.fail("createFluidStack did not return the wrapped fluid/amount: " + stack);
 			return;

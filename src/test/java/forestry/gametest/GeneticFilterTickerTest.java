@@ -2,17 +2,15 @@ package forestry.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import forestry.api.ForestryConstants;
 import forestry.core.content.sorting.blocks.GeneticFilterBlock;
@@ -54,7 +52,7 @@ public class GeneticFilterTickerTest {
 
 		helper.assertTrue(block.getTicker(helper.getLevel(), state, SortingBlockEntities.GENETIC_FILTER.tileType()) != null,
 			"BlockGeneticFilter supplied no ticker, so TileGeneticFilter.serverTick can never run");
-		helper.assertTrue(block.getTicker(helper.getLevel(), state, BlockEntityType.CHEST) == null,
+		helper.assertTrue(block.getTicker(helper.getLevel(), state, BlockEntityTypes.CHEST) == null,
 			"BlockGeneticFilter supplied a ticker for a foreign block entity type");
 		helper.succeed();
 	}
@@ -64,7 +62,7 @@ public class GeneticFilterTickerTest {
 		helper.setBlock(CHEST_POS, Blocks.CHEST);
 		helper.setBlock(FILTER_POS, SortingBlocks.FILTER.defaultState());
 
-		if (!(helper.getBlockEntity(FILTER_POS) instanceof GeneticFilterBlockEntity filter)) {
+		if (!(helper.getBlockEntity(FILTER_POS, BlockEntity.class) instanceof GeneticFilterBlockEntity filter)) {
 			helper.fail("Expected a TileGeneticFilter at " + FILTER_POS);
 			return;
 		}
@@ -87,7 +85,7 @@ public class GeneticFilterTickerTest {
 	}
 
 	private static int countInChest(GameTestHelper helper) {
-		if (!(helper.getBlockEntity(CHEST_POS) instanceof Container chest)) {
+		if (!(helper.getBlockEntity(CHEST_POS, BlockEntity.class) instanceof Container chest)) {
 			helper.fail("Expected a chest at " + CHEST_POS);
 			return -1;
 		}

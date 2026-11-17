@@ -3,7 +3,6 @@ package forestry.gametest;
 import java.util.List;
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.RegistryOps;
@@ -11,9 +10,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import com.mojang.serialization.JsonOps;
 
@@ -38,7 +36,7 @@ public class SqueezerRecipeCodecTest {
 	@GameTest(template = "empty")
 	public static void jsonRoundTrip(GameTestHelper helper) {
 		RegistryOps<com.google.gson.JsonElement> jsonOps = RegistryOps.create(JsonOps.INSTANCE, helper.getLevel().registryAccess());
-		SqueezerRecipe.Serializer serializer = new SqueezerRecipe.Serializer();
+		RecipeSerializer<SqueezerRecipe> serializer = SqueezerRecipe.SERIALIZER;
 		SqueezerRecipe original = sample();
 		var json = serializer.codec().codec().encodeStart(jsonOps, original).getOrThrow();
 		SqueezerRecipe decoded = serializer.codec().codec().parse(jsonOps, json).getOrThrow();
@@ -52,7 +50,7 @@ public class SqueezerRecipeCodecTest {
 
 	@GameTest(template = "empty")
 	public static void streamRoundTrip(GameTestHelper helper) {
-		SqueezerRecipe.Serializer serializer = new SqueezerRecipe.Serializer();
+		RecipeSerializer<SqueezerRecipe> serializer = SqueezerRecipe.SERIALIZER;
 		SqueezerRecipe original = sample();
 		RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), helper.getLevel().registryAccess());
 		serializer.streamCodec().encode(buf, original);

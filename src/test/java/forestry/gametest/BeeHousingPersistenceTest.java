@@ -9,7 +9,6 @@ import forestry.apiculture.bees.BeeHousingInventory;
 import forestry.apiculture.features.ApicultureBlocks;
 import forestry.core.platform.util.SpeciesUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
@@ -17,10 +16,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
-import forestry.core.platform.transfer.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.function.Consumer;
 
@@ -41,11 +40,11 @@ public final class BeeHousingPersistenceTest {
 		helper.setBlock(HOUSING, ApicultureBlocks.BASE.get(ApicultureBlockType.APIARY).defaultState());
 		container(helper, HOUSING).setItem(BeeHousingInventory.SLOT_PRODUCT_1, new ItemStack(Items.HONEYCOMB, 7));
 		LevelChunk chunk = helper.getLevel().getChunkAt(helper.absolutePos(HOUSING));
-		chunk.setUnsaved(false);
+		chunk.tryMarkSaved();
 
-		IItemHandler handler = helper.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, helper.absolutePos(HOUSING), null);
+		ResourceHandler<ItemResource> handler = helper.getLevel().getCapability(Capabilities.Item.BLOCK, helper.absolutePos(HOUSING), null);
 		helper.assertTrue(handler != null, "apiary exposes no item handler");
-		helper.assertTrue(handler.extractItem(BeeHousingInventory.SLOT_PRODUCT_1, 1, false).getCount() == 1, "extraction through the item handler failed");
+		helper.assertTrue(MultiblockTestSupport.extractItem(handler, BeeHousingInventory.SLOT_PRODUCT_1, 1) == 1, "extraction through the item handler failed");
 
 		helper.assertTrue(chunk.isUnsaved(), "extraction through the item handler did not mark the apiary's chunk unsaved");
 		helper.succeed();
@@ -114,7 +113,7 @@ public final class BeeHousingPersistenceTest {
 			.run(() -> {
 				setup.accept(container(helper, housing));
 				chunk[0] = level.getChunkAt(helper.absolutePos(housing));
-				chunk[0].setUnsaved(false);
+				chunk[0].tryMarkSaved();
 			})
 			// the next tick's eager save can write a dirty chunk and clear its flag, so check it after every tick
 			.everyTick(5, () -> unsaved[0] |= chunk[0].isUnsaved())
@@ -126,7 +125,7 @@ public final class BeeHousingPersistenceTest {
 	}
 
 	private static Container container(GameTestHelper helper, BlockPos pos) {
-		return (Container) helper.getBlockEntity(pos);
+		return (Container) helper.getBlockEntity(pos, BlockEntity.class);
 	}
 
 	private static boolean hasProduct(Container container, BeeLifeStage stage) {
