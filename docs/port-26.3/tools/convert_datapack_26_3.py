@@ -38,6 +38,20 @@ import sys
 SEPARATE = {'ingredients', 'resources', 'inputs'}
 CUSTOM_INGREDIENTS = {'neoforge:components', 'neoforge:compound', 'neoforge:difference', 'neoforge:intersection', 'neoforge:block_tag'}
 RENAMED = {'minecraft:chain': 'minecraft:iron_chain', 'c:slimeballs': 'c:slime_balls', '#c:slimeballs': '#c:slime_balls'}
+# a strict components ingredient of the 1.21.1 datagen listed every default component of its item; 26.3 items
+# carry other defaults, so it never matched. These are dropped and the ingredient made non-strict
+OLD_DEFAULT_COMPONENTS = {'minecraft:attribute_modifiers', 'minecraft:enchantments', 'minecraft:lore', 'minecraft:max_stack_size',
+                          'minecraft:rarity', 'minecraft:repair_cost'}
+# the 1.21.1 datagen wrote minecraft:air where a filled container belongs, so these recipes took an empty
+# slot. 1.12 took the container filled with water (bog earth) or milk (cake)
+FILLED_CONTAINERS = {
+    'bog_earth_can': ('forestry:can', 'minecraft:water'),
+    'bog_earth_wax_capsule': ('forestry:wax_capsule', 'minecraft:water'),
+    'bog_earth_refractory': ('forestry:refractory_capsule', 'minecraft:water'),
+    'cake_can': ('forestry:can', 'minecraft:milk'),
+    'cake_wax_capsule': ('forestry:wax_capsule', 'minecraft:milk'),
+    'cake_refractory_capsule': ('forestry:refractory_capsule', 'minecraft:milk'),
+}
 problems = []
 
 
@@ -73,6 +87,16 @@ def ingredient(value, where):
             return out
         if value.get('neoforge:ingredient_type') == 'neoforge:components' and isinstance(value.get('components'), dict):
             components(value['components'])
+            name = os.path.basename(where)[:-len('.json')]
+            if value.get('items') == 'minecraft:air' and name in FILLED_CONTAINERS:
+                item, fluid = FILLED_CONTAINERS[name]
+                return {'neoforge:ingredient_type': 'neoforge:components', 'items': item,
+                        'components': {'forestry:fluid_content': {'id': fluid, 'amount': 1000}}, 'strict': False}
+            if value.get('strict') and OLD_DEFAULT_COMPONENTS & set(value['components']):
+                kept = {k: v for k, v in value['components'].items() if k not in OLD_DEFAULT_COMPONENTS}
+                if not kept:
+                    return value['items']
+                return {**value, 'components': kept, 'strict': False}
     if isinstance(value, list) and value and all(isinstance(v, dict) and set(v) in ({'item'}, {'tag'}) for v in value):
         converted = [ingredient(v, where) for v in value]
         if len(converted) == 1:

@@ -4,9 +4,14 @@
   "key": {
     "A": {
       "neoforge:ingredient_type": "neoforge:components",
-      "components": {},
-      "items": "minecraft:air",
-      "strict": true
+      "items": "forestry:refractory_capsule",
+      "components": {
+        "forestry:fluid_content": {
+          "id": "minecraft:milk",
+          "amount": 1000
+        }
+      },
+      "strict": false
     },
     "B": "minecraft:sugar",
     "C": "minecraft:wheat",

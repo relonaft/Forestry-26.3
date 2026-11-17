@@ -5,9 +5,14 @@
     "#": "minecraft:dirt",
     "X": {
       "neoforge:ingredient_type": "neoforge:components",
-      "components": {},
-      "items": "minecraft:air",
-      "strict": true
+      "items": "forestry:can",
+      "components": {
+        "forestry:fluid_content": {
+          "id": "minecraft:water",
+          "amount": 1000
+        }
+      },
+      "strict": false
     },
     "Y": "#minecraft:sand"
   },

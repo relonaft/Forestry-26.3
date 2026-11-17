@@ -68,13 +68,6 @@ contentModules.each { sourceSets[it].java.exclude portExcludes }
 // refuses to start on a service entry whose class is missing
 tasks.withType(ProcessResources).configureEach {
 	exclude 'META-INF/services/forestry.core.data.IForestryDataProvider'
-	// todo port: Community Edition ships these six recipes with a minecraft:air ingredient where the
-	// water or milk container belongs. 1.21.1 loaded them, 26.3 stops the server on one. Left out of
-	// the build, with the advancements that unlock them, until it is decided what they take
-	['bog_earth_can', 'bog_earth_refractory', 'bog_earth_wax_capsule', 'cake_can', 'cake_refractory_capsule', 'cake_wax_capsule'].each {
-		exclude "data/forestry/recipe/${it}.json"
-		exclude "data/forestry/advancement/recipes/*/${it}.json"
-	}
 	// a filter is not a task input, without this an up-to-date task keeps the unfiltered file
 	inputs.property('portServiceFilter', '.compat.kubejs.')
 	filesMatching('META-INF/services/forestry.api.plugin.IForestryPlugin') {
