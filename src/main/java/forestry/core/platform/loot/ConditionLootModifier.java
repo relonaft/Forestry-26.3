@@ -12,24 +12,24 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.predicates.ConditionUserBuilder;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
  * A global loot modifier used by forestry to inject the additional chest loot to the vanilla loot tables.
  */
 public class ConditionLootModifier extends LootModifier {
-	public static final MapCodec<ConditionLootModifier> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-		LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(lm -> lm.conditions),
+	public static final MapCodec<ConditionLootModifier> CODEC = RecordCodecBuilder.mapCodec(instance -> codecStart(instance).and(instance.group(
 		Identifier.CODEC.fieldOf("table").forGetter(lm -> lm.tableLocation),
 		Codec.list(Codec.STRING).fieldOf("extensions").forGetter(o -> o.extensions)
-	).apply(instance, ConditionLootModifier::new));
+	)).apply(instance, ConditionLootModifier::new));
 
 	private final Identifier tableLocation;
 	private final List<String> extensions;
@@ -44,21 +44,16 @@ public class ConditionLootModifier extends LootModifier {
 	private boolean operates = false;
 
 	public ConditionLootModifier(Identifier location, List<String> extensions) {
-		super(new LootItemCondition[]{
-			LootTableIdCondition.builder(location).build()
-		});
-		this.tableLocation = location;
-		this.extensions = extensions;
+		this(Optional.empty(), DEFAULT_PRIORITY, location, extensions);
 	}
 
-	private static LootItemCondition[] merge(LootItemCondition[] conditions, LootItemCondition condition) {
-		LootItemCondition[] newArray = Arrays.copyOf(conditions, conditions.length + 1);
-		newArray[conditions.length] = condition;
-		return newArray;
+	private static Optional<Holder<LootItemCondition>> merge(Optional<Holder<LootItemCondition>> condition, Identifier location) {
+		Holder<LootItemCondition> tableCondition = Holder.direct(LootTableIdCondition.builder(location).build());
+		return ConditionUserBuilder.buildCondition(condition.map(c -> List.of(c, tableCondition)).orElse(List.of(tableCondition)));
 	}
 
-	private ConditionLootModifier(LootItemCondition[] conditions, Identifier location, List<String> extensions) {
-		super(merge(conditions, LootTableIdCondition.builder(location).build()));
+	private ConditionLootModifier(Optional<Holder<LootItemCondition>> condition, int priority, Identifier location, List<String> extensions) {
+		super(merge(condition, location), priority);
 		this.tableLocation = location;
 		this.extensions = extensions;
 	}

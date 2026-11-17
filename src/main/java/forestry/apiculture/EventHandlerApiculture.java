@@ -30,7 +30,7 @@ public class EventHandlerApiculture {
 	public static void onEntityJoinWorld(EntityJoinLevelEvent event) {
 		Entity entity = event.getEntity();
 		if (entity instanceof Villager villager) {
-			if (villager.getVillagerData().getProfession().equals(ApicultureVillagers.PROF_BEEKEEPER.get())) {
+			if (villager.getVillagerData().profession().is(ApicultureVillagers.PROF_BEEKEEPER.getKey())) {
 				villager.goalSelector.addGoal(6, new ApiaristAI(villager, 0.6));
 			}
 		}
@@ -58,8 +58,8 @@ public class EventHandlerApiculture {
 
 	@SubscribeEvent
 	public static void serverAboutToStart(ServerAboutToStartEvent event) {
-		Registry<StructureTemplatePool> pools = event.getServer().registryAccess().registry(Registries.TEMPLATE_POOL).orElseThrow();
-		Registry<StructureProcessorList> processors = event.getServer().registryAccess().registry(Registries.PROCESSOR_LIST).orElseThrow();
+		Registry<StructureTemplatePool> pools = event.getServer().registryAccess().lookupOrThrow(Registries.TEMPLATE_POOL);
+		Registry<StructureProcessorList> processors = event.getServer().registryAccess().lookupOrThrow(Registries.PROCESSOR_LIST);
 
 		VillagerJigsaw.init(pools, processors);
 	}

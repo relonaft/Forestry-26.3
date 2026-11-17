@@ -10,6 +10,7 @@ import forestry.arboriculture.commands.TreeGenHelper;
 import forestry.arboriculture.trees.genetics.Tree;
 import forestry.core.platform.config.ForestryConfig;
 import forestry.core.platform.util.BlockUtil;
+import com.mojang.serialization.MapCodec;
 import forestry.core.platform.util.SpeciesUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,22 +21,19 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 
-public class TreeDecorator extends Feature<NoneFeatureConfiguration> {
-	private static final IdentityHashMap<ResourceKey<Biome>, List<ITree>> BIOME_CACHE = new IdentityHashMap<>();
+public class TreeDecorator implements Feature {
+	public static final MapCodec<TreeDecorator> CODEC = MapCodec.unit(TreeDecorator::new);
 
-	public TreeDecorator() {
-		super(NoneFeatureConfiguration.CODEC);
-	}
+	private static final IdentityHashMap<ResourceKey<Biome>, List<ITree>> BIOME_CACHE = new IdentityHashMap<>();
 
 	@Nullable
 	private static BlockPos getValidPos(WorldGenLevel world, int x, int z, ITree tree) {
@@ -74,7 +72,7 @@ public class TreeDecorator extends Feature<NoneFeatureConfiguration> {
 		// correctly dedupe ITree instances with map instead of using set
 		IdentityHashMap<ITreeSpecies, ITree> treeInstances = new IdentityHashMap<>(allSpecies.size());
 
-		level.registryAccess().registryOrThrow(Registries.BIOME).holders().forEach(biome -> {
+		level.registryAccess().lookupOrThrow(Registries.BIOME).listElements().forEach(biome -> {
 			List<ITree> trees = BIOME_CACHE.computeIfAbsent(biome.key(), k -> new ArrayList<>());
 			TemperatureType temperature = manager.getTemperature(biome);
 			HumidityType humidity = manager.getHumidity(biome);
@@ -91,11 +89,12 @@ public class TreeDecorator extends Feature<NoneFeatureConfiguration> {
 	}
 
 	@Override
-	public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-		WorldGenLevel level = context.level();
-		RandomSource rand = context.random();
-		BlockPos pos = context.origin();
+	public MapCodec<TreeDecorator> codec() {
+		return CODEC;
+	}
 
+	@Override
+	public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource rand, BlockPos pos) {
 		double globalRarity = ForestryConfig.SERVER.treesSpawnNaturally.get();
 		if (globalRarity <= 0.0) {
 			return false;
@@ -120,7 +119,7 @@ public class TreeDecorator extends Feature<NoneFeatureConfiguration> {
 						continue;
 					}
 
-					if (TreeGenHelper.generateTree(species, null, level, context.random(), validPos)) {
+					if (TreeGenHelper.generateTree(species, null, level, rand, validPos)) {
 						return true;
 					}
 				}

@@ -6,14 +6,14 @@ import forestry.api.IForestryApi;
 import forestry.api.core.genetics.ILifeStage;
 import forestry.api.core.genetics.ISpecies;
 import forestry.api.core.genetics.ISpeciesType;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
  * Loot function to add genetic information, an organism, to the item stack.
@@ -29,8 +29,8 @@ public class OrganismFunction extends LootItemConditionalFunction {
 	private final Identifier typeId;
 	private final Identifier speciesId;
 
-	private OrganismFunction(List<LootItemCondition> conditions, Identifier typeId, Identifier speciesId) {
-		super(conditions);
+	private OrganismFunction(Optional<Holder<LootItemCondition>> condition, Identifier typeId, Identifier speciesId) {
+		super(condition);
 		this.typeId = typeId;
 		this.speciesId = speciesId;
 	}
@@ -40,7 +40,7 @@ public class OrganismFunction extends LootItemConditionalFunction {
 	}
 
 	public static LootItemConditionalFunction.Builder<?> fromId(Identifier typeId, Identifier speciesId) {
-		return simpleBuilder(conditions -> new OrganismFunction(conditions, typeId, speciesId));
+		return simpleBuilder(condition -> new OrganismFunction(condition, typeId, speciesId));
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class OrganismFunction extends LootItemConditionalFunction {
 	}
 
 	@Override
-	public LootItemFunctionType getType() {
-		return CoreLootFunctions.ORGANISM.get();
+	public MapCodec<OrganismFunction> codec() {
+		return CODEC;
 	}
 }
