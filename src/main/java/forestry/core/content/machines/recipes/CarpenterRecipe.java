@@ -7,13 +7,15 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import forestry.api.core.machines.ICarpenterRecipe;
 import forestry.core.content.machines.features.FactoryRecipeTypes;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -22,16 +24,16 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
 
 public class CarpenterRecipe implements ICarpenterRecipe {
 	// Inner crafting recipe is either Shaped or Shapeless; dispatch via Either so
 	// existing data (e.g. wood pulp, bronze ingot) using shapeless can persist.
 	private static final Codec<CraftingRecipe> CRAFTING_RECIPE_CODEC = Codec.either(
-		RecipeSerializer.SHAPED_RECIPE.codec().codec(),
-		RecipeSerializer.SHAPELESS_RECIPE.codec().codec()
+		ShapedRecipe.MAP_CODEC.codec(),
+		ShapelessRecipe.MAP_CODEC.codec()
 	).xmap(
 		either -> either.map(sr -> (CraftingRecipe) sr, slr -> (CraftingRecipe) slr),
 		cr -> {
@@ -44,27 +46,27 @@ public class CarpenterRecipe implements ICarpenterRecipe {
 	private static final MapCodec<CarpenterRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Identifier.CODEC.fieldOf("id").forGetter(CarpenterRecipe::getId),
 		Codec.INT.fieldOf("time").forGetter(CarpenterRecipe::getPackagingTime),
-		FluidStack.OPTIONAL_CODEC.optionalFieldOf("liquid", FluidStack.EMPTY).forGetter(CarpenterRecipe::getInputFluid),
-		Ingredient.CODEC.fieldOf("box").forGetter(CarpenterRecipe::getBox),
+		ExtraCodecs.optionalEmptyMap(FluidStackTemplate.CODEC).optionalFieldOf("liquid", Optional.empty()).forGetter(recipe -> recipe.liquid),
+		Ingredient.CODEC.optionalFieldOf("box").forGetter(CarpenterRecipe::getBox),
 		CRAFTING_RECIPE_CODEC.fieldOf("recipe").forGetter(CarpenterRecipe::getCraftingGridRecipe),
-		ItemStack.STRICT_CODEC.optionalFieldOf("result").forGetter(CarpenterRecipe::getOptionalResult)
-	).apply(instance, (id, time, liquid, box, recipe, optResult) -> new CarpenterRecipe(id, time, liquid, box, recipe, optResult.orElse(null))));
+		ItemStackTemplate.CODEC.optionalFieldOf("result").forGetter(recipe -> recipe.result)
+	).apply(instance, CarpenterRecipe::new));
 	private static final StreamCodec<RegistryFriendlyByteBuf, CarpenterRecipe> STREAM_CODEC = StreamCodec.of(
-		Serializer::toNetwork,
-		Serializer::fromNetwork
+		CarpenterRecipe::toNetwork,
+		CarpenterRecipe::fromNetwork
 	);
+	public static final RecipeSerializer<CarpenterRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
 	private final Identifier id;
 	private final int packagingTime;
-	private final FluidStack liquid;
-	private final Ingredient box;
+	private final Optional<FluidStackTemplate> liquid;
+	private final Optional<Ingredient> box;
 	private final CraftingRecipe recipe;
-	@Nullable
-	private final ItemStack result;
+	private final Optional<ItemStackTemplate> result;
 
-	public CarpenterRecipe(Identifier id, int packagingTime, FluidStack liquid, Ingredient box, CraftingRecipe recipe, @Nullable ItemStack result) {
+	public CarpenterRecipe(Identifier id, int packagingTime, Optional<FluidStackTemplate> liquid, Optional<Ingredient> box, CraftingRecipe recipe, Optional<ItemStackTemplate> result) {
 		Preconditions.checkNotNull(id, "Recipe identifier cannot be null");
-		Preconditions.checkNotNull(liquid, "Recipe liquid cannot be null; use FluidStack.EMPTY for no fluid input");
+		Preconditions.checkNotNull(liquid, "Recipe liquid cannot be null; use an empty optional for no fluid input");
 		Preconditions.checkNotNull(box);
 		Preconditions.checkNotNull(recipe);
 		if (!(recipe instanceof ShapedRecipe) && !(recipe instanceof ShapelessRecipe)) {
@@ -85,13 +87,13 @@ public class CarpenterRecipe implements ICarpenterRecipe {
 	}
 
 	@Override
-	public Ingredient getBox() {
+	public Optional<Ingredient> getBox() {
 		return this.box;
 	}
 
 	@Override
 	public FluidStack getInputFluid() {
-		return this.liquid;
+		return this.liquid.map(FluidStackTemplate::create).orElse(FluidStack.EMPTY);
 	}
 
 	@Override
@@ -100,25 +102,21 @@ public class CarpenterRecipe implements ICarpenterRecipe {
 	}
 
 	@Override
-	public ItemStack getResultItem(HolderLookup.Provider lookupProvider) {
-		return this.result != null ? this.result : this.recipe.getResultItem(lookupProvider);
-	}
-
-	Optional<ItemStack> getOptionalResult() {
-		return Optional.ofNullable(this.result);
+	public ItemStack getResultItem() {
+		// the inner recipe has no getter for its result, and neither inner recipe class reads the input
+		return this.result.map(ItemStackTemplate::create).orElseGet(() -> this.recipe.assemble(CraftingInput.EMPTY));
 	}
 
 	@Override
 	public boolean matches(FluidStack fluid, ItemStack boxStack, Container craftingInventory, Level level) {
-		FluidStack liquid = this.liquid;
-		if (!liquid.isEmpty()) {
-			if (fluid.isEmpty() || !(FluidStack.isSameFluidSameComponents(fluid, liquid) && fluid.getAmount() >= liquid.getAmount())) {
+		if (this.liquid.isPresent()) {
+			FluidStackTemplate liquid = this.liquid.get();
+			if (fluid.isEmpty() || !(FluidStack.isSameFluidSameComponents(fluid, liquid) && fluid.getAmount() >= liquid.amount())) {
 				return false;
 			}
 		}
 
-		Ingredient box = this.box;
-		if (!box.isEmpty() && !box.test(boxStack)) {
+		if (this.box.isPresent() && !this.box.get().test(boxStack)) {
 			return false;
 		}
 
@@ -131,59 +129,49 @@ public class CarpenterRecipe implements ICarpenterRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return FactoryRecipeTypes.CARPENTER.serializer();
+	public RecipeSerializer<CarpenterRecipe> getSerializer() {
+		return SERIALIZER;
 	}
 
 	@Override
-	public RecipeType<?> getType() {
+	public RecipeType<ICarpenterRecipe> getType() {
 		return FactoryRecipeTypes.CARPENTER.type();
 	}
 
-	public static class Serializer implements RecipeSerializer<CarpenterRecipe> {
-		@Override
-		public MapCodec<CarpenterRecipe> codec() {
-			return CODEC;
+	private static CarpenterRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
+		Identifier recipeId = Identifier.STREAM_CODEC.decode(buffer);
+		int packagingTime = ByteBufCodecs.VAR_INT.decode(buffer);
+		Optional<FluidStackTemplate> liquid = buffer.readBoolean() ? Optional.of(FluidStackTemplate.STREAM_CODEC.decode(buffer)) : Optional.empty();
+		Optional<Ingredient> box = Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC.decode(buffer);
+		CraftingRecipe internal = buffer.readBoolean()
+			? ShapedRecipe.STREAM_CODEC.decode(buffer)
+			: ShapelessRecipe.STREAM_CODEC.decode(buffer);
+		Optional<ItemStackTemplate> result = buffer.readBoolean() ? Optional.of(ItemStackTemplate.STREAM_CODEC.decode(buffer)) : Optional.empty();
+
+		return new CarpenterRecipe(recipeId, packagingTime, liquid, box, internal, result);
+	}
+
+	private static void toNetwork(RegistryFriendlyByteBuf buffer, CarpenterRecipe recipe) {
+		Identifier.STREAM_CODEC.encode(buffer, recipe.id);
+		ByteBufCodecs.VAR_INT.encode(buffer, recipe.packagingTime);
+		buffer.writeBoolean(recipe.liquid.isPresent());
+		if (recipe.liquid.isPresent()) {
+			FluidStackTemplate.STREAM_CODEC.encode(buffer, recipe.liquid.get());
+		}
+		Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC.encode(buffer, recipe.box);
+		if (recipe.recipe instanceof ShapedRecipe shaped) {
+			buffer.writeBoolean(true);
+			ShapedRecipe.STREAM_CODEC.encode(buffer, shaped);
+		} else if (recipe.recipe instanceof ShapelessRecipe shapeless) {
+			buffer.writeBoolean(false);
+			ShapelessRecipe.STREAM_CODEC.encode(buffer, shapeless);
+		} else {
+			throw new IllegalStateException("Unsupported CraftingRecipe type for CarpenterRecipe network sync: " + recipe.recipe.getClass().getName());
 		}
 
-		@Override
-		public StreamCodec<RegistryFriendlyByteBuf, CarpenterRecipe> streamCodec() {
-			return STREAM_CODEC;
-		}
-
-		private static CarpenterRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
-			Identifier recipeId = Identifier.STREAM_CODEC.decode(buffer);
-			int packagingTime = ByteBufCodecs.VAR_INT.decode(buffer);
-			FluidStack liquid = FluidStack.OPTIONAL_STREAM_CODEC.decode(buffer);
-			Ingredient box = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
-			CraftingRecipe internal = buffer.readBoolean()
-				? RecipeSerializer.SHAPED_RECIPE.streamCodec().decode(buffer)
-				: RecipeSerializer.SHAPELESS_RECIPE.streamCodec().decode(buffer);
-			ItemStack result = buffer.readBoolean() ? ItemStack.STREAM_CODEC.decode(buffer) : null;
-
-			return new CarpenterRecipe(recipeId, packagingTime, liquid, box, internal, result);
-		}
-
-		private static void toNetwork(RegistryFriendlyByteBuf buffer, CarpenterRecipe recipe) {
-			Identifier.STREAM_CODEC.encode(buffer, recipe.id);
-			ByteBufCodecs.VAR_INT.encode(buffer, recipe.packagingTime);
-			FluidStack.OPTIONAL_STREAM_CODEC.encode(buffer, recipe.liquid);
-			Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.box);
-			if (recipe.recipe instanceof ShapedRecipe shaped) {
-				buffer.writeBoolean(true);
-				RecipeSerializer.SHAPED_RECIPE.streamCodec().encode(buffer, shaped);
-			} else if (recipe.recipe instanceof ShapelessRecipe shapeless) {
-				buffer.writeBoolean(false);
-				RecipeSerializer.SHAPELESS_RECIPE.streamCodec().encode(buffer, shapeless);
-			} else {
-				throw new IllegalStateException("Unsupported CraftingRecipe type for CarpenterRecipe network sync: " + recipe.recipe.getClass().getName());
-			}
-
-			boolean hasResult = recipe.result != null;
-			buffer.writeBoolean(hasResult);
-			if (hasResult) {
-				ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
-			}
+		buffer.writeBoolean(recipe.result.isPresent());
+		if (recipe.result.isPresent()) {
+			ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result.get());
 		}
 	}
 }
