@@ -4,41 +4,33 @@ import com.google.common.base.Preconditions;
 import forestry.core.platform.models.baker.ModelBaker;
 import forestry.core.platform.models.baker.ModelBakerModel;
 import forestry.core.platform.util.ResourceUtil;
-import net.minecraft.client.Minecraft;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.resources.model.cuboid.ItemTransforms;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.ItemOwner;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.client.model.DynamicBlockStateModel;
 import net.neoforged.neoforge.model.data.ModelData;
-import net.neoforged.neoforge.model.data.ModelProperty;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public abstract class ModelBlockDefault<B extends Block, K> implements BakedModel {
-	/**
-	 * The particle sprite of the model baked for one block position.
-	 *
-	 * <p>One model instance serves every block it was registered for, so {@link #getParticleIcon(ModelData)} cannot
-	 * tell the blocks apart. {@link #getModelData} has the block state, so it resolves the sprite there.
-	 */
-	public static final ModelProperty<TextureAtlasSprite> PARTICLE_SPRITE = new ModelProperty<>();
-
-	@Nullable
-	private ItemOverrides overrideList;
+// one instance is both the block model and the item model of the blocks it was registered for
+public abstract class ModelBlockDefault<B extends Block, K> implements DynamicBlockStateModel, ItemModel {
+	private static final Matrix4fc NO_TRANSFORM = new Matrix4f();
 
 	protected final Class<B> blockClass;
 
@@ -51,7 +43,7 @@ public abstract class ModelBlockDefault<B extends Block, K> implements BakedMode
 		this.blockClass = blockClass;
 	}
 
-	protected BakedModel bakeModel(BlockState state, K key, B block, ModelData extraData) {
+	protected ModelBakerModel bakeModel(BlockState state, K key, B block, ModelData extraData) {
 		ModelBaker baker = new ModelBaker();
 
 		bakeBlock(block, extraData, key, baker, false);
@@ -63,7 +55,7 @@ public abstract class ModelBlockDefault<B extends Block, K> implements BakedMode
 		return model;
 	}
 
-	protected BakedModel getModel(BlockState state, ModelData extraData) {
+	protected ModelBakerModel getModel(BlockState state, ModelData extraData) {
 		Preconditions.checkArgument(this.blockClass.isInstance(state.getBlock()));
 
 		K worldKey = getWorldKey(state, extraData);
@@ -71,7 +63,7 @@ public abstract class ModelBlockDefault<B extends Block, K> implements BakedMode
 		return bakeModel(state, worldKey, block, extraData);
 	}
 
-	protected BakedModel bakeModel(ItemStack stack, Level world, K key) {
+	protected ModelBakerModel bakeModel(ItemStack stack, @Nullable Level world, K key) {
 		ModelBaker baker = new ModelBaker();
 		Block block = Block.byItem(stack.getItem());
 		Preconditions.checkArgument(this.blockClass.isInstance(block));
@@ -81,21 +73,16 @@ public abstract class ModelBlockDefault<B extends Block, K> implements BakedMode
 		return this.itemModel = baker.bake(true);
 	}
 
-	protected BakedModel getModel(ItemStack stack, Level world) {
+	protected ModelBakerModel getModel(ItemStack stack, @Nullable Level world) {
 		return bakeModel(stack, world, getInventoryKey(stack));
 	}
 
-	@Nonnull
 	@Override
-	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData, @Nullable RenderType renderType) {
-		Preconditions.checkNotNull(state);
-		BakedModel model = getModel(state, extraData);
-		return model.getQuads(state, side, rand, extraData, renderType);
-	}
-
-	@Override
-	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand) {
-		return getQuads(state, side, rand, ModelData.EMPTY, null);
+	public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockStateModelPart> parts) {
+		// the context-free overload of the vanilla interface passes air
+		if (this.blockClass.isInstance(state.getBlock())) {
+			parts.add(getModel(state, level.getModelData(pos)));
+		}
 	}
 
 	protected void onCreateModel(ModelBakerModel model) {
@@ -103,77 +90,64 @@ public abstract class ModelBlockDefault<B extends Block, K> implements BakedMode
 	}
 
 	@Override
-	public boolean useAmbientOcclusion() {
-		return (this.itemModel != null || this.blockModel != null) &&
-			(this.blockModel != null ? this.blockModel.useAmbientOcclusion() : this.itemModel.useAmbientOcclusion());
-	}
-
-	@Override
-	public boolean isGui3d() {
-		return this.itemModel != null && this.itemModel.isGui3d();
-	}
-
-	@Override
-	public boolean isCustomRenderer() {
-		return (this.itemModel != null || this.blockModel != null) &&
-			(this.blockModel != null ? this.blockModel.isCustomRenderer() : this.itemModel.isCustomRenderer());
-	}
-
-	@Override
-	public boolean usesBlockLight() {
-		return this.itemModel != null && this.itemModel.usesBlockLight();
-	}
-
-	@Override
-	public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
+	public Material.Baked particleMaterial(BlockAndTintGetter level, BlockPos pos, BlockState state) {
 		if (!this.blockClass.isInstance(state.getBlock())) {
-			return modelData;
+			return particleMaterial();
 		}
-		// Break and hit particles read the sprite through getParticleIcon(ModelData), which has no block state to
-		// bake from, so carry the sprite of this state's model in the model data. Chunk meshing calls this once per
-		// block, and the model it bakes is the one the following getQuads calls reuse.
-		return modelData.derive().with(PARTICLE_SPRITE, getModel(state, modelData).getParticleIcon()).build();
+		return getModel(state, level.getModelData(pos)).particleMaterial();
+	}
+
+	// last resort for callers that have no block state: the model baked last, or the missing texture before the
+	// first bake
+	@Override
+	public Material.Baked particleMaterial() {
+		ModelBakerModel model = this.blockModel;
+		if (model != null) {
+			return model.particleMaterial();
+		}
+		return new Material.Baked(ResourceUtil.getMissingTexture(), false);
 	}
 
 	@Override
-	public TextureAtlasSprite getParticleIcon(ModelData data) {
-		TextureAtlasSprite sprite = data.get(PARTICLE_SPRITE);
-
-		return sprite != null ? sprite : getParticleIcon();
-	}
-
-	/**
-	 * Used as the last resort for callers that have no model data. Prefer {@link #getParticleIcon(ModelData)}, which
-	 * tells apart the blocks that share this model instance.
-	 *
-	 * @return The particle sprite of the model baked last, or the missing texture before the first bake
-	 */
-	@Override
-	public TextureAtlasSprite getParticleIcon() {
-		if (this.blockModel != null) {
-			return this.blockModel.getParticleIcon();
+	public int materialFlags(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+		if (!this.blockClass.isInstance(state.getBlock())) {
+			return materialFlags();
 		}
-		return ResourceUtil.getMissingTexture();
+		return getModel(state, level.getModelData(pos)).materialFlags();
 	}
 
 	@Override
-	public ItemTransforms getTransforms() {
-		if (this.itemModel == null) {
-			return ItemTransforms.NO_TRANSFORMS;
-		}
-		return this.itemModel.getTransforms();
-	}
-
-	protected ItemOverrides createOverrides() {
-		return new DefaultItemOverrideList();
+	public int materialFlags() {
+		ModelBakerModel model = this.blockModel;
+		return model != null ? model.materialFlags() : 0;
 	}
 
 	@Override
-	public ItemOverrides getOverrides() {
-		if (this.overrideList == null) {
-            this.overrideList = createOverrides();
+	public void update(ItemStackRenderState output, ItemStack stack, ItemModelResolver resolver, ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+		ModelBakerModel model = getModel(stack, level);
+
+		output.appendModelIdentityElement(model);
+		ItemStackRenderState.LayerRenderState layer = output.newLayer();
+		if (stack.hasFoil()) {
+			layer.setFoilType(ItemStackRenderState.FoilType.STANDARD);
+			output.setAnimated();
+			output.appendModelIdentityElement(ItemStackRenderState.FoilType.STANDARD);
 		}
-		return this.overrideList;
+
+		// every tint index of the model asks the item, as the shared item colour did
+		IntList tintLayers = layer.tintLayers();
+		for (int tintIndex = 0; tintIndex < model.tintLayers(); tintIndex++) {
+			int tint = ForestryItemTint.getColor(stack, tintIndex);
+			tintLayers.add(tint);
+			output.appendModelIdentityElement(tint);
+		}
+
+		layer.setExtents(model.extents());
+		layer.setLocalTransform(NO_TRANSFORM);
+		layer.setUsesBlockLight(true);
+		layer.setParticleMaterial(model.particleMaterial());
+		layer.setItemTransform(ModelTransforms.BLOCK.getTransform(displayContext));
+		layer.setQuads(model.itemQuads());
 	}
 
 	protected abstract K getInventoryKey(ItemStack stack);
@@ -181,19 +155,4 @@ public abstract class ModelBlockDefault<B extends Block, K> implements BakedMode
 	protected abstract K getWorldKey(BlockState state, ModelData extraData);
 
 	protected abstract void bakeBlock(B block, ModelData extraData, K key, ModelBaker baker, boolean inventory);
-
-	private class DefaultItemOverrideList extends ItemOverrides {
-		public DefaultItemOverrideList() {
-			super();
-		}
-
-		@Nullable
-		@Override
-		public BakedModel resolve(BakedModel originalModel, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int p_173469_) {
-			if (world == null) {
-				world = Minecraft.getInstance().level;
-			}
-			return getModel(stack, world);
-		}
-	}
 }

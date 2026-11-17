@@ -1,78 +1,38 @@
 package forestry.core.platform.models.baker;
 
-import forestry.core.platform.models.ModelTransforms;
-import forestry.core.platform.util.ResourceUtil;
+import com.google.common.base.Suppliers;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.resources.model.cuboid.ItemTransforms;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.renderer.block.dispatch.ModelState;
+import net.minecraft.client.resources.model.geometry.ItemQuads;
+import net.minecraft.client.resources.model.geometry.QuadCollection;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.apache.commons.lang3.tuple.Pair;
+import org.joml.Vector3fc;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.List;
+import java.util.function.Supplier;
 
 @OnlyIn(Dist.CLIENT)
-public class ModelBakerModel implements BakedModel {
-
-	private final boolean isGui3d;
+public class ModelBakerModel implements BlockStateModelPart {
 	private boolean isAmbientOcclusion;
-	private TextureAtlasSprite particleSprite;
-	@Nullable
-	private ModelState modelState;
+	private final Material.Baked particleMaterial;
+	private final QuadCollection quads;
+	private final int tintLayers;
+	// the item renderer wants the same quads split by blending, and their corners for the bounding box
+	private final Supplier<ItemQuads> itemQuads;
+	private final Supplier<Vector3fc[]> extents;
 
-	private final Map<Direction, List<BakedQuad>> faceQuads;
-	private final List<BakedQuad> generalQuads;
-	private final List<Pair<BlockState, BakedModel>> models;
-	private final List<Pair<BlockState, BakedModel>> modelsPost;
-
-	private float[] rotation = getDefaultRotation();
-	private float[] translation = getDefaultTranslation();
-	private float[] scale = getDefaultScale();
-
-	ModelBakerModel(ModelState modelState) {
-        this.models = new ArrayList<>();
-        this.modelsPost = new ArrayList<>();
-        this.faceQuads = new EnumMap<>(Direction.class);
-        this.generalQuads = new ArrayList<>();
-        this.particleSprite = ResourceUtil.getMissingTexture();
-        this.isGui3d = true;
-        this.isAmbientOcclusion = false;
-		setModelState(modelState);
-
-		for (Direction face : Direction.VALUES) {
-            this.faceQuads.put(face, new ArrayList<>());
-		}
-	}
-
-	private ModelBakerModel(ModelBakerModel old) {
-		this.models = new ArrayList<>(old.models);
-		this.modelsPost = new ArrayList<>(old.modelsPost);
-		this.faceQuads = new EnumMap<>(old.faceQuads);
-		this.generalQuads = new ArrayList<>(old.generalQuads);
-		this.isGui3d = old.isGui3d;
-		this.isAmbientOcclusion = old.isAmbientOcclusion;
-		this.rotation = Arrays.copyOf(old.rotation, 3);
-		this.translation = Arrays.copyOf(old.translation, 3);
-		this.scale = Arrays.copyOf(old.scale, 3);
-		this.particleSprite = old.particleSprite;
-		setModelState(old.modelState);
-	}
-
-	@Override
-	public boolean isGui3d() {
-		return this.isGui3d;
-	}
-
-	@Override
-	public boolean usesBlockLight() {
-		return true;
+	ModelBakerModel(QuadCollection quads, Material.Baked particleMaterial, int tintLayers) {
+		this.quads = quads;
+		this.particleMaterial = particleMaterial;
+		this.tintLayers = tintLayers;
+		this.isAmbientOcclusion = false;
+		this.itemQuads = Suppliers.memoize(() -> ItemQuads.split(quads.getAll()));
+		this.extents = Suppliers.memoize(() -> CuboidItemModelWrapper.computeExtents(quads.getAll()));
 	}
 
 	public void setAmbientOcclusion(boolean ambientOcclusion) {
@@ -84,101 +44,31 @@ public class ModelBakerModel implements BakedModel {
 		return this.isAmbientOcclusion;
 	}
 
-	public void setParticleSprite(TextureAtlasSprite particleSprite) {
-		this.particleSprite = particleSprite;
+	@Override
+	public Material.Baked particleMaterial() {
+		return this.particleMaterial;
 	}
 
 	@Override
-	public TextureAtlasSprite getParticleIcon() {
-		return this.particleSprite;
+	public List<BakedQuad> getQuads(@Nullable Direction side) {
+		return this.quads.getQuads(side);
 	}
 
 	@Override
-	public boolean isCustomRenderer() {
-		return false;
+	public int materialFlags() {
+		return this.quads.materialFlags();
 	}
 
-	@Override
-	public ItemTransforms getTransforms() {
-		return ModelTransforms.BLOCK;
+	public ItemQuads itemQuads() {
+		return this.itemQuads.get();
 	}
 
-	@Override
-	public ItemOverrides getOverrides() {
-		return ItemOverrides.EMPTY;
+	public Supplier<Vector3fc[]> extents() {
+		return this.extents;
 	}
 
-	private static float[] getDefaultRotation() {
-		return new float[]{-80, -45, 170};
-	}
-
-	private static float[] getDefaultTranslation() {
-		return new float[]{0, 1.5F, -2.75F};
-	}
-
-	private static float[] getDefaultScale() {
-		return new float[]{0.375F, 0.375F, 0.375F};
-	}
-
-	public void setRotation(float[] rotation) {
-		this.rotation = rotation;
-	}
-
-	public void setTranslation(float[] translation) {
-		this.translation = translation;
-	}
-
-	public void setScale(float[] scale) {
-		this.scale = scale;
-	}
-
-	public float[] getRotation() {
-		return this.rotation;
-	}
-
-	public float[] getTranslation() {
-		return this.translation;
-	}
-
-	public float[] getScale() {
-		return this.scale;
-	}
-
-	public void setModelState(ModelState modelState) {
-		this.modelState = modelState;
-	}
-
-	public void addQuad(@Nullable Direction facing, BakedQuad quad) {
-		if (facing != null) {
-            this.faceQuads.get(facing).add(quad);
-		} else {
-            this.generalQuads.add(quad);
-		}
-	}
-
-	@Override
-	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand) {
-		List<BakedQuad> quads = new ArrayList<>();
-		for (Pair<BlockState, BakedModel> model : this.models) {
-			List<BakedQuad> modelQuads = model.getRight().getQuads(model.getLeft(), side, rand);
-			if (!modelQuads.isEmpty()) {
-				quads.addAll(modelQuads);
-			}
-		}
-		if (side != null) {
-			quads.addAll(this.faceQuads.get(side));
-		}
-		quads.addAll(this.generalQuads);
-		for (Pair<BlockState, BakedModel> model : this.modelsPost) {
-			List<BakedQuad> modelQuads = model.getRight().getQuads(model.getLeft(), side, rand);
-			if (!modelQuads.isEmpty()) {
-				quads.addAll(modelQuads);
-			}
-		}
-		return quads;
-	}
-
-	public ModelBakerModel copy() {
-		return new ModelBakerModel(this);
+	// one more than the highest tint index of the quads
+	public int tintLayers() {
+		return this.tintLayers;
 	}
 }

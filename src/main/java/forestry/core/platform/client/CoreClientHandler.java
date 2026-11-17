@@ -1,18 +1,12 @@
 package forestry.core.platform.client;
 
-import forestry.core.features.CoreItems;
-
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.renderpearl.api.vertex.VertexFormat;
-import com.mojang.datafixers.util.Pair;
 import forestry.api.ForestryConstants;
-import forestry.api.apiculture.genetics.BeeLifeStage;
 import forestry.api.client.IClientModuleHandler;
 import forestry.api.client.IForestryClientApi;
-import forestry.api.client.apiculture.IBeeClientManager;
-import forestry.api.client.arboriculture.ITreeClientManager;
 import forestry.api.core.ISpectacleBlock;
 import forestry.apiimpl.client.ForestryClientApiImpl;
 import forestry.apiimpl.plugin.PluginManager;
@@ -28,6 +22,7 @@ import forestry.core.content.escritoire.*;
 import forestry.core.platform.item.SpecialRendererBlockItem;
 import forestry.core.platform.models.ClientManager;
 import forestry.core.platform.models.FluidContainerModel;
+import forestry.core.platform.models.ForestryItemTint;
 import forestry.core.platform.models.ModelBlockCached;
 import forestry.core.platform.particles.CoreParticles;
 import forestry.core.platform.render.*;
@@ -35,31 +30,27 @@ import forestry.core.content.machines.*;
 import forestry.core.platform.util.GeneticsUtil;
 import forestry.core.platform.util.RenderUtil;
 import forestry.core.platform.registration.FeatureFluid;
-import forestry.core.content.energy.features.EnergyBlocks;
 import forestry.core.content.energy.features.EnergyBlockEntities;
 import forestry.core.content.machines.features.FactoryBlocks;
 import forestry.core.content.machines.features.FactoryBlockEntities;
 import forestry.modules.ModuleUtil;
-import forestry.core.content.backpacks.items.BackpackItem;
-import forestry.core.content.backpacks.features.CrateItems;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockTintSources;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.client.renderer.*;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Item;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.GrassColor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.*;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.bus.api.EventPriority;
@@ -67,6 +58,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.awt.*;
+import java.util.List;
 import java.util.OptionalDouble;
 
 public class CoreClientHandler implements IClientModuleHandler {
@@ -88,15 +80,16 @@ public class CoreClientHandler implements IClientModuleHandler {
 		modBus.addListener(CoreClientHandler::onClientSetup);
 		modBus.addListener(CoreClientHandler::registerMenuScreens);
 		modBus.addListener(CoreClientHandler::registerModelLoaders);
-		modBus.addListener(CoreClientHandler::additionalBakedModels);
+		modBus.addListener(CoreClientHandler::registerItemModels);
 		modBus.addListener(CoreClientHandler::bakeModels);
 		modBus.addListener(CoreClientHandler::setupLayers);
 		modBus.addListener(CoreClientHandler::clientSetupRenderers);
 		modBus.addListener(CoreClientHandler::registerReloadListeners);
 		modBus.addListener(CoreClientHandler::registerBlockColors);
-		modBus.addListener(CoreClientHandler::registerItemColors);
+		modBus.addListener(CoreClientHandler::registerItemTintSources);
 		modBus.addListener(CoreClientHandler::registerParticleFactory);
 		modBus.addListener(CoreClientHandler::registerClientExtensions);
+		modBus.addListener(CoreClientHandler::registerFluidModels);
 		NeoForge.EVENT_BUS.addListener(CoreClientHandler::onClientTick);
 		// HIGH priority so the client mutation index is rebuilt before NORMAL-priority consumers (e.g. JEI, which can
 		// start synchronously during RecipesUpdatedEvent on a dedicated-server connection) read it.
@@ -106,30 +99,6 @@ public class CoreClientHandler implements IClientModuleHandler {
 	}
 
 	private static void onClientSetup(FMLClientSetupEvent event) {
-		event.enqueueWork(() -> {
-			CoreBlocks.BASE.getList().forEach((block) -> ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutoutMipped()));
-
-			for (ForestryFluids fluid : ForestryFluids.values()) {
-				ItemBlockRenderTypes.setRenderLayer(fluid.getFluid(), RenderType.translucent());
-				ItemBlockRenderTypes.setRenderLayer(fluid.getFlowing(), RenderType.translucent());
-			}
-
-			ItemBlockRenderTypes.setRenderLayer(CoreBlocks.PHOSPHOR_WALL_TORCH.block(), RenderType.cutout());
-			ItemBlockRenderTypes.setRenderLayer(CoreBlocks.PHOSPHOR_TORCH.block(), RenderType.cutout());
-			ItemBlockRenderTypes.setRenderLayer(CoreBlocks.TIN_CHAIN.block(), RenderType.cutout());
-			ItemBlockRenderTypes.setRenderLayer(CoreBlocks.PHOSPHOR_LANTERN.block(), RenderType.cutout());
-			ItemBlockRenderTypes.setRenderLayer(CoreBlocks.BURN_BARREL.block(), RenderType.cutout());
-			ItemBlockRenderTypes.setRenderLayer(EnergyBlocks.SOLAR_PANEL.block(), RenderType.cutout());
-			ItemBlockRenderTypes.setRenderLayer(CoreBlocks.PLYWOOD_SHEET.block(), RenderType.cutout());
-
-			CoreBlocks.JUMBO_CANDLES.getList().forEach(block -> ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutout()));
-			CoreBlocks.BIG_CANDLES.getList().forEach(block -> ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutout()));
-			// Deviation from 1.20.1: these two were left on the solid layer there, which turns the transparent
-			// pixels of the vanilla candle templates black. Vanilla registers its own candles as cutout
-			ItemBlockRenderTypes.setRenderLayer(CoreBlocks.RAINBOW_CANDLE.block(), RenderType.cutout());
-			ItemBlockRenderTypes.setRenderLayer(CoreBlocks.REFRACTORY_CANDLE.block(), RenderType.cutout());
-		});
-
 		bewlr = new ForestryBewlr(Minecraft.getInstance().getBlockEntityRenderDispatcher());
 	}
 
@@ -142,31 +111,16 @@ public class CoreClientHandler implements IClientModuleHandler {
 		event.register(CoreMenuTypes.SOLDERING_IRON.menuType(), SolderingIronScreen::new);
 	}
 
-	private static void registerModelLoaders(ModelEvent.RegisterGeometryLoaders event) {
-		event.register(Identifier.fromNamespaceAndPath(ForestryConstants.MOD_ID, "fluid_container"), FluidContainerModel.Loader.INSTANCE);
-
+	private static void registerModelLoaders(ModelEvent.RegisterLoaders event) {
 		// Client model registration depends on TreeManager / BeeManager / etc. being
-		// initialized. RegisterGeometryLoaders fires before FMLCommonSetupEvent, so make
+		// initialized. RegisterLoaders fires before FMLCommonSetupEvent, so make
 		// sure the API is bootstrapped before plugin client registration runs.
 		forestry.core.ModuleCore.ensureApiInitialized();
 		PluginManager.registerClient();
 	}
 
-	private static void additionalBakedModels(ModelEvent.RegisterAdditional event) {
-		IBeeClientManager beeManager = IForestryClientApi.INSTANCE.getBeeManager();
-
-		for (BeeLifeStage stage : BeeLifeStage.values()) {
-			for (Identifier location : beeManager.getAllModelLocations(stage)) {
-				event.register(ModelResourceLocation.standalone(location));
-			}
-		}
-
-		ITreeClientManager treeManager = IForestryClientApi.INSTANCE.getTreeManager();
-
-		for (Pair<Identifier, Identifier> pair : treeManager.getAllSaplingModels()) {
-			event.register(ModelResourceLocation.standalone(pair.getFirst()));
-			event.register(ModelResourceLocation.standalone(pair.getSecond()));
-		}
+	private static void registerItemModels(RegisterItemModelsEvent event) {
+		event.register(Identifier.fromNamespaceAndPath(ForestryConstants.MOD_ID, "fluid_container"), FluidContainerModel.Unbaked.MAP_CODEC);
 	}
 
 	private static void bakeModels(ModelEvent.ModifyBakingResult event) {
@@ -221,68 +175,37 @@ public class CoreClientHandler implements IClientModuleHandler {
 		for (SpecialRendererBlockItem<?> item : SpecialRendererBlockItem.getInstances()) {
 			event.registerItem(tesrExtensions, item);
 		}
+	}
 
-		// Replaces the deprecated per-instance FluidType#initializeClient override on ForestryFluidType.
+	private static void registerFluidModels(RegisterFluidModelsEvent event) {
 		for (ForestryFluids fluid : ForestryFluids.values()) {
 			FluidType type = fluid.getFluid().getFluidType();
 			if (!(type instanceof FeatureFluid.ForestryFluidType forestryType)) {
 				continue;
 			}
-			event.registerFluidType(new IClientFluidTypeExtensions() {
-				@Override
-				public Identifier getStillTexture() {
-					return forestryType.getStillTexture();
-				}
-
-				@Override
-				public Identifier getFlowingTexture() {
-					return forestryType.getFlowingTexture();
-				}
-
-				@Override
-				public int getTintColor() {
-					// forestryType.getColor() double-tints placed fluids, since the still/flowing textures
-					// are already tinted; white leaves the texture's own color alone
-					return 0xFFFFFFFF;
-				}
-			}, type);
+			// forced translucent, the layer these fluids were registered on. No tint source:
+			// forestryType.getColor() double-tints placed fluids, since the still/flowing textures
+			// are already tinted
+			event.register(new FluidModel.Unbaked(
+				new Material(forestryType.getStillTexture(), true),
+				new Material(forestryType.getFlowingTexture(), true),
+				null,
+				(FluidTintSource) null
+			), fluid.getFluid(), fluid.getFlowing());
 		}
 	}
 
-	private static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
-		// Turf wears the grass texture and tints it by biome, the same way vanilla tints its grass block.
-		// Deviation from 1.20.1: that tree named the two blocks inside ClientManager's shared block colour,
-		// which every other forestry block reaches through IColoredBlock. Neither turf block is one, so they
-		// get vanilla's own lambda here instead
-		event.register((state, level, pos, tintIndex) -> level != null && pos != null
-			? BiomeColors.getAverageGrassColor(level, pos)
-			: GrassColor.getDefaultColor(), CoreBlocks.TURF_BLOCK.block(), CoreBlocks.TURF.block());
+	private static void registerBlockColors(RegisterColorHandlersEvent.BlockTintSources event) {
+		// Turf wears the grass texture and tints it by biome, the same way vanilla tints its grass
+		event.register(List.of(BlockTintSources.grass()), CoreBlocks.TURF_BLOCK.block(), CoreBlocks.TURF.block());
 
 		// Packaging machine tank slices, tinted with the fluid colour of whatever they hold
-		event.register(ClientManager.FORESTRY_BLOCK_COLOR, FactoryBlocks.PLAIN.blockArray());
+		event.register(ClientManager.FORESTRY_BLOCK_TINTS, FactoryBlocks.PLAIN.blockArray());
 	}
 
-	private static void registerItemColors(RegisterColorHandlersEvent.Item event) {
-		// Core
-		event.register(ClientManager.FORESTRY_ITEM_COLOR, FluidsItems.CONTAINERS.itemArray());
-		event.register(ClientManager.FORESTRY_ITEM_COLOR, CoreItems.PIPETTE.item());
-		event.register(ClientManager.FORESTRY_ITEM_COLOR, CoreItems.HONEY_DROP.item());
-
-
-
-		// Backpacks, including addon backpacks from IBackpackInterface
-		for (Item item : BuiltInRegistries.ITEM) {
-			if (item instanceof BackpackItem) {
-				event.register(ClientManager.FORESTRY_ITEM_COLOR, item);
-			}
-		}
-
-		// A turf item has no level to sample, so both show the default grass colour, the way vanilla's does
-		event.register((stack, tintIndex) -> GrassColor.getDefaultColor(), CoreBlocks.TURF_BLOCK.item(), CoreBlocks.TURF.item());
-
-		// Crates. The bee ones are registered by ApicultureClientHandler
-		event.register(ClientManager.FORESTRY_ITEM_COLOR, CrateItems.CRATED_GRASS_BLOCK.item());
-
+	private static void registerItemTintSources(RegisterColorHandlersEvent.ItemTintSources event) {
+		// which items use it is listed in their item model definitions under assets/forestry/items
+		event.register(Identifier.fromNamespaceAndPath(ForestryConstants.MOD_ID, "item_tint"), ForestryItemTint.MAP_CODEC);
 	}
 
 	private static void onRecipesUpdated(RecipesUpdatedEvent event) {
