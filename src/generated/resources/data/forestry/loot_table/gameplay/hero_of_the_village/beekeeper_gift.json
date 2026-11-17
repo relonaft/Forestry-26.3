@@ -7,7 +7,7 @@
         {
           "type": "minecraft:tag",
           "expand": true,
-          "name": "forestry:village_combs",
+          "items": "#forestry:village_combs",
           "modifier": {
             "type": "minecraft:set_count",
             "add": false,
@@ -21,7 +21,7 @@
         {
           "type": "minecraft:tag",
           "expand": true,
-          "name": "forestry:scoops",
+          "items": "#forestry:scoops",
           "weight": 5
         }
       ],

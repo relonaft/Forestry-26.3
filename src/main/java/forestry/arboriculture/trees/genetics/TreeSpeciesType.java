@@ -160,7 +160,7 @@ public class TreeSpeciesType extends SpeciesType<ITreeSpecies, ITree> implements
 			builder.getGenerator(),
 			builder.getVanillaLeafStates(),
 			builder.getVanillaSaplingItems(),
-			builder.getDecorativeLeaves()
+			builder.getDecorativeLeavesTemplate()
 		)));
 		this.bindings = bindings.build();
 

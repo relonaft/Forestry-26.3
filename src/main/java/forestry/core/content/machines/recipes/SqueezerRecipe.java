@@ -19,6 +19,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 
 import java.util.List;
+import java.util.Optional;
 
 public class SqueezerRecipe implements ISqueezerRecipe {
 	private static final MapCodec<SqueezerRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -29,10 +30,9 @@ public class SqueezerRecipe implements ISqueezerRecipe {
 		// addon-provided dynamic products (tag resolution, random amount, chance) declare their own "type".
 		IFluidProduct.CODEC.fieldOf("output").forGetter(SqueezerRecipe::getFluidOutput),
 		// "remnant" is optional: many squeezer recipes drop no remnant.
-		// ItemStackTemplate.CODEC.xmap(ItemStackTemplate::create, ItemStackTemplate::fromNonEmptyStack) rejects EMPTY at serialization, so map EMPTY to absent.
-		ItemStackTemplate.CODEC.xmap(ItemStackTemplate::create, ItemStackTemplate::fromNonEmptyStack).optionalFieldOf("remnant").forGetter(r -> r.remnants.isEmpty() ? java.util.Optional.<ItemStack>empty() : java.util.Optional.of(r.remnants)),
+		ItemStackTemplate.CODEC.optionalFieldOf("remnant").forGetter(recipe -> recipe.remnants),
 		Codec.FLOAT.fieldOf("chance").forGetter(SqueezerRecipe::getRemnantsChance)
-	).apply(instance, (id, time, resources, fluid, remnants, chance) -> new SqueezerRecipe(id, time, resources, fluid, remnants.orElse(ItemStack.EMPTY), chance)));
+	).apply(instance, SqueezerRecipe::new));
 	private static final StreamCodec<RegistryFriendlyByteBuf, SqueezerRecipe> STREAM_CODEC = StreamCodec.of(
 		SqueezerRecipe::toNetwork,
 		SqueezerRecipe::fromNetwork
@@ -43,10 +43,15 @@ public class SqueezerRecipe implements ISqueezerRecipe {
 	private final int processingTime;
 	private final List<Ingredient> resources;
 	private final IFluidProduct fluidOutput;
-	private final ItemStack remnants;
+	private final Optional<ItemStackTemplate> remnants;
 	private final float remnantsChance;
 
 	public SqueezerRecipe(Identifier id, int processingTime, List<Ingredient> resources, IFluidProduct fluidOutput, ItemStack remnants, float remnantsChance) {
+		this(id, processingTime, resources, fluidOutput, remnants.isEmpty() ? Optional.empty() : Optional.of(ItemStackTemplate.fromNonEmptyStack(remnants)), remnantsChance);
+	}
+
+	// holds a template, a stack cannot be built while the datapack loads
+	public SqueezerRecipe(Identifier id, int processingTime, List<Ingredient> resources, IFluidProduct fluidOutput, Optional<ItemStackTemplate> remnants, float remnantsChance) {
 		Preconditions.checkNotNull(id, "Recipe identifier cannot be null");
 		Preconditions.checkNotNull(resources);
 		Preconditions.checkArgument(!resources.isEmpty());
@@ -68,7 +73,7 @@ public class SqueezerRecipe implements ISqueezerRecipe {
 
 	@Override
 	public ItemStack getRemnants() {
-		return this.remnants;
+		return this.remnants.map(ItemStackTemplate::create).orElse(ItemStack.EMPTY);
 	}
 
 	@Override
@@ -111,7 +116,7 @@ public class SqueezerRecipe implements ISqueezerRecipe {
 		int processingTime = ByteBufCodecs.VAR_INT.decode(buffer);
 		List<Ingredient> resources = Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buffer);
 		IFluidProduct fluidOutput = IFluidProduct.STREAM_CODEC.decode(buffer);
-		ItemStack remnants = ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer);
+		Optional<ItemStackTemplate> remnants = ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode(buffer);
 		float remnantsChance = ByteBufCodecs.FLOAT.decode(buffer);
 
 		return new SqueezerRecipe(recipeId, processingTime, resources, fluidOutput, remnants, remnantsChance);
@@ -122,7 +127,7 @@ public class SqueezerRecipe implements ISqueezerRecipe {
 		ByteBufCodecs.VAR_INT.encode(buffer, recipe.processingTime);
 		Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buffer, recipe.resources);
 		IFluidProduct.STREAM_CODEC.encode(buffer, recipe.fluidOutput);
-		ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, recipe.remnants);
+		ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode(buffer, recipe.remnants);
 		ByteBufCodecs.FLOAT.encode(buffer, recipe.remnantsChance);
 	}
 }

@@ -6,7 +6,7 @@
       "forestry:fir_stripped_log",
       "forestry:fir_fireproof_stripped_log"
     ],
-    "X": "minecraft:chain"
+    "X": "minecraft:iron_chain"
   },
   "pattern": [
     "X X",

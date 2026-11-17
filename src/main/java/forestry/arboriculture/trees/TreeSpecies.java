@@ -36,6 +36,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Supplier;
+import com.google.common.base.Suppliers;
 import forestry.api.ForestryConstants;
 import forestry.api.arboriculture.ForestryFruits;
 import forestry.core.platform.util.GeneticsUtil;
@@ -46,7 +48,8 @@ public class TreeSpecies extends Species<ITreeSpeciesType, ITree> implements ITr
 	private final ITreeGenerator generator;
 	private final List<BlockState> vanillaLeafStates;
 	private final List<Item> vanillaSaplingItems;
-	private final ItemStack decorativeLeaves;
+	// built on first use, item components are not bound when a species is built
+	private final Supplier<ItemStack> decorativeLeaves;
 	private final float rarity;
 
 	public TreeSpecies(Identifier id, ITreeSpeciesType speciesType, IGenome defaultGenome, ITreeSpeciesBuilder builder) {
@@ -58,7 +61,7 @@ public class TreeSpecies extends Species<ITreeSpeciesType, ITree> implements ITr
 		this.generator = builder.getGenerator();
 		this.vanillaLeafStates = builder.getVanillaLeafStates();
 		this.vanillaSaplingItems = builder.getVanillaSaplingItems();
-		this.decorativeLeaves = builder.getDecorativeLeaves();
+		this.decorativeLeaves = Suppliers.memoize(builder::getDecorativeLeaves);
 		this.rarity = builder.getRarity();
 	}
 
@@ -69,7 +72,7 @@ public class TreeSpecies extends Species<ITreeSpeciesType, ITree> implements ITr
 
 	@Override
 	public ItemStack getDecorativeLeaves() {
-		return this.decorativeLeaves;
+		return this.decorativeLeaves.get();
 	}
 
 	@Override

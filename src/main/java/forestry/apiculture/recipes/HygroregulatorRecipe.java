@@ -15,12 +15,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 
 // recipes used by Alveary Hygroregulator
 public class HygroregulatorRecipe implements IHygroregulatorRecipe {
 	private static final MapCodec<HygroregulatorRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Identifier.CODEC.fieldOf("id").forGetter(HygroregulatorRecipe::getId),
-		FluidStack.CODEC.fieldOf("liquid").forGetter(HygroregulatorRecipe::getInputFluid),
+		FluidStackTemplate.CODEC.fieldOf("liquid").forGetter(recipe -> recipe.liquid),
 		Codec.INT.fieldOf("time").forGetter(HygroregulatorRecipe::getRetainTime),
 		Codec.BYTE.fieldOf("humidity_steps").forGetter(HygroregulatorRecipe::getHumiditySteps),
 		Codec.BYTE.fieldOf("temperature_steps").forGetter(HygroregulatorRecipe::getTemperatureSteps)
@@ -32,12 +33,17 @@ public class HygroregulatorRecipe implements IHygroregulatorRecipe {
 	public static final RecipeSerializer<HygroregulatorRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
 	private final Identifier id;
-	private final FluidStack liquid;
+	private final FluidStackTemplate liquid;
 	private final byte humiditySteps;
 	private final byte temperatureSteps;
 	private final int retainTime;
 
 	public HygroregulatorRecipe(Identifier id, FluidStack liquid, int retainTime, byte humiditySteps, byte temperatureSteps) {
+		this(id, FluidStackTemplate.fromNonEmptyStack(liquid), retainTime, humiditySteps, temperatureSteps);
+	}
+
+	// holds templates, a stack cannot be built while the datapack loads
+	public HygroregulatorRecipe(Identifier id, FluidStackTemplate liquid, int retainTime, byte humiditySteps, byte temperatureSteps) {
 		Preconditions.checkNotNull(id, "Recipe identifier cannot be null");
 		Preconditions.checkNotNull(liquid);
 		this.id = id;
@@ -49,7 +55,7 @@ public class HygroregulatorRecipe implements IHygroregulatorRecipe {
 
 	@Override
 	public FluidStack getInputFluid() {
-		return this.liquid;
+		return this.liquid.create();
 	}
 
 	@Override
@@ -89,7 +95,7 @@ public class HygroregulatorRecipe implements IHygroregulatorRecipe {
 
 	private static HygroregulatorRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
 		Identifier recipeId = Identifier.STREAM_CODEC.decode(buffer);
-		FluidStack liquid = FluidStack.STREAM_CODEC.decode(buffer);
+		FluidStackTemplate liquid = FluidStackTemplate.STREAM_CODEC.decode(buffer);
 		int retainTime = ByteBufCodecs.VAR_INT.decode(buffer);
 		byte humiditySteps = ByteBufCodecs.BYTE.decode(buffer);
 		byte temperatureSteps = ByteBufCodecs.BYTE.decode(buffer);
@@ -99,7 +105,7 @@ public class HygroregulatorRecipe implements IHygroregulatorRecipe {
 
 	private static void toNetwork(RegistryFriendlyByteBuf buffer, HygroregulatorRecipe recipe) {
 		Identifier.STREAM_CODEC.encode(buffer, recipe.id);
-		FluidStack.STREAM_CODEC.encode(buffer, recipe.liquid);
+		FluidStackTemplate.STREAM_CODEC.encode(buffer, recipe.liquid);
 		ByteBufCodecs.VAR_INT.encode(buffer, recipe.retainTime);
 		ByteBufCodecs.BYTE.encode(buffer, recipe.humiditySteps);
 		ByteBufCodecs.BYTE.encode(buffer, recipe.temperatureSteps);

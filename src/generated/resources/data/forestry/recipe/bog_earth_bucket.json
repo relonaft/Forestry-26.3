@@ -6,12 +6,8 @@
     "X": {
       "neoforge:ingredient_type": "neoforge:components",
       "components": {
-        "minecraft:attribute_modifiers": {
-          "modifiers": []
-        },
-        "minecraft:enchantments": {
-          "levels": {}
-        },
+        "minecraft:attribute_modifiers": [],
+        "minecraft:enchantments": {},
         "minecraft:lore": [],
         "minecraft:max_stack_size": 1,
         "minecraft:rarity": "common",

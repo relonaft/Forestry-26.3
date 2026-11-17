@@ -1,6 +1,5 @@
 {
   "type": "forestry:carpenter",
-  "box": [],
   "id": "forestry:woven_backpack/builder",
   "liquid": {
     "amount": 1000,

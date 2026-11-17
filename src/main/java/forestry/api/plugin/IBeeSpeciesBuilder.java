@@ -10,6 +10,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.CustomData;
 
 import java.util.List;
@@ -37,6 +38,17 @@ public interface IBeeSpeciesBuilder extends ISpeciesBuilder<IBeeSpeciesType, IBe
 	}
 
 	/**
+	 * Adds a product to this bee species. Plugins register species before the game binds item components,
+	 * when an item stack cannot be built.
+	 *
+	 * @param stack  The template of the item stack the product should produce.
+	 * @param chance A float between 0 and 1. The chance that this product is produced during a single work cycle.
+	 */
+	default IBeeSpeciesBuilder addProduct(ItemStackTemplate stack, float chance) {
+		return addProduct(new Product(stack.item().value(), stack.count(), stack.components(), chance));
+	}
+
+	/**
 	 * Adds a specialty product to this species, only produced when the bee in a jubilant state.
 	 *
 	 * @param specialty A product that can only be produced by this species when in its jubilant state.
@@ -51,6 +63,17 @@ public interface IBeeSpeciesBuilder extends ISpeciesBuilder<IBeeSpeciesType, IBe
 	 */
 	default IBeeSpeciesBuilder addSpecialty(ItemStack stack, float chance) {
 		return addSpecialty(new Product(stack.getItem(), stack.getCount(), stack.getComponentsPatch(), chance));
+	}
+
+	/**
+	 * Adds a specialty to the bee species, a product only produced when the bee is in a jubilant state.
+	 * Plugins register species before the game binds item components, when an item stack cannot be built.
+	 *
+	 * @param stack  The template of the item stack the product should produce.
+	 * @param chance A float between 0 and 1. The chance that this product is produced during a single work cycle.
+	 */
+	default IBeeSpeciesBuilder addSpecialty(ItemStackTemplate stack, float chance) {
+		return addSpecialty(new Product(stack.item().value(), stack.count(), stack.components(), chance));
 	}
 
 	/**

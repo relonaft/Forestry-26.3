@@ -91,6 +91,14 @@ public interface IForestryModule {
 	}
 
 	/**
+	 * Called once, in module load order, the first time the game binds item components: when a server loads its
+	 * datapacks or a client receives them. Used to run the plugin registration that builds item stacks, such as
+	 * circuits and farm types, which cannot run in {@link #applyPluginRegistration}.
+	 */
+	default void applyBoundPluginRegistration() {
+	}
+
+	/**
 	 * Called during client plugin registration after {@link #applyPluginRegistration}. Modules build
 	 * their client manager from the assembled registration and install it here.
 	 *

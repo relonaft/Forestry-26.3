@@ -39,9 +39,9 @@ public class SqueezerContainerRecipe implements ISqueezerContainerRecipe {
 
 	private static final MapCodec<SqueezerContainerRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Identifier.CODEC.fieldOf("id").forGetter(SqueezerContainerRecipe::getId),
-		ItemStackTemplate.CODEC.xmap(ItemStackTemplate::create, ItemStackTemplate::fromNonEmptyStack).fieldOf("container").forGetter(SqueezerContainerRecipe::getEmptyContainer),
+		ItemStackTemplate.CODEC.fieldOf("container").forGetter(recipe -> recipe.emptyContainer),
 		Codec.INT.fieldOf("time").forGetter(SqueezerContainerRecipe::getProcessingTime),
-		ItemStackTemplate.CODEC.xmap(ItemStackTemplate::create, ItemStackTemplate::fromNonEmptyStack).fieldOf("remnants").forGetter(SqueezerContainerRecipe::getRemnants),
+		ItemStackTemplate.CODEC.fieldOf("remnants").forGetter(recipe -> recipe.remnants),
 		Codec.FLOAT.fieldOf("remnantsChance").forGetter(SqueezerContainerRecipe::getRemnantsChance)
 	).apply(instance, SqueezerContainerRecipe::new));
 	private static final StreamCodec<RegistryFriendlyByteBuf, SqueezerContainerRecipe> STREAM_CODEC = StreamCodec.of(
@@ -51,15 +51,19 @@ public class SqueezerContainerRecipe implements ISqueezerContainerRecipe {
 	public static final RecipeSerializer<SqueezerContainerRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
 	private final Identifier id;
-	private final ItemStack emptyContainer;
+	private final ItemStackTemplate emptyContainer;
 	private final int processingTime;
-	private final ItemStack remnants;
+	private final ItemStackTemplate remnants;
 	private final float remnantsChance;
 
 	public SqueezerContainerRecipe(Identifier id, ItemStack emptyContainer, int processingTime, ItemStack remnants, float remnantsChance) {
+		this(id, ItemStackTemplate.fromNonEmptyStack(emptyContainer), processingTime, ItemStackTemplate.fromNonEmptyStack(remnants), remnantsChance);
+	}
+
+	// holds templates, a stack cannot be built while the datapack loads
+	public SqueezerContainerRecipe(Identifier id, ItemStackTemplate emptyContainer, int processingTime, ItemStackTemplate remnants, float remnantsChance) {
 		this.id = id;
 		Preconditions.checkNotNull(emptyContainer);
-		Preconditions.checkArgument(!emptyContainer.isEmpty());
 		Preconditions.checkNotNull(remnants);
 
 		this.emptyContainer = emptyContainer;
@@ -70,7 +74,7 @@ public class SqueezerContainerRecipe implements ISqueezerContainerRecipe {
 
 	@Override
 	public ItemStack getEmptyContainer() {
-		return this.emptyContainer;
+		return this.emptyContainer.create();
 	}
 
 	@Override
@@ -85,7 +89,7 @@ public class SqueezerContainerRecipe implements ISqueezerContainerRecipe {
 
 	@Override
 	public ItemStack getRemnants() {
-		return this.remnants;
+		return this.remnants.create();
 	}
 
 	@Override
@@ -100,7 +104,7 @@ public class SqueezerContainerRecipe implements ISqueezerContainerRecipe {
 
 	@Override
 	public ItemStack getResultItem() {
-		return this.remnants;
+		return this.remnants.create();
 	}
 
 	@Override
@@ -120,9 +124,9 @@ public class SqueezerContainerRecipe implements ISqueezerContainerRecipe {
 
 	private static SqueezerContainerRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
 		Identifier recipeId = Identifier.STREAM_CODEC.decode(buffer);
-		ItemStack emptyContainer = ItemStack.STREAM_CODEC.decode(buffer);
+		ItemStackTemplate emptyContainer = ItemStackTemplate.STREAM_CODEC.decode(buffer);
 		int processingTime = ByteBufCodecs.VAR_INT.decode(buffer);
-		ItemStack remnants = ItemStack.STREAM_CODEC.decode(buffer);
+		ItemStackTemplate remnants = ItemStackTemplate.STREAM_CODEC.decode(buffer);
 		float remnantsChance = ByteBufCodecs.FLOAT.decode(buffer);
 
 		return new SqueezerContainerRecipe(recipeId, emptyContainer, processingTime, remnants, remnantsChance);
@@ -130,9 +134,9 @@ public class SqueezerContainerRecipe implements ISqueezerContainerRecipe {
 
 	private static void toNetwork(RegistryFriendlyByteBuf buffer, SqueezerContainerRecipe recipe) {
 		Identifier.STREAM_CODEC.encode(buffer, recipe.id);
-		ItemStack.STREAM_CODEC.encode(buffer, recipe.emptyContainer);
+		ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.emptyContainer);
 		ByteBufCodecs.VAR_INT.encode(buffer, recipe.processingTime);
-		ItemStack.STREAM_CODEC.encode(buffer, recipe.remnants);
+		ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.remnants);
 		ByteBufCodecs.FLOAT.encode(buffer, recipe.remnantsChance);
 	}
 }

@@ -61,8 +61,9 @@ public class ModuleFarming extends BlankForestryModule {
 		event.register(ForestryDataMaps.FARM_FERTILIZERS);
 	}
 
+	// farm types and farmables hold item stacks
 	@Override
-	public void applyPluginRegistration() {
+	public void applyBoundPluginRegistration() {
 		FarmingRegistration registration = new FarmingRegistration();
 
 		for (IForestryPlugin plugin : PluginManager.getLoadedPlugins()) {

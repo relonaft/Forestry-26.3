@@ -19,6 +19,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 
 public class FermenterRecipe implements IFermenterRecipe {
 	private static final MapCodec<FermenterRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -27,7 +28,7 @@ public class FermenterRecipe implements IFermenterRecipe {
 		Codec.INT.fieldOf("fermentationValue").forGetter(FermenterRecipe::getFermentationValue),
 		Codec.FLOAT.fieldOf("modifier").forGetter(FermenterRecipe::getModifier),
 		BuiltInRegistries.FLUID.byNameCodec().fieldOf("output").forGetter(FermenterRecipe::getOutput),
-		FluidStack.CODEC.fieldOf("fluidResource").forGetter(FermenterRecipe::getInputFluid)
+		FluidStackTemplate.CODEC.fieldOf("fluidResource").forGetter(recipe -> recipe.fluidResource)
 	).apply(instance, (id, resource, value, mod, out, fluidRes) -> new FermenterRecipe(id, resource, value, mod, out, fluidRes)));
 	private static final StreamCodec<RegistryFriendlyByteBuf, FermenterRecipe> STREAM_CODEC = StreamCodec.of(
 		FermenterRecipe::toNetwork,
@@ -40,12 +41,17 @@ public class FermenterRecipe implements IFermenterRecipe {
 	private final int fermentationValue;
 	private final float modifier;
 	private final Fluid output;
-	private final FluidStack fluidResource;
+	private final FluidStackTemplate fluidResource;
 
 	public FermenterRecipe(Identifier id, Ingredient resource, int fermentationValue, float modifier, Fluid output, FluidStack fluidResource) {
+		this(id, resource, fermentationValue, modifier, output, FluidStackTemplate.fromNonEmptyStack(fluidResource));
+	}
+
+	// holds templates, a stack cannot be built while the datapack loads
+	public FermenterRecipe(Identifier id, Ingredient resource, int fermentationValue, float modifier, Fluid output, FluidStackTemplate fluidResource) {
 		Preconditions.checkNotNull(id, "Recipe identifier cannot be null");
 		Preconditions.checkNotNull(resource, "Fermenter Resource cannot be null!");
-		Preconditions.checkArgument(!resource.isEmpty(), "Fermenter Resource item cannot be empty!");
+		// no emptiness check: the codec refuses an empty ingredient and a tag has no contents while the datapack loads
 		Preconditions.checkNotNull(output, "Fermenter Output cannot be null!");
 		Preconditions.checkNotNull(fluidResource, "Fermenter Liquid cannot be null!");
 
@@ -64,7 +70,7 @@ public class FermenterRecipe implements IFermenterRecipe {
 
 	@Override
 	public FluidStack getInputFluid() {
-		return this.fluidResource;
+		return this.fluidResource.create();
 	}
 
 	@Override
@@ -84,7 +90,7 @@ public class FermenterRecipe implements IFermenterRecipe {
 
 	@Override
 	public boolean matches(ItemStack inputItem, FluidStack inputFluid) {
-		return this.resource.test(inputItem) && FluidStack.isSameFluidSameComponents(this.fluidResource, inputFluid);
+		return this.resource.test(inputItem) && FluidStack.isSameFluidSameComponents(this.fluidResource.create(), inputFluid);
 	}
 
 	@Override
@@ -113,7 +119,7 @@ public class FermenterRecipe implements IFermenterRecipe {
 		int fermentationValue = ByteBufCodecs.VAR_INT.decode(buffer);
 		float modifier = ByteBufCodecs.FLOAT.decode(buffer);
 		Fluid output = ByteBufCodecs.registry(Registries.FLUID).decode(buffer);
-		FluidStack fluidResource = FluidStack.STREAM_CODEC.decode(buffer);
+		FluidStackTemplate fluidResource = FluidStackTemplate.STREAM_CODEC.decode(buffer);
 
 		return new FermenterRecipe(recipeId, resource, fermentationValue, modifier, output, fluidResource);
 	}
@@ -124,6 +130,6 @@ public class FermenterRecipe implements IFermenterRecipe {
 		ByteBufCodecs.VAR_INT.encode(buffer, recipe.fermentationValue);
 		ByteBufCodecs.FLOAT.encode(buffer, recipe.modifier);
 		ByteBufCodecs.registry(Registries.FLUID).encode(buffer, recipe.output);
-		FluidStack.STREAM_CODEC.encode(buffer, recipe.fluidResource);
+		FluidStackTemplate.STREAM_CODEC.encode(buffer, recipe.fluidResource);
 	}
 }

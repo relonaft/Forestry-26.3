@@ -1,6 +1,5 @@
 {
   "type": "forestry:carpenter",
-  "box": [],
   "id": "forestry:carpenter/turf_blocks",
   "liquid": {
     "amount": 100,

@@ -6,7 +6,7 @@
       "forestry:ginkgo_stripped_log",
       "forestry:ginkgo_fireproof_stripped_log"
     ],
-    "X": "minecraft:chain"
+    "X": "minecraft:iron_chain"
   },
   "pattern": [
     "X X",

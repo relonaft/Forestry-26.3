@@ -78,7 +78,8 @@ public class FarmLogicGourd extends FarmLogicWatered {
 		if (super.isAcceptedSoil(housing, direction, pos, state)) {
 			return true;
 		}
-		return !isStemPosition(housing, direction, pos) && state.is(BlockTags.DIRT);
+		// the dirt tag of 1.21.1, 26.1 moved grass, podzol, mycelium, moss and mud out of minecraft:dirt
+		return !isStemPosition(housing, direction, pos) && state.is(BlockTags.SUBSTRATE_OVERWORLD);
 	}
 
 	private static boolean isStemPosition(IFarmHousing housing, Direction direction, BlockPos position) {

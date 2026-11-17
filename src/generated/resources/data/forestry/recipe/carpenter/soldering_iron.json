@@ -1,6 +1,5 @@
 {
   "type": "forestry:carpenter",
-  "box": [],
   "id": "forestry:carpenter/soldering_iron",
   "liquid": {
     "amount": 1000,
