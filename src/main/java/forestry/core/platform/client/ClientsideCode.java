@@ -25,6 +25,10 @@ public class ClientsideCode {
 		return new ClientBreedingHandler();
 	}
 
+	public static boolean hasShiftDown() {
+		return Minecraft.getInstance().hasShiftDown();
+	}
+
 	@Nullable
 	public static RecipeManager getRecipeManager() {
 		ClientPacketListener connection = Minecraft.getInstance().getConnection();

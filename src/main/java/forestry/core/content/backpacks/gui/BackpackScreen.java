@@ -7,13 +7,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class BackpackScreen extends ForestryScreen<BackpackMenu> {
 	public BackpackScreen(BackpackMenu container, Inventory inv, Component title) {
-		super(getTextureString(container), container, inv, title);
-		BackpackMenu.Size size = container.getSize();
-
-		if (size == BackpackMenu.Size.T2) {
-            this.imageWidth = 176;
-            this.imageHeight = 192;
-		}
+		super(getTextureString(container), container, inv, title, DEFAULT_IMAGE_WIDTH, container.getSize() == BackpackMenu.Size.T2 ? 192 : DEFAULT_IMAGE_HEIGHT);
 	}
 
 	private static String getTextureString(BackpackMenu container) {

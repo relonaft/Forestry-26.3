@@ -1,18 +1,20 @@
 package forestry.core.platform.gui.ledgers;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import forestry.api.ForestryConstants;
 import forestry.api.client.ForestrySprites;
 import forestry.api.client.IForestryClientApi;
 import forestry.core.platform.config.Constants;
 import forestry.core.platform.config.SessionVars;
 import forestry.core.platform.gui.ForestryScreen;
+import forestry.core.platform.gui.GuiUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 
 import java.util.List;
@@ -146,11 +148,11 @@ public abstract class Ledger {
 		this.y = y;
 	}
 
-	public final void draw(GuiGraphics graphics) {
+	public final void draw(GuiGraphicsExtractor graphics) {
 		draw(graphics, this.y, this.x);
 	}
 
-	public abstract void draw(GuiGraphics graphics, int y, int x);
+	public abstract void draw(GuiGraphicsExtractor graphics, int y, int x);
 	
 	public boolean shouldDrawTooltip() {
 		return true;
@@ -202,71 +204,64 @@ public abstract class Ledger {
 
 	}
 
-	protected void drawBackground(GuiGraphics graphics, int y, int x) {
-		float colorR = (this.overlayColor >> 16 & 255) / 255.0F;
-		float colorG = (this.overlayColor >> 8 & 255) / 255.0F;
-		float colorB = (this.overlayColor & 255) / 255.0F;
-
-		RenderSystem.setShaderColor(colorR, colorG, colorB, 1.0F);
-		RenderSystem.setShaderTexture(0, this.texture);
+	protected void drawBackground(GuiGraphicsExtractor graphics, int y, int x) {
+		int color = ARGB.opaque(this.overlayColor);
 
 		int height = getHeight();
 		int width = getWidth();
 
 		// left edge
-		graphics.blit(this.texture, x, y + 4, 0, 256 - height + 4, 4, height - 4);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, this.texture, x, y + 4, 0, 256 - height + 4, 4, height - 4, 256, 256, color);
 		// top edge
-		graphics.blit(this.texture, x + 4, y, 256 - width + 4, 0, width - 4, 4);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, this.texture, x + 4, y, 256 - width + 4, 0, width - 4, 4, 256, 256, color);
 		// top left corner
-		graphics.blit(this.texture, x, y, 0, 0, 4, 4);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, this.texture, x, y, 0, 0, 4, 4, 256, 256, color);
 		// body + bottom + right
-		graphics.blit(this.texture, x + 4, y + 4, 256 - width + 4, 256 - height + 4, width - 4, height - 4);
-
-		RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0F);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, this.texture, x + 4, y + 4, 256 - width + 4, 256 - height + 4, width - 4, height - 4, 256, 256, color);
 	}
 
-	protected void drawSprite(GuiGraphics graphics, Identifier path, int x, int y) {
+	protected void drawSprite(GuiGraphicsExtractor graphics, Identifier path, int x, int y) {
 		drawSprite(graphics, IForestryClientApi.INSTANCE.getTextureManager().getSprite(path), x, y);
 	}
 
-	protected void drawSprite(GuiGraphics graphics, TextureAtlasSprite sprite, int x, int y) {
+	protected void drawSprite(GuiGraphicsExtractor graphics, TextureAtlasSprite sprite, int x, int y) {
 		drawSprite(graphics, sprite, x, y, ForestrySprites.TEXTURE_ATLAS);
 	}
 
-	protected void drawSprite(GuiGraphics graphics, TextureAtlasSprite sprite, int x, int y, Identifier textureMap) {
-		graphics.blit(x, y, 0, 16, 16, sprite);
+	protected void drawSprite(GuiGraphicsExtractor graphics, TextureAtlasSprite sprite, int x, int y, Identifier textureMap) {
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, 16, 16);
 	}
 
-	protected int drawHeader(GuiGraphics graphics, Component string, int x, int y) {
+	protected int drawHeader(GuiGraphicsExtractor graphics, Component string, int x, int y) {
 		return drawShadowText(graphics, string, x, y, this.fontColorHeader);
 	}
 
-	protected int drawSubheader(GuiGraphics graphics, Component string, int x, int y) {
+	protected int drawSubheader(GuiGraphicsExtractor graphics, Component string, int x, int y) {
 		return drawShadowText(graphics, string, x, y, this.fontColorSubheader);
 	}
 
-	protected int drawShadowText(GuiGraphics graphics, Component string, int x, int y, int color) {
+	protected int drawShadowText(GuiGraphicsExtractor graphics, Component string, int x, int y, int color) {
 		return drawSplitText(graphics, string, x, y, this.maxTextWidth, color, true);
 	}
 
-	protected int drawSplitText(GuiGraphics graphics, Component string, int x, int y, int width) {
+	protected int drawSplitText(GuiGraphicsExtractor graphics, Component string, int x, int y, int width) {
 		return drawSplitText(graphics, string, x, y, width, this.fontColorText, false);
 	}
 
-	protected int drawSplitText(GuiGraphics graphics, Component string, int x, int y, int width, int color, boolean shadow) {
+	protected int drawSplitText(GuiGraphicsExtractor graphics, Component string, int x, int y, int width, int color, boolean shadow) {
 		int originalY = y;
 		Minecraft mc = Minecraft.getInstance();
 		List<FormattedCharSequence> strings = mc.font.split(string, width);
 		for (FormattedCharSequence obj : strings) {
-			graphics.drawString(mc.font, obj, x, y, color, shadow);
+			graphics.text(mc.font, obj, x, y, GuiUtil.textColor(color), shadow);
 			y += mc.font.lineHeight;
 		}
 		return y - originalY;
 	}
 
-	protected int drawText(GuiGraphics graphics, String string, int x, int y) {
+	protected int drawText(GuiGraphicsExtractor graphics, String string, int x, int y) {
 		Minecraft mc = Minecraft.getInstance();
-		graphics.drawString(mc.font, string, x, y, this.fontColorText, false);
+		graphics.text(mc.font, string, x, y, GuiUtil.textColor(this.fontColorText), false);
 		return mc.font.lineHeight;
 	}
 }

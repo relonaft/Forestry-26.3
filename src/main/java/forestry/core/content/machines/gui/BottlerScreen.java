@@ -1,14 +1,15 @@
 package forestry.core.content.machines.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import forestry.core.platform.config.Constants;
 import forestry.core.platform.gui.TitledForestryScreen;
 import forestry.core.platform.gui.widgets.TankWidget;
 import forestry.core.platform.render.ColourProperties;
 import forestry.core.content.machines.tiles.BottlerBlockEntity;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import org.joml.Matrix3x2fStack;
 
 public class BottlerScreen extends TitledForestryScreen<BottlerMenu> {
 	private final BottlerBlockEntity tile;
@@ -20,40 +21,34 @@ public class BottlerScreen extends TitledForestryScreen<BottlerMenu> {
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseY, int mouseX) {
-		bindTexture(this.textureFile);
-
+	protected void extractBg(GuiGraphicsExtractor graphics, float partialTicks, int mouseY, int mouseX) {
 		int x = (this.width - this.imageWidth) / 2;
 		int y = (this.height - this.imageHeight) / 2;
-		graphics.blit(this.textureFile, x, y, 0, 0, this.imageWidth, this.imageHeight);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, this.textureFile, x, y, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
 
 		//RenderHelper.enableGUIStandardItemLighting(); TODO Gui Light
 		// RenderSystem.disableLighting();
 		// RenderSystem.enableRescaleNormal();
-		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-		PoseStack pose = graphics.pose();
-		pose.pushPose();
+		Matrix3x2fStack pose = graphics.pose();
+		pose.pushMatrix();
 		{
-			pose.translate(this.leftPos, this.topPos, 0.0F);
+			pose.translate(this.leftPos, this.topPos);
 			drawWidgets(graphics);
 		}
-		pose.popPose();
+		pose.popMatrix();
 
 		Component name = this.tile.getTitle();
         this.textLayout.line = 5;
         this.textLayout.drawCenteredLine(graphics, name, 0, ColourProperties.INSTANCE.get("gui.title"));
-		bindTexture(this.textureFile);
-
-		bindTexture(this.textureFile);
 
 		BottlerBlockEntity bottler = this.tile;
 		int progressArrow = bottler.getProgressScaled(22);
 		if (progressArrow > 0) {
 			if (bottler.isFillRecipe) {
-				graphics.blit(this.textureFile, this.leftPos + 108, this.topPos + 35, 177, 74, progressArrow, 16);
+				graphics.blit(RenderPipelines.GUI_TEXTURED, this.textureFile, this.leftPos + 108, this.topPos + 35, 177, 74, progressArrow, 16, 256, 256);
 			} else {
-				graphics.blit(this.textureFile, this.leftPos + 46, this.topPos + 35, 177, 74, progressArrow, 16);
+				graphics.blit(RenderPipelines.GUI_TEXTURED, this.textureFile, this.leftPos + 46, this.topPos + 35, 177, 74, progressArrow, 16, 256, 256);
 			}
 		}
 	}

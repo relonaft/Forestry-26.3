@@ -9,13 +9,13 @@ import forestry.api.core.genetics.IIndividualLiving;
 import forestry.api.core.genetics.ILifeStage;
 import forestry.api.core.genetics.ISpecies;
 import forestry.api.core.genetics.ISpeciesType;
+import forestry.core.platform.client.ClientsideCode;
 import forestry.core.platform.config.ForestryConfig;
 import forestry.core.features.CoreDataComponents;
 import forestry.core.platform.item.ItemForestry;
 import forestry.core.platform.util.GeneticsUtil;
 import forestry.core.platform.util.TooltipList;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -29,6 +29,8 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 public abstract class ItemGE extends ItemForestry implements IIndividualItem {
 	@Override
@@ -158,7 +160,7 @@ public abstract class ItemGE extends ItemForestry implements IIndividualItem {
 		IIndividual individual = getIndividual(stack);
 		if (individual != null) {
 			if (individual.isAnalyzed()) {
-				if (Screen.hasShiftDown()) {
+				if (FMLEnvironment.getDist() == Dist.CLIENT && ClientsideCode.hasShiftDown()) {
 					((ISpecies<IIndividual>) individual.getSpecies()).addTooltip(individual, tooltip);
 				} else {
 					tooltip.add(Component.translatable("for.gui.tooltip.tmi", "< %s >").withStyle(style -> style.withColor(ChatFormatting.GRAY).withItalic(true)));

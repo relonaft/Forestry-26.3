@@ -1,6 +1,5 @@
 package forestry.core.content.sorting.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import forestry.api.core.genetics.filter.IFilterLogic;
 import forestry.core.platform.config.Constants;
 import forestry.core.platform.gui.Drawable;
@@ -11,8 +10,10 @@ import forestry.core.content.sorting.gui.widgets.RuleWidget;
 import forestry.core.content.sorting.gui.widgets.SelectionWidget;
 import forestry.core.content.sorting.gui.widgets.SpeciesWidget;
 import forestry.core.content.sorting.tiles.GeneticFilterBlockEntity;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -29,9 +30,7 @@ public class GeneticFilterScreen extends TitledForestryScreen<GeneticFilterMenu>
 	private EditBox searchField;
 
 	public GeneticFilterScreen(GeneticFilterMenu menu, Inventory inventory, Component title) {
-		super(Constants.TEXTURE_PATH_GUI + "/filter.png", menu, inventory, title);
-        this.imageHeight = 222;
-        this.imageWidth = 212;
+		super(Constants.TEXTURE_PATH_GUI + "/filter.png", menu, inventory, title, 212, 222);
 		this.tile = menu.getTile();
 
 		for (int i = 0; i < 6; i++) {
@@ -98,28 +97,27 @@ public class GeneticFilterScreen extends TitledForestryScreen<GeneticFilterMenu>
 		this.searchField = new EditBox(this.font, this.leftPos + this.selection.getX() + 89 + 36, this.selection.getY() + this.topPos + 4, 80, this.font.lineHeight, Component.empty());
 		this.searchField.setMaxLength(50);
 		this.searchField.setBordered(false);
-		this.searchField.setTextColor(16777215);
+		this.searchField.setTextColor(0xFFFFFFFF);
 		this.searchField.setValue(oldString);
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
-		super.renderBg(graphics, partialTicks, mouseX, mouseY);
+	protected void extractBg(GuiGraphicsExtractor graphics, float partialTicks, int mouseX, int mouseY) {
+		super.extractBg(graphics, partialTicks, mouseX, mouseY);
 
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		if (this.searchField != null) {
-			this.searchField.render(graphics, mouseX, mouseY, partialTicks);
+			this.searchField.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 		}
 	}
 
 	@Override
-	public boolean keyPressed(int key, int scanCode, int modifiers) {
-		if (this.searchField != null && this.searchField.keyPressed(key, scanCode, modifiers)) {
+	public boolean keyPressed(KeyEvent event) {
+		if (this.searchField != null && this.searchField.keyPressed(event)) {
             this.scrollBar.setValue(0);
             this.selection.filterEntries(this.searchField.getValue());
 			return true;
 		} else {
-			return super.keyPressed(key, scanCode, modifiers);
+			return super.keyPressed(event);
 		}
 	}
 
@@ -134,15 +132,15 @@ public class GeneticFilterScreen extends TitledForestryScreen<GeneticFilterMenu>
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-		if (super.mouseClicked(mouseX, mouseY, mouseButton)) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+		if (super.mouseClicked(event, doubleClick)) {
 			return true;
 		}
 
 		if (this.searchField != null) {
-            this.searchField.mouseClicked(mouseX, mouseY, mouseButton);
+            this.searchField.mouseClicked(event, doubleClick);
 		}
-		Widget widget = this.widgetManager.getAtPosition(mouseX - this.leftPos, mouseY - this.topPos);
+		Widget widget = this.widgetManager.getAtPosition(event.x() - this.leftPos, event.y() - this.topPos);
 		if (widget == null) {
 			deselectFilter();
 		}

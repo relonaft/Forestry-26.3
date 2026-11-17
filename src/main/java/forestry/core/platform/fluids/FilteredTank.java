@@ -3,9 +3,9 @@ package forestry.core.platform.fluids;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Suppliers;
 import forestry.api.core.tooltips.ToolTip;
+import forestry.core.platform.client.ClientsideCode;
 import forestry.core.platform.util.ModUtil;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -14,6 +14,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 
@@ -82,7 +83,7 @@ public class FilteredTank extends StandardTank {
 		toolTip.clear();
 		Set<Identifier> filters = this.filters.get();
 
-		if (Screen.hasShiftDown() || filters.size() < 5) {
+		if ((FMLEnvironment.getDist() == Dist.CLIENT && ClientsideCode.hasShiftDown()) || filters.size() < 5) {
 			for (Identifier filterName : filters) {
 				Fluid fluidFilter = BuiltInRegistries.FLUID.getValue(filterName);
 				if (fluidFilter == Fluids.EMPTY) {

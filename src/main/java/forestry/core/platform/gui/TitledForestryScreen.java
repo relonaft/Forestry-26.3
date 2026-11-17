@@ -1,7 +1,7 @@
 package forestry.core.platform.gui;
 
 import forestry.core.platform.render.ColourProperties;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -12,14 +12,22 @@ public abstract class TitledForestryScreen<C extends AbstractContainerMenu> exte
 		super(texture, container, inv, title);
 	}
 
+	protected TitledForestryScreen(String texture, C container, Inventory inv, Component title, int imageWidth, int imageHeight) {
+		super(texture, container, inv, title, imageWidth, imageHeight);
+	}
+
 	// For Forestry addons
 	protected TitledForestryScreen(Identifier texture, C container, Inventory inv, Component title) {
 		super(texture, container, inv, title);
 	}
 
+	protected TitledForestryScreen(Identifier texture, C container, Inventory inv, Component title, int imageWidth, int imageHeight) {
+		super(texture, container, inv, title, imageWidth, imageHeight);
+	}
+
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
-		super.renderBg(graphics, partialTicks, mouseX, mouseY);
+	protected void extractBg(GuiGraphicsExtractor graphics, float partialTicks, int mouseX, int mouseY) {
+		super.extractBg(graphics, partialTicks, mouseX, mouseY);
 
         this.textLayout.line = 6;
 		if (centeredTitle()) {
@@ -27,8 +35,6 @@ public abstract class TitledForestryScreen<C extends AbstractContainerMenu> exte
 		} else {
             this.textLayout.drawLine(graphics, this.title.getString(), 8, ColourProperties.INSTANCE.get("gui.title"));
 		}
-		// todo get rid of this and make sure nothing breaks
-		bindTexture(this.textureFile);
 	}
 
 	protected boolean centeredTitle() {

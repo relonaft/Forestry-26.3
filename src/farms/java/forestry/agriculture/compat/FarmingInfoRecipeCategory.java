@@ -1,5 +1,6 @@
 package forestry.agriculture.compat;
 
+import forestry.core.platform.gui.GuiUtil;
 import forestry.api.ForestryConstants;
 import forestry.api.core.circuits.ICircuit;
 import forestry.api.agriculture.IFarmType;
@@ -22,7 +23,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -96,7 +97,7 @@ public class FarmingInfoRecipeCategory extends ForestryRecipeCategory<FarmingInf
 	}
 
 	@Override
-	public void draw(FarmingInfoRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
+	public void draw(FarmingInfoRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
         super.draw(recipe, recipeSlotsView, graphics, mouseX, mouseY);
         this.addition.draw(graphics, 37, 64);
         this.arrow.draw(graphics, 91, 64);
@@ -104,15 +105,15 @@ public class FarmingInfoRecipeCategory extends ForestryRecipeCategory<FarmingInf
 		Font font = Minecraft.getInstance().font;
 		ICircuit circuit = recipe.circuit();
 		int textX = (recipeWidth - font.width(circuit.getDisplayName().getString())) / 2;
-		graphics.drawString(font, circuit.getDisplayName(), textX, 3, ForestryColors.DARK_GRAY, false);
+		graphics.text(font, circuit.getDisplayName(), textX, 3, GuiUtil.textColor(ForestryColors.DARK_GRAY), false);
 
 		Component soilName = Component.translatable("for.jei.farming.soil");
-		graphics.drawString(font, soilName, 18 - (font.width(soilName.getString())) / 2, 45, ForestryColors.DARK_GRAY, false);
+		graphics.text(font, soilName, 18 - (font.width(soilName.getString())) / 2, 45, GuiUtil.textColor(ForestryColors.DARK_GRAY), false);
 
 		Component germlingsName = Component.translatable("for.jei.farming.germlings");
-		graphics.drawString(font, germlingsName, (recipeWidth - font.width(germlingsName.getString())) / 2, 45, ForestryColors.DARK_GRAY, false);
+		graphics.text(font, germlingsName, (recipeWidth - font.width(germlingsName.getString())) / 2, 45, GuiUtil.textColor(ForestryColors.DARK_GRAY), false);
 
 		Component productsName = Component.translatable("for.jei.farming.products");
-		graphics.drawString(font, productsName, 126 - (font.width(productsName.getString())) / 2, 45, ForestryColors.DARK_GRAY, false);
+		graphics.text(font, productsName, 126 - (font.width(productsName.getString())) / 2, 45, GuiUtil.textColor(ForestryColors.DARK_GRAY), false);
 	}
 }

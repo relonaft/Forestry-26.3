@@ -5,17 +5,18 @@ import forestry.api.core.circuits.ICircuit;
 import forestry.api.core.circuits.ICircuitBoard;
 import forestry.api.core.circuits.ICircuitLayout;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import forestry.core.platform.client.ClientsideCode;
 
 public class CircuitBoard implements ICircuitBoard {
 	private final EnumCircuitBoardType type;
@@ -64,7 +65,7 @@ public class CircuitBoard implements ICircuitBoard {
 				}
 			}
 
-			if (Screen.hasShiftDown() || extendedTooltip.size() <= 4) {
+			if ((FMLEnvironment.getDist() == Dist.CLIENT && ClientsideCode.hasShiftDown()) || extendedTooltip.size() <= 4) {
 				list.addAll(extendedTooltip);
 			} else {
 				list.add(Component.literal("<").withStyle(ChatFormatting.UNDERLINE, ChatFormatting.GRAY)

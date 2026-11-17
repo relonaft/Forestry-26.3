@@ -1,5 +1,6 @@
 package forestry.mail.gui;
 
+import forestry.core.platform.gui.GuiUtil;
 import forestry.api.ForestryRegistries;
 import forestry.api.mail.IMailAddress;
 import forestry.api.mail.IPostalCarrier;
@@ -14,16 +15,18 @@ import forestry.core.platform.util.NetworkUtil;
 import forestry.mail.carriers.PostalCarriers;
 import forestry.mail.inventory.LetterInventory;
 import forestry.mail.network.packets.PacketLetterInfoRequest;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.StringUtils;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -45,12 +48,9 @@ public class LetterScreen extends ForestryScreen<LetterMenu> {
 	private final ArrayList<Widget> tradeInfoWidgets;
 
 	public LetterScreen(LetterMenu container, Inventory inv, Component title) {
-		super(Constants.TEXTURE_PATH_GUI + "/letter.png", container, inv, title);
-		this.minecraft = Minecraft.getInstance(); //not 100% why this is needed, maybe side issues
+		super(Constants.TEXTURE_PATH_GUI + "/letter.png", container, inv, title, 194, 227);
 
 		this.itemInventory = container.getItemInventory();
-		this.imageWidth = 194;
-		this.imageHeight = 227;
 
 		this.isProcessedLetter = container.getLetter().isProcessed();
 		this.widgetManager.add(new AddresseeSlot(this.widgetManager, 16, 12, container));
@@ -85,16 +85,17 @@ public class LetterScreen extends ForestryScreen<LetterMenu> {
 	}
 
 	@Override
-	public boolean keyPressed(int key, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyEvent event) {
+		int key = event.key();
 		if (this.isProcessedLetter) {
-			return super.keyPressed(key, scanCode, modifiers);
+			return super.keyPressed(event);
 		}
 
 		// Set focus or enter text into address
 		if (this.address.isFocused()) {
-			if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_ESCAPE) {
+			if (key == InputConstants.KEY_RETURN || key == InputConstants.KEY_ESCAPE) {
 				this.address.setFocused(false);
-			} else if (key == GLFW.GLFW_KEY_TAB) {
+			} else if (key == InputConstants.KEY_TAB) {
 				// Name autocomplete
 				String currentValue = this.address.getValue().toLowerCase(Locale.ENGLISH);
 				Minecraft.getInstance().getConnection().getOnlinePlayers().stream()
@@ -103,43 +104,43 @@ public class LetterScreen extends ForestryScreen<LetterMenu> {
 					.findFirst()
 					.ifPresent(name -> this.address.setValue(name));
 			} else {
-				this.address.keyPressed(key, scanCode, modifiers);
+				this.address.keyPressed(event);
 			}
 			return true;
 		}
 
 		if (this.text.isFocused()) {
-			if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_ESCAPE) {
-				if (hasShiftDown() && key != GLFW.GLFW_KEY_ESCAPE) {
+			if (key == InputConstants.KEY_RETURN || key == InputConstants.KEY_ESCAPE) {
+				if (event.hasShiftDown() && key != InputConstants.KEY_ESCAPE) {
                     this.text.setValue(this.text.getValue() + "\n");
 				} else {
 					this.text.setFocused(false);
 				}
-			} else if (key == GLFW.GLFW_KEY_DOWN) {
+			} else if (key == InputConstants.KEY_DOWN) {
                 this.text.advanceLine();
-			} else if (key == GLFW.GLFW_KEY_UP) {
+			} else if (key == InputConstants.KEY_UP) {
                 this.text.regressLine();
-			} else if (this.text.moreLinesAllowed() || key == GLFW.GLFW_KEY_DELETE || key == GLFW.GLFW_KEY_BACKSLASH) {
-				this.text.keyPressed(key, scanCode, modifiers);
+			} else if (this.text.moreLinesAllowed() || key == InputConstants.KEY_DELETE || key == InputConstants.KEY_BACKSLASH) {
+				this.text.keyPressed(event);
 			}
 			return true;
 		}
 
-		return super.keyPressed(key, scanCode, modifiers);
+		return super.keyPressed(event);
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-		if (super.mouseClicked(mouseX, mouseY, mouseButton)) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+		if (super.mouseClicked(event, doubleClick)) {
 			return true;
 		}
-		this.address.mouseClicked(mouseX, mouseY, mouseButton);
-		this.text.mouseClicked(mouseX, mouseY, mouseButton);
+		this.address.mouseClicked(event, doubleClick);
+		this.text.mouseClicked(event, doubleClick);
 		return true;
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseY, int mouseX) {
+	protected void extractBg(GuiGraphicsExtractor graphics, float partialTicks, int mouseY, int mouseX) {
 
 		if (!this.isProcessedLetter && !this.checkedSessionVars) {
             this.checkedSessionVars = true;
@@ -166,23 +167,23 @@ public class LetterScreen extends ForestryScreen<LetterMenu> {
 		}
         this.textFocus = this.text.isFocused();
 
-		super.renderBg(graphics, partialTicks, mouseY, mouseX);
+		super.extractBg(graphics, partialTicks, mouseY, mouseX);
 
 		if (this.isProcessedLetter) {
-			graphics.drawString(this.font, this.address.getValue(), this.leftPos + 49, this.topPos + 16, ColourProperties.INSTANCE.get("gui.mail.lettertext"));
-			graphics.drawWordWrap(this.font, Component.literal(this.text.getValue()), this.leftPos + 20, this.topPos + 34, 119, ColourProperties.INSTANCE.get("gui.mail.lettertext"));
+			graphics.text(this.font, this.address.getValue(), this.leftPos + 49, this.topPos + 16, GuiUtil.textColor(ColourProperties.INSTANCE.get("gui.mail.lettertext")));
+			graphics.textWithWordWrap(this.font, Component.literal(this.text.getValue()), this.leftPos + 20, this.topPos + 34, 119, GuiUtil.textColor(ColourProperties.INSTANCE.get("gui.mail.lettertext")), false);
 		} else {
 			clearTradeInfoWidgets();
-            this.address.render(graphics, mouseX, mouseY, partialTicks);    //TODO correct?
+            this.address.extractRenderState(graphics, mouseX, mouseY, partialTicks);    //TODO correct?
 			if (this.menu.getCarrier().equals(PostalCarriers.TRADER.value())) {
 				drawTradePreview(graphics, 18, 32);
 			} else {
-                this.text.render(graphics, mouseX, mouseY, partialTicks);
+                this.text.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 			}
 		}
 	}
 
-	private void drawTradePreview(GuiGraphics graphics, int x, int y) {
+	private void drawTradePreview(GuiGraphicsExtractor graphics, int x, int y) {
 
 		Component infoString = null;
 		if (this.menu.getTradeInfo() == null) {
@@ -194,15 +195,15 @@ public class LetterScreen extends ForestryScreen<LetterMenu> {
 		}
 
 		if (infoString != null) {
-			graphics.drawWordWrap(this.font, infoString, this.leftPos + x, this.topPos + y, 119, ColourProperties.INSTANCE.get("gui.mail.lettertext"));
+			graphics.textWithWordWrap(this.font, infoString, this.leftPos + x, this.topPos + y, 119, GuiUtil.textColor(ColourProperties.INSTANCE.get("gui.mail.lettertext")), false);
 			return;
 		}
 
-		graphics.drawString(this.font, Component.translatable("for.gui.mail.pleasesend"), this.leftPos + x, this.topPos + y, ColourProperties.INSTANCE.get("gui.mail.lettertext"));
+		graphics.text(this.font, Component.translatable("for.gui.mail.pleasesend"), this.leftPos + x, this.topPos + y, GuiUtil.textColor(ColourProperties.INSTANCE.get("gui.mail.lettertext")));
 
 		addTradeInfoWidget(new ItemStackWidget(this.widgetManager, x, y + 10, this.menu.getTradeInfo().tradegood()));
 
-		graphics.drawString(this.font, Component.translatable("for.gui.mail.foreveryattached"), this.leftPos + x, this.topPos + y + 28, ColourProperties.INSTANCE.get("gui.mail.lettertext"));
+		graphics.text(this.font, Component.translatable("for.gui.mail.foreveryattached"), this.leftPos + x, this.topPos + y + 28, GuiUtil.textColor(ColourProperties.INSTANCE.get("gui.mail.lettertext")));
 
 		for (int i = 0; i < this.menu.getTradeInfo().required().size(); i++) {
 			addTradeInfoWidget(new ItemStackWidget(this.widgetManager, x + i * 18, y + 38, this.menu.getTradeInfo().required().get(i)));

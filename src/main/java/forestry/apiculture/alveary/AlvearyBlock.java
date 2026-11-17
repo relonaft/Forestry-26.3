@@ -5,11 +5,11 @@ import forestry.apiculture.features.ApicultureTiles;
 import forestry.apiculture.alveary.multiblock.AbstractAlvearyBlockEntity;
 import forestry.core.platform.block.AbstractMultiblockBlock;
 import forestry.core.platform.block.IBlockTooltip;
+import forestry.core.platform.client.ClientsideCode;
 import forestry.core.platform.tile.IActivatable;
 import forestry.core.platform.tile.TileUtil;
 import forestry.core.platform.util.ItemTooltipUtil;
 import forestry.core.platform.registration.FeatureTileType;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import net.minecraft.world.level.redstone.Orientation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 public class AlvearyBlock extends AbstractMultiblockBlock implements EntityBlock, IBlockTooltip {
 	public static final EnumProperty<State> STATE = EnumProperty.create("state", State.class);
@@ -153,7 +155,7 @@ public class AlvearyBlock extends AbstractMultiblockBlock implements EntityBlock
 
 	@Override
 	public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flag) {
-		if (Screen.hasShiftDown()) {
+		if (FMLEnvironment.getDist() == Dist.CLIENT && ClientsideCode.hasShiftDown()) {
 			tooltip.add(Component.translatable("block.forestry.alveary_tooltip"));
 		} else {
 			ItemTooltipUtil.addShiftInformation(tooltip);

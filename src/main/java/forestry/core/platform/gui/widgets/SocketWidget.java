@@ -7,16 +7,16 @@ import forestry.core.engine.circuits.ItemCircuitBoard;
 import forestry.core.platform.gui.GuiUtil;
 import forestry.core.platform.gui.IContainerSocketed;
 import forestry.core.platform.util.ItemTooltipUtil;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.lwjgl.glfw.GLFW;
 
 public class SocketWidget extends Widget {
 
@@ -30,7 +30,7 @@ public class SocketWidget extends Widget {
 	}
 
 	@Override
-	public void draw(GuiGraphics graphics, int startX, int startY) {
+	public void draw(GuiGraphicsExtractor graphics, int startX, int startY) {
 		ItemStack socketStack = this.tile.getSocket(this.slot);
 		if (!socketStack.isEmpty()) {
 			GuiUtil.drawItemStack(graphics, Minecraft.getInstance().font, socketStack, this.xPos, this.yPos);
@@ -63,7 +63,7 @@ public class SocketWidget extends Widget {
 		ItemStack itemstack = Minecraft.getInstance().player.containerMenu.getCarried();
 
 		if (itemstack.isEmpty()) {
-			if (mouseButton == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
+			if (mouseButton == InputConstants.MOUSE_BUTTON_MIDDLE) {
 
 			}
 			return;

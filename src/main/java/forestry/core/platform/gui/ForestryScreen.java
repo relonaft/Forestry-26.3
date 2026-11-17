@@ -2,8 +2,7 @@ package forestry.core.platform.gui;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedListMultimap;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.platform.InputConstants;
 import forestry.Forestry;
 import forestry.api.ForestryConstants;
 import forestry.api.core.climate.IClimateProvider;
@@ -19,14 +18,17 @@ import forestry.core.platform.render.ColourProperties;
 import forestry.core.content.energy.ForestryEnergyStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import org.joml.Matrix3x2fStack;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -47,8 +49,16 @@ public abstract class ForestryScreen<C extends AbstractContainerMenu> extends Ab
 		this(ForestryConstants.forestry(texture), menu, inv, title);
 	}
 
+	protected ForestryScreen(String texture, C menu, Inventory inv, Component title, int imageWidth, int imageHeight) {
+		this(ForestryConstants.forestry(texture), menu, inv, title, imageWidth, imageHeight);
+	}
+
 	protected ForestryScreen(Identifier texture, C menu, Inventory inv, Component title) {
-		super(menu, inv, title);
+		this(texture, menu, inv, title, DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT);
+	}
+
+	protected ForestryScreen(Identifier texture, C menu, Inventory inv, Component title, int imageWidth, int imageHeight) {
+		super(menu, inv, title, imageWidth, imageHeight);
 
 		this.widgetManager = new WidgetManager(this);
 		this.ledgerManager = new LedgerManager(this);
@@ -72,19 +82,13 @@ public abstract class ForestryScreen<C extends AbstractContainerMenu> extends Ab
 	}
 
 	@Override
-	public void resize(Minecraft mc, int width, int height) {
-		super.resize(mc, width, height);
+	public void resize(int width, int height) {
+		super.resize(width, height);
 	}
 
 	@Override
 	public void containerTick() {
 		super.containerTick();
-	}
-
-	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		super.render(graphics, mouseX, mouseY, partialTicks);
-		renderTooltip(graphics, mouseX, mouseY);
 	}
 
 	protected abstract void addLedgers();
@@ -138,20 +142,30 @@ public abstract class ForestryScreen<C extends AbstractContainerMenu> extends Ab
 		return this.font;
 	}
 
-	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-		// / Handle ledger clicks
-		this.ledgerManager.handleMouseClicked(mouseX, mouseY, mouseButton);
-		this.widgetManager.handleMouseClicked(mouseX, mouseY, mouseButton);
-		return super.mouseClicked(mouseX, mouseY, mouseButton);
+	// ledgers and widgets keep the numbering of container clicks: 0 left, 1 right, 2 middle
+	protected static int clickButton(MouseButtonEvent event) {
+		return switch (event.button()) {
+			case InputConstants.MOUSE_BUTTON_LEFT -> 0;
+			case InputConstants.MOUSE_BUTTON_RIGHT -> 1;
+			default -> event.button();
+		};
 	}
 
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
-		if (this.widgetManager.handleMouseRelease(mouseX, mouseY, mouseButton)) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+		int mouseButton = clickButton(event);
+		// / Handle ledger clicks
+		this.ledgerManager.handleMouseClicked(event.x(), event.y(), mouseButton);
+		this.widgetManager.handleMouseClicked(event.x(), event.y(), mouseButton);
+		return super.mouseClicked(event, doubleClick);
+	}
+
+	@Override
+	public boolean mouseReleased(MouseButtonEvent event) {
+		if (this.widgetManager.handleMouseRelease(event.x(), event.y(), clickButton(event))) {
 			return true;
 		}
-		return super.mouseReleased(mouseX, mouseY, mouseButton);
+		return super.mouseReleased(event);
 	}
 
 	@Nullable
@@ -182,7 +196,7 @@ public abstract class ForestryScreen<C extends AbstractContainerMenu> extends Ab
 	}
 
 	@Override
-	protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+	protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         this.ledgerManager.drawTooltips(graphics, mouseX, mouseY);
 
 		if (this.menu.getCarried().isEmpty()) {
@@ -192,33 +206,42 @@ public abstract class ForestryScreen<C extends AbstractContainerMenu> extends Ab
 		}
 	}
 
-	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
+	@Override
+	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+		super.extractBackground(graphics, mouseX, mouseY, partialTicks);
+		extractBg(graphics, partialTicks, mouseX, mouseY);
+	}
+
+	// drawn behind the vanilla widgets and the slots, like renderBg was
+	protected void extractBg(GuiGraphicsExtractor graphics, float partialTicks, int mouseX, int mouseY) {
 		drawBackground(graphics);
 
         this.widgetManager.updateWidgets(mouseX - this.leftPos, mouseY - this.topPos);
 
-		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-		PoseStack transform = graphics.pose();
-		transform.pushPose();
-		transform.translate(this.leftPos, this.topPos, 0.0F);
+		Matrix3x2fStack transform = graphics.pose();
+		transform.pushMatrix();
+		transform.translate(this.leftPos, this.topPos);
 		drawWidgets(graphics);
-		transform.popPose();
-
-		bindTexture(this.textureFile);
+		transform.popMatrix();
 	}
 
-	protected void drawBackground(GuiGraphics transform) {
-		transform.blit(this.textureFile, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+	protected void drawBackground(GuiGraphicsExtractor transform) {
+		transform.blit(RenderPipelines.GUI_TEXTURED, this.textureFile, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
 	}
 
-	protected void drawWidgets(GuiGraphics graphics) {
+	protected void drawWidgets(GuiGraphicsExtractor graphics) {
         this.ledgerManager.drawLedgers(graphics);
         this.widgetManager.drawWidgets(graphics);
 	}
 
-	protected void bindTexture(Identifier texturePath) {
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.setShaderTexture(0, texturePath);
+	@Override
+	public int getGuiLeft() {
+		return this.leftPos;
+	}
+
+	@Override
+	public int getGuiTop() {
+		return this.topPos;
 	}
 
 	@Override
