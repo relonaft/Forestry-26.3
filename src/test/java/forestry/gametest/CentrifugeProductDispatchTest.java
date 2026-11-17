@@ -30,6 +30,7 @@ import forestry.apiculture.bees.genetics.FireworkProduct;
 import forestry.core.features.CoreItems;
 import forestry.core.platform.util.RecipeUtils;
 import forestry.core.content.machines.features.FactoryRecipeTypes;
+import forestry.core.content.machines.recipes.CentrifugeRecipe;
 
 /**
  * Behavioral oracle for "centrifuge products as an IProduct dispatch". Proves that the default {@link Product}
@@ -178,6 +179,34 @@ public class CentrifugeProductDispatchTest {
 		boolean gotBeeswax = produced.stream().anyMatch(stack -> stack.is(CoreItems.BEESWAX.item()) && !stack.isEmpty());
 		if (!gotBeeswax) {
 			helper.fail("Honey comb did not produce its guaranteed beeswax output: " + produced);
+			return;
+		}
+
+		helper.succeed();
+	}
+
+	// the client gets recipes through the stream codec, so both honey comb products must survive it
+	@GameTest(template = "empty")
+	public static void honeyCombProductsSurviveSync(GameTestHelper helper) {
+		RecipeMap manager = helper.getLevel().recipeAccess().recipeMap();
+		ICentrifugeRecipe honeyComb = RecipeUtils.getRecipes(manager, FactoryRecipeTypes.CENTRIFUGE)
+			.filter(recipe -> recipe.getId().equals(ForestryConstants.forestry("centrifuge/honey_comb")))
+			.findFirst()
+			.orElse(null);
+		if (!(honeyComb instanceof CentrifugeRecipe recipe)) {
+			helper.fail("Missing built-in centrifuge/honey_comb recipe");
+			return;
+		}
+		if (recipe.getAllProducts().size() != 2) {
+			helper.fail("Honey comb must have beeswax and honey drop on the server: " + recipe.getAllProducts());
+			return;
+		}
+
+		RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), helper.getLevel().registryAccess());
+		CentrifugeRecipe.SERIALIZER.streamCodec().encode(buf, recipe);
+		CentrifugeRecipe decoded = CentrifugeRecipe.SERIALIZER.streamCodec().decode(buf);
+		if (!recipe.getAllProducts().equals(decoded.getAllProducts())) {
+			helper.fail("Honey comb products changed in the stream codec: " + recipe.getAllProducts() + " -> " + decoded.getAllProducts());
 			return;
 		}
 

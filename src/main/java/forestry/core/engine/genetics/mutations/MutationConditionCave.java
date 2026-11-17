@@ -15,8 +15,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 
 public class MutationConditionCave implements IMutationCondition {
-	public static final MapCodec<MutationConditionCave> CODEC = MapCodec.unit(new MutationConditionCave());
-	public static final StreamCodec<RegistryFriendlyByteBuf, MutationConditionCave> STREAM_CODEC = StreamCodec.unit(new MutationConditionCave());
+	// one instance, StreamCodec.unit refuses to encode any other
+	public static final MutationConditionCave INSTANCE = new MutationConditionCave();
+	public static final MapCodec<MutationConditionCave> CODEC = MapCodec.unit(INSTANCE);
+	public static final StreamCodec<RegistryFriendlyByteBuf, MutationConditionCave> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 	public static final MutationConditionType<MutationConditionCave> TYPE = new MutationConditionType<>(CODEC, STREAM_CODEC);
 
 	@Override

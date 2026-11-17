@@ -35,6 +35,12 @@ public class PacketRegistry implements IPacketRegistry {
 	}
 
 	private static <P extends CustomPacketPayload> void handleClientbound(P message, IPayloadContext context, BiConsumer<P, Player> handler) {
-		handler.accept(message, context.player());
+		// the datapack sync packets of a joining player arrive before the client player exists
+		Player player = null;
+		try {
+			player = context.player();
+		} catch (UnsupportedOperationException ignored) {
+		}
+		handler.accept(message, player);
 	}
 }

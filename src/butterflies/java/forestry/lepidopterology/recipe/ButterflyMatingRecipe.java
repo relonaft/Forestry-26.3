@@ -17,8 +17,10 @@ import net.minecraft.world.level.Level;
 
 public class ButterflyMatingRecipe extends CustomRecipe {
 	// the recipe has no fields, the JSON only names the type
-	public static final MapCodec<ButterflyMatingRecipe> MAP_CODEC = MapCodec.unit(ButterflyMatingRecipe::new);
-	public static final StreamCodec<RegistryFriendlyByteBuf, ButterflyMatingRecipe> STREAM_CODEC = StreamCodec.unit(new ButterflyMatingRecipe());
+	// one instance, StreamCodec.unit refuses to encode any other
+	public static final ButterflyMatingRecipe INSTANCE = new ButterflyMatingRecipe();
+	public static final MapCodec<ButterflyMatingRecipe> MAP_CODEC = MapCodec.unit(INSTANCE);
+	public static final StreamCodec<RegistryFriendlyByteBuf, ButterflyMatingRecipe> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 	public static final RecipeSerializer<ButterflyMatingRecipe> SERIALIZER = new RecipeSerializer<>(MAP_CODEC, STREAM_CODEC);
 
 	@Override

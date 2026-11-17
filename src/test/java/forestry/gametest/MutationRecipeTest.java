@@ -135,7 +135,7 @@ public class MutationRecipeTest {
 			new MutationConditionDaytime(true),
 			new MutationConditionTimeLimited(3, 29, 4, 15),
 			new MutationConditionRequiresResource(Blocks.STONE.defaultBlockState(), Blocks.DIRT.defaultBlockState()),
-			new MutationConditionCave()
+			MutationConditionCave.INSTANCE
 		);
 
 		for (IMutationCondition condition : conditions) {

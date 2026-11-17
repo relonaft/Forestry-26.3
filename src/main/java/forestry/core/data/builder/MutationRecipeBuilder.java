@@ -97,7 +97,7 @@ public class MutationRecipeBuilder {
 	}
 
 	public MutationRecipeBuilder cave() {
-		this.conditions.add(new MutationConditionCave());
+		this.conditions.add(MutationConditionCave.INSTANCE);
 		return this;
 	}
 

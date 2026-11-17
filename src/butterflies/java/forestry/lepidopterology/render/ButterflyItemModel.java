@@ -104,7 +104,8 @@ public class ButterflyItemModel implements ItemModel {
 				resolver.addLast(current.wrapped().textureSlots());
 			}
 			TextureSlots slots = resolver.resolve(base);
-			QuadCollection quads = base.bakeTopGeometry(slots, baker, BlockModelRotation.IDENTITY);
+			// not bakeTopGeometry, it caches the first identity bake and ignores the texture override after it
+			QuadCollection quads = base.getTopGeometry().bake(slots, baker, BlockModelRotation.IDENTITY, base, base.getTopAdditionalProperties());
 			ModelRenderProperties properties = ModelRenderProperties.fromResolvedModel(baker, base, slots);
 
 			baked.put(texture, new CuboidItemModelWrapper(List.of(), quads, properties, transformation));
