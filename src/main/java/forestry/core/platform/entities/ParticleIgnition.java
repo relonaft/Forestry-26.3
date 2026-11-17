@@ -1,17 +1,15 @@
 package forestry.core.platform.entities;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.NoRenderParticle;
 import net.minecraft.core.particles.ParticleTypes;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 //TODO particles
+// draws nothing itself, only emits vanilla smoke along its path
 @OnlyIn(Dist.CLIENT)
-public class ParticleIgnition extends Particle {
+public class ParticleIgnition extends NoRenderParticle {
 	private final float ignitionParticleScale;
 
 	public ParticleIgnition(ClientLevel world, double x, double y, double z) {
@@ -20,7 +18,6 @@ public class ParticleIgnition extends Particle {
 		this.yd *= 0.8;
 		this.zd *= 0.8;
 		this.yd = this.random.nextFloat() * 0.4F + 0.05F;
-		this.rCol = this.gCol = this.bCol = 1.0F;
 		//TODO particle stuff
 		//		this.particleScale *= this.rand.nextFloat() / 2 + 0.3F;
 		this.ignitionParticleScale = 1.0f;//this.particleScale;
@@ -29,8 +26,8 @@ public class ParticleIgnition extends Particle {
 	}
 
 	@Override
-	public int getLightColor(float p_70070_1_) {
-		int i = super.getLightColor(p_70070_1_);
+	public int getLightCoords(float p_70070_1_) {
+		int i = super.getLightCoords(p_70070_1_);
 		short short1 = 240;
 		int j = i >> 16 & 255;
 		return short1 | j << 16;
@@ -42,16 +39,6 @@ public class ParticleIgnition extends Particle {
 		//		this.particleScale = this.ignitionParticleScale * (1.0F - f6 * f6);
 		//		super.renderParticle(buffer, renderInfo, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
 	}*/
-
-	@Override
-	public void render(VertexConsumer iVertexBuilder, Camera activeRenderInfo, float v) {
-
-	}
-
-	@Override
-	public ParticleRenderType getRenderType() {
-		return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
-	}
 
 	/**
 	 * Called to update the entity's position/logic.

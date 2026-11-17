@@ -1,15 +1,15 @@
 package forestry.apiculture.particles;
 
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-public class SnowParticle extends TextureSheetParticle {
+public class SnowParticle extends SingleQuadParticle {
 	public static final TextureAtlasSprite[] SPRITES = new TextureAtlasSprite[3];
 
 	public SnowParticle(ClientLevel level, double x, double y, double z) {
-		super(level, x, y, z, 0, 0, 0);
+		// the base class wants a sprite up front, the random one is picked right below
+		super(level, x, y, z, 0, 0, 0, SPRITES[0]);
 
 		setSprite(SPRITES[this.random.nextInt(SPRITES.length)]);
 		this.quadSize *= 0.5F;
@@ -21,7 +21,7 @@ public class SnowParticle extends TextureSheetParticle {
 	}
 
 	@Override
-	public ParticleRenderType getRenderType() {
-		return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+	public SingleQuadParticle.Layer getLayer() {
+		return SingleQuadParticle.Layer.TRANSLUCENT;
 	}
 }

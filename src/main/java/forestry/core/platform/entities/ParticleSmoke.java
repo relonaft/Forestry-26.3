@@ -1,16 +1,14 @@
 package forestry.core.platform.entities;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.NoRenderParticle;
 import net.minecraft.core.particles.ParticleTypes;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+// draws nothing itself, only emits vanilla smoke along its path
 @OnlyIn(Dist.CLIENT)
-public class ParticleSmoke extends Particle {
+public class ParticleSmoke extends NoRenderParticle {
 	private final float ignitionParticleScale = 1.0f;    //TODO particles
 
 	public ParticleSmoke(ClientLevel world, double x, double y, double z) {
@@ -19,7 +17,6 @@ public class ParticleSmoke extends Particle {
 		this.yd *= 0.8;
 		this.zd *= 0.8;
 		this.yd = this.random.nextFloat() * 0.2F + 0.05F;
-		this.rCol = this.gCol = this.bCol = 1.0F;
 		//TODO - think width and height have to be changed now
 		//TODO - or multipleParticleScaleBy()
 		//		this.particleScale *= this.rand.nextFloat() / 4;
@@ -29,8 +26,8 @@ public class ParticleSmoke extends Particle {
 	}
 
 	@Override
-	public int getLightColor(float p_70070_1_) {
-		int i = super.getLightColor(p_70070_1_);
+	public int getLightCoords(float p_70070_1_) {
+		int i = super.getLightCoords(p_70070_1_);
 		int j = i >> 16 & 255;
 		return 240 | j << 16;
 	}
@@ -43,16 +40,6 @@ public class ParticleSmoke extends Particle {
 		//		super.renderParticle(buffer, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
 		//TODO now abstract
 	}*/
-
-	@Override
-	public void render(VertexConsumer iVertexBuilder, Camera activeRenderInfo, float v) {
-
-	}
-
-	@Override
-	public ParticleRenderType getRenderType() {
-		return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;    //TODO renderType
-	}
 
 	/**
 	 * Called to update the entity's position/logic.

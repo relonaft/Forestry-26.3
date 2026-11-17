@@ -8,18 +8,19 @@ import net.minecraft.server.level.ParticleStatus;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Vector3f;
 
 
 @OnlyIn(Dist.CLIENT)
 public class ParticleRender {
-	private static final DustParticleOptions HONEY_DUST = new DustParticleOptions(new Vector3f(0.9F, 0.75F, 0.0F), 1.0F);
+	// deviation: dust color is packed 8-bit rgb since 1.21.2, was (0.9, 0.75, 0.0)
+	private static final DustParticleOptions HONEY_DUST = new DustParticleOptions(0xE6BF00, 1.0F);
 
 	public static boolean shouldSpawnParticle(Level world) {
 		if (!ForestryConfig.CLIENT.showParticles.get()) {
@@ -55,6 +56,7 @@ public class ParticleRender {
 
 		ParticleEngine effectRenderer = Minecraft.getInstance().particleEngine;
 		//TODO particle data
+		// quirk kept: ParticleRender, createParticle already queues the particle, so here and below it is added twice
 		Particle Particle = effectRenderer.createParticle(DustParticleOptions.REDSTONE, x, y, z, 0, 0, 0);
 		effectRenderer.add(Particle);
 	}
@@ -92,7 +94,10 @@ public class ParticleRender {
 		//TODO particle data
 		Particle particle = effectRenderer.createParticle(DustParticleOptions.REDSTONE, x, y, z, 0, 0, 0);
 		if (particle != null) {
-			particle.setColor(red, green, blue);
+			// color lives on the quad particle now, dust is one
+			if (particle instanceof SingleQuadParticle quad) {
+				quad.setColor(red, green, blue);
+			}
 			effectRenderer.add(particle);
 		}
 	}

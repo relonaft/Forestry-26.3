@@ -20,12 +20,12 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import org.joml.Vector3f;
 
 public class WaterloggableTorchBlock extends TorchBlock implements SimpleWaterloggedBlock {
 	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-	private static final DustParticleOptions PHOSPHOR_PARTICLE = new DustParticleOptions(new Vector3f(0.68f, 1.0f, 0.89f), 0.8f);
+	// deviation: dust color is packed 8-bit rgb since 1.21.2, was (0.68, 1.0, 0.89)
+	private static final DustParticleOptions PHOSPHOR_PARTICLE = new DustParticleOptions(0xADFFE3, 0.8f);
 
 	public WaterloggableTorchBlock(BlockBehaviour.Properties properties) {
 		super(ParticleTypes.SOUL_FIRE_FLAME, properties);
