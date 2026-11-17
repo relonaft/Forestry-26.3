@@ -93,7 +93,8 @@ public class Tree extends Individual<ITreeSpecies, ITree, ITreeSpeciesType> impl
 	}
 
 	public static boolean canPlantTreeOn(BlockState state) {
-		return state.is(BlockTags.DIRT);
+		// the dirt tag of 1.21.1, 26.1 moved grass, podzol, mycelium, moss and mud out of minecraft:dirt
+		return state.is(BlockTags.SUBSTRATE_OVERWORLD);
 	}
 
 	@Override

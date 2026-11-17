@@ -21,6 +21,10 @@ Changes, each checked against the 26.3 codecs:
 - worldgen: configured features are worldgen/feature with the config fields at the top level, a block
   state without properties is written as the block ID
 - bee effects: a block state is the block ID, or "id" and "properties" instead of "Name" and "Properties"
+- the dirt tag: 26.1 left dirt, coarse dirt and rooted dirt in minecraft:dirt and moved grass, podzol,
+  mycelium, moss and mud out. A block tag or bee effect that names #minecraft:dirt names
+  #minecraft:substrate_overworld, which holds the old contents. There is no such item tag, so an item tag
+  also lists #minecraft:mud, #minecraft:moss_blocks and #minecraft:grass_blocks
 - global loot modifiers: every file under loot_modifiers is a modifier, the list file
   data/neoforge/loot_modifiers/global_loot_modifiers.json is removed once every entry has its file
 The script is idempotent and prints every value it could not convert.
@@ -149,6 +153,22 @@ def states(node, where):
     return {k: states(v, where) for k, v in node.items()}
 
 
+def old_dirt(node, where):
+    block = os.sep + 'bee_effect' + os.sep in where or os.sep + os.path.join('tags', 'block') + os.sep in where
+    item = os.sep + os.path.join('tags', 'item') + os.sep in where
+    if isinstance(node, dict):
+        return {k: old_dirt(v, where) for k, v in node.items()}
+    if isinstance(node, list):
+        out = [old_dirt(v, where) for v in node]
+        if item and '#minecraft:dirt' in out and '#minecraft:mud' not in out:
+            at = out.index('#minecraft:dirt') + 1
+            out[at:at] = ['#minecraft:mud', '#minecraft:moss_blocks', '#minecraft:grass_blocks']
+        return out
+    if block and node == '#minecraft:dirt':
+        return '#minecraft:substrate_overworld'
+    return node
+
+
 def modifier_list(roots):
     for root in roots:
         path = os.path.join(root, 'data', 'neoforge', 'loot_modifiers', 'global_loot_modifiers.json')
@@ -165,8 +185,8 @@ def modifier_list(roots):
             print('removed %s' % path)
 
 
-FOLDERS = {'recipe': recipe, 'loot_table': loot, 'loot_modifiers': loot, 'advancement': advancement, 'tags': lambda node, where: node,
-           'bee_effect': states}
+FOLDERS = {'recipe': recipe, 'loot_table': loot, 'loot_modifiers': loot, 'advancement': advancement, 'tags': old_dirt,
+           'bee_effect': lambda node, where: old_dirt(states(node, where), where)}
 
 
 def features(root):
