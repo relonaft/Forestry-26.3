@@ -40,12 +40,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-// the sapling block and the sapling item, which both take their model from the tree species
 public final class SaplingModel {
 	private SaplingModel() {
 	}
 
-	// the block state model of the sapling block
 	public static final class Unbaked implements CustomUnbakedBlockStateModel {
 		public static final Unbaked INSTANCE = new Unbaked();
 		public static final MapCodec<Unbaked> MAP_CODEC = MapCodec.unit(INSTANCE);
@@ -130,7 +128,6 @@ public final class SaplingModel {
 		}
 	}
 
-	// the item model of the sapling item
 	public record ItemUnbaked(List<ItemTintSource> tints) implements ItemModel.Unbaked {
 		public static final MapCodec<ItemUnbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			ItemTintSources.CODEC.listOf().optionalFieldOf("tints", List.of()).forGetter(ItemUnbaked::tints)

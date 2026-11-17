@@ -4,6 +4,221 @@
       "type": "minecraft:directory",
       "prefix": "slots/",
       "source": "forestry/atlas/gui/slots"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/chestnut_sapling",
+      "sprite": "forestry:block/chestnut_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/cocobolo_sapling",
+      "sprite": "forestry:block/cocobolo_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/coconut_sapling",
+      "sprite": "forestry:block/coconut_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/date_sapling",
+      "sprite": "forestry:block/date_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/dogwood_sapling",
+      "sprite": "forestry:block/dogwood_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/ebony_sapling",
+      "sprite": "forestry:block/ebony_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/elm_sapling",
+      "sprite": "forestry:block/elm_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/feijoa_sapling",
+      "sprite": "forestry:block/feijoa_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/fir_sapling",
+      "sprite": "forestry:block/fir_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/giant_sequoia_sapling",
+      "sprite": "forestry:block/giant_sequoia_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/ginkgo_sapling",
+      "sprite": "forestry:block/ginkgo_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/greenheart_sapling",
+      "sprite": "forestry:block/greenheart_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/ipe_sapling",
+      "sprite": "forestry:block/ipe_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/jacaranda_sapling",
+      "sprite": "forestry:block/jacaranda_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/kapok_sapling",
+      "sprite": "forestry:block/kapok_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/kauri_sapling",
+      "sprite": "forestry:block/kauri_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/larch_sapling",
+      "sprite": "forestry:block/larch_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/lemon_sapling",
+      "sprite": "forestry:block/lemon_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/lime_sapling",
+      "sprite": "forestry:block/lime_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/macrocarpa_sapling",
+      "sprite": "forestry:block/macrocarpa_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/mahoe_sapling",
+      "sprite": "forestry:block/mahoe_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/mahogany_sapling",
+      "sprite": "forestry:block/mahogany_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/maple_sapling",
+      "sprite": "forestry:block/maple_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/olive_sapling",
+      "sprite": "forestry:block/olive_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/orange_sapling",
+      "sprite": "forestry:block/orange_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/padauk_sapling",
+      "sprite": "forestry:block/padauk_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/papaya_sapling",
+      "sprite": "forestry:block/papaya_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/pear_sapling",
+      "sprite": "forestry:block/pear_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/pewen_sapling",
+      "sprite": "forestry:block/pewen_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/pine_sapling",
+      "sprite": "forestry:block/pine_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/plum_sapling",
+      "sprite": "forestry:block/plum_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/poplar_sapling",
+      "sprite": "forestry:block/poplar_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/sequoia_sapling",
+      "sprite": "forestry:block/sequoia_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/sour_cherry_sapling",
+      "sprite": "forestry:block/sour_cherry_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/teak_sapling",
+      "sprite": "forestry:block/teak_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/walnut_sapling",
+      "sprite": "forestry:block/walnut_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/wenge_sapling",
+      "sprite": "forestry:block/wenge_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/willow_sapling",
+      "sprite": "forestry:block/willow_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/zebrano_sapling",
+      "sprite": "forestry:block/zebrano_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/balsa_sapling",
+      "sprite": "forestry:block/balsa_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/baobab_sapling",
+      "sprite": "forestry:block/baobab_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/beech_sapling",
+      "sprite": "forestry:block/beech_sapling"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "forestry:item/camelthorn_sapling",
+      "sprite": "forestry:block/camelthorn_sapling"
     }
   ]
 }

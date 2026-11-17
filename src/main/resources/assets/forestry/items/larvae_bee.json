@@ -1,0 +1,20 @@
+{
+  "model": {
+    "type": "forestry:bee_ge",
+    "stage": "larvae",
+    "tints": [
+      {
+        "type": "forestry:item_tint",
+        "index": 0
+      },
+      {
+        "type": "forestry:item_tint",
+        "index": 1
+      },
+      {
+        "type": "forestry:item_tint",
+        "index": 2
+      }
+    ]
+  }
+}

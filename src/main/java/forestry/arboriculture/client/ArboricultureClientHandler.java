@@ -34,7 +34,7 @@ public class ArboricultureClientHandler implements IClientModuleHandler {
 	private static void registerBlockStateModels(RegisterBlockStateModels event) {
 		event.registerModel(ForestryConstants.forestry("sapling_ge"), SaplingModel.Unbaked.MAP_CODEC);
 
-		// registered here and not in FMLClientSetupEvent, which races the ModifyBakingResult that reads these models back
+		// not FMLClientSetupEvent, which races the ModifyBakingResult that reads these back
 		ClientManager clientManager = ClientManager.INSTANCE;
 		clientManager.registerModel(new LeavesModel(), ArboricultureBlocks.LEAVES);
 		clientManager.registerModel(new DecorativeLeavesModel<>(DecorativeLeavesBlock.class), ArboricultureBlocks.LEAVES_DECORATIVE);

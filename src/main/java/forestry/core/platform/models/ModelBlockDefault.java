@@ -28,7 +28,7 @@ import org.joml.Matrix4fc;
 import javax.annotation.Nullable;
 import java.util.List;
 
-// one instance is both the block model and the item model of the blocks it was registered for
+// both the block model and the item model of its blocks
 public abstract class ModelBlockDefault<B extends Block, K> implements DynamicBlockStateModel, ItemModel {
 	private static final Matrix4fc NO_TRANSFORM = new Matrix4f();
 
@@ -97,8 +97,7 @@ public abstract class ModelBlockDefault<B extends Block, K> implements DynamicBl
 		return getModel(state, level.getModelData(pos)).particleMaterial();
 	}
 
-	// last resort for callers that have no block state: the model baked last, or the missing texture before the
-	// first bake
+	// last resort without a block state: the model baked last
 	@Override
 	public Material.Baked particleMaterial() {
 		ModelBakerModel model = this.blockModel;
@@ -134,7 +133,7 @@ public abstract class ModelBlockDefault<B extends Block, K> implements DynamicBl
 			output.appendModelIdentityElement(ItemStackRenderState.FoilType.STANDARD);
 		}
 
-		// every tint index of the model asks the item, as the shared item colour did
+		// every tint index asks the item, like the old shared item colour
 		IntList tintLayers = layer.tintLayers();
 		for (int tintIndex = 0; tintIndex < model.tintLayers(); tintIndex++) {
 			int tint = ForestryItemTint.getColor(stack, tintIndex);

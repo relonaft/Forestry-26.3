@@ -48,7 +48,7 @@ public class LepidopterologyClientHandler implements IClientModuleHandler {
 		event.register(ForestryConstants.forestry("butterfly_ge"), ButterflyItemModel.Unbaked.MAP_CODEC);
 	}
 
-	// replaces the "age" item property that the cocoon model selected its overrides with
+	// replaces the "age" item property of the cocoon overrides
 	public record CocoonAgeProperty() implements RangeSelectItemModelProperty {
 		public static final MapCodec<CocoonAgeProperty> MAP_CODEC = MapCodec.unit(new CocoonAgeProperty());
 

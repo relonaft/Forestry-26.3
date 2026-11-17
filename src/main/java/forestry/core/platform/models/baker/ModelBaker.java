@@ -27,8 +27,7 @@ import java.util.List;
 //Todo: Test if baker can be replaced with model loaders
 @OnlyIn(Dist.CLIENT)
 public final class ModelBaker {
-	// these models are baked while rendering, after the vanilla baker and its interner are gone. The baked
-	// models are cached per key, so there is nothing to deduplicate
+	// baked at render time, after the vanilla baker and its interner are gone
 	private static final net.minecraft.client.resources.model.ModelBaker.Interner INTERNER = new net.minecraft.client.resources.model.ModelBaker.Interner() {
 		@Override
 		public Vector3fc vector(Vector3fc vector) {
@@ -82,8 +81,7 @@ public final class ModelBaker {
 
 		for (ModelBakerFace face : this.faces) {
 			Direction facing = face.face;
-			// the render layer of a quad comes from its sprite: opaque sprites go to the solid layer, sprites with
-			// holes (fancy leaves, fruit overlays) to cutout
+			// the sprite picks the render layer: cutout for sprites with holes
 			Transparency transparency = face.spite.transparency();
 			BakedQuad.MaterialInfo material = BakedQuad.MaterialInfo.of(new Material.Baked(face.spite, false), transparency, face.colorIndex, null, 0, true);
 			BakedQuad quad = FaceBakery.bakeQuad(INTERNER, POS_FROM, POS_TO, FULL_FACE, Quadrant.R0, material, facing, modelRotation, null);

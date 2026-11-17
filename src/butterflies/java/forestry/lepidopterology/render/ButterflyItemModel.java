@@ -98,7 +98,6 @@ public class ButterflyItemModel implements ItemModel {
 			if (baked.containsKey(texture)) {
 				return;
 			}
-			// the base model with its butterfly texture swapped
 			TextureSlots.Data override = new TextureSlots.Data.Builder().addTexture("butterfly", new Material(texture)).build();
 			TextureSlots.Resolver resolver = new TextureSlots.Resolver().addLast(override);
 			for (ResolvedModel current = base; current != null; current = current.parent()) {

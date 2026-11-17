@@ -11,8 +11,7 @@ import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
-// The tint of one layer of an ITintedItem. Item colours are part of the item model definition now, so every
-// item that was registered with the shared item colour lists these under "tints", one per tint index
+// one tint layer of an ITintedItem, listed under "tints" in its item model definition
 public record ForestryItemTint(int index) implements ItemTintSource {
 	public static final MapCodec<ForestryItemTint> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.INT.optionalFieldOf("index", 0).forGetter(ForestryItemTint::index)
@@ -23,8 +22,7 @@ public record ForestryItemTint(int index) implements ItemTintSource {
 		if (stack.getItem() instanceof ITintedItem tintedItem) {
 			color = tintedItem.getColorFromItemStack(stack, tintIndex);
 		}
-		// the item renderer reads ARGB; ITintedItem returns 0xRRGGBB (alpha 0), which renders as fully
-		// transparent. Force alpha to 0xff so opaque-tint multiply passes the texture through unchanged.
+		// ITintedItem returns 0xRRGGBB, alpha 0 would draw the layer invisible
 		return color | 0xff000000;
 	}
 

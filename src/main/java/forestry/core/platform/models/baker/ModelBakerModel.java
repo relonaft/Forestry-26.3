@@ -22,7 +22,7 @@ public class ModelBakerModel implements BlockStateModelPart {
 	private final Material.Baked particleMaterial;
 	private final QuadCollection quads;
 	private final int tintLayers;
-	// the item renderer wants the same quads split by blending, and their corners for the bounding box
+	// the item renderer needs the quads split by blending
 	private final Supplier<ItemQuads> itemQuads;
 	private final Supplier<Vector3fc[]> extents;
 
@@ -67,7 +67,7 @@ public class ModelBakerModel implements BlockStateModelPart {
 		return this.extents;
 	}
 
-	// one more than the highest tint index of the quads
+	// highest tint index plus one
 	public int tintLayers() {
 		return this.tintLayers;
 	}
