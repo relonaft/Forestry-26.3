@@ -1,5 +1,6 @@
 package forestry.core.content.soil;
 
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
@@ -20,7 +21,7 @@ public class HumusBlock extends Block {
 	public static final IntegerProperty DEGRADE = IntegerProperty.create("degrade", 0, MAX_DEGRADE);
 
 	public HumusBlock(Block.Properties properties) {
-		super(properties.randomTicks().strength(0.5f).sound(SoundType.GRAVEL));
+		super(PendingId.block(properties.randomTicks().strength(0.5f).sound(SoundType.GRAVEL)));
 
 		registerDefaultState(this.getStateDefinition().any().setValue(DEGRADE, 0));
 	}

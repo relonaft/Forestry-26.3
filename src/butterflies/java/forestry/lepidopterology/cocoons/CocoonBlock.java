@@ -2,6 +2,7 @@ package forestry.lepidopterology.cocoons;
 
 import forestry.api.lepidopterology.genetics.ButterflyLifeStage;
 import forestry.api.lepidopterology.genetics.IButterfly;
+import forestry.core.platform.registration.PendingId;
 import forestry.core.platform.tile.TileUtil;
 import forestry.core.platform.util.NBTUtilForestry;
 import forestry.core.platform.util.SpeciesUtil;
@@ -34,7 +35,7 @@ public class CocoonBlock extends Block implements EntityBlock {
 	public static final IntegerProperty AGE = IntegerProperty.create("age", 0, 2);
 
 	public CocoonBlock(Block.Properties properties) {
-		super(properties.randomTicks().sound(SoundType.GRAVEL));
+		super(PendingId.block(properties.randomTicks().sound(SoundType.GRAVEL)));
 		registerDefaultState(getStateDefinition().any().setValue(AGE, 0));
 	}
 

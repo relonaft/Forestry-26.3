@@ -1,5 +1,6 @@
 package forestry.core.content.resources;
 
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.world.level.block.Block;
 
 // todo remove
@@ -7,7 +8,7 @@ public class ResourceStorageBlock extends Block {
 	private final ResourceStorageBlockType type;
 
 	public ResourceStorageBlock(ResourceStorageBlockType type) {
-		super(Block.Properties.of().strength(3f, 5f));
+		super(PendingId.block(Block.Properties.of().strength(3f, 5f)));
 		this.type = type;
 	}
 

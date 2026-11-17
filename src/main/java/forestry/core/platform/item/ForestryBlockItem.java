@@ -1,6 +1,7 @@
 package forestry.core.platform.item;
 
 import forestry.core.platform.block.IBlockTooltip;
+import forestry.core.platform.registration.PendingId;
 import forestry.core.platform.util.ItemTooltipUtil;
 import forestry.core.platform.util.TooltipList;
 import java.util.function.Consumer;
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class ForestryBlockItem<B extends Block> extends BlockItem {
 	public ForestryBlockItem(B block, Item.Properties builder) {
-		super(block, builder);
+		super(block, PendingId.blockItem(block, builder));
 	}
 
 	public ForestryBlockItem(B block) {

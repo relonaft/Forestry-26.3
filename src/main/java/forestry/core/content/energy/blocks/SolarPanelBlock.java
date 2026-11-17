@@ -1,5 +1,6 @@
 package forestry.core.content.energy.blocks;
 
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -19,7 +20,7 @@ public class SolarPanelBlock extends Block {
 	public static final BooleanProperty IN_DAYLIGHT = BlockStateProperties.LIT;
 
 	public SolarPanelBlock(Properties properties) {
-		super(properties);
+		super(PendingId.block(properties));
 		this.registerDefaultState(this.defaultBlockState().setValue(CONNECTED, false).setValue(IN_DAYLIGHT, false));
 	}
 

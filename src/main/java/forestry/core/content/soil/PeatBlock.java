@@ -1,6 +1,7 @@
 package forestry.core.content.soil;
 
 import forestry.core.features.CoreBlocks;
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -15,9 +16,9 @@ import net.minecraft.world.phys.HitResult;
  */
 public class PeatBlock extends Block {
 	public PeatBlock(Block.Properties properties) {
-		super(properties
+		super(PendingId.block(properties
 			.strength(0.5f)
-			.sound(SoundType.MUDDY_MANGROVE_ROOTS));
+			.sound(SoundType.MUDDY_MANGROVE_ROOTS)));
 	}
 
 	@Override

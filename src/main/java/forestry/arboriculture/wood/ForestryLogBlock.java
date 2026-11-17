@@ -3,6 +3,7 @@ package forestry.arboriculture.wood;
 import forestry.api.arboriculture.IWoodType;
 import forestry.api.arboriculture.WoodBlockKind;
 import forestry.arboriculture.features.ArboricultureBlocks;
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -15,7 +16,7 @@ public class ForestryLogBlock extends RotatedPillarBlock implements IWoodTyped {
 	private final IWoodType woodType;
 
 	public ForestryLogBlock(WoodBlockKind kind, boolean fireproof, IWoodType woodType) {
-		super(ForestryPlanksBlock.createWoodProperties(woodType));
+		super(PendingId.block(ForestryPlanksBlock.createWoodProperties(woodType)));
 		this.kind = kind;
 		this.fireproof = fireproof;
 		this.woodType = woodType;

@@ -1,5 +1,6 @@
 package forestry.core.content.decorative;
 
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -48,7 +49,7 @@ public class BigCandleBlock extends Block implements SimpleWaterloggedBlock {
 	private final SimpleParticleType flame;
 
 	public BigCandleBlock(BlockBehaviour.Properties properties, BigCandleBlockType type) {
-		super(properties);
+		super(PendingId.block(properties));
 		this.registerDefaultState(this.getStateDefinition().any()
 			.setValue(LIT, false)
 			.setValue(WATERLOGGED, false));

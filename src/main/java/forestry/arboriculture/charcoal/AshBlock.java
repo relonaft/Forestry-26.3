@@ -2,6 +2,7 @@ package forestry.arboriculture.charcoal;
 
 import forestry.api.ForestryConstants;
 import forestry.core.platform.advancements.AdvancementHelper;
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -28,7 +29,7 @@ public class AshBlock extends FallingBlock {
 	private static final Identifier BREAK_ASH_BLOCK = ForestryConstants.forestry("break_ash_block");
 
 	public AshBlock(Block.Properties properties) {
-		super(properties.sound(SoundType.SAND).strength(0.6F).mapColor(MapColor.COLOR_LIGHT_GRAY));
+		super(PendingId.block(properties.sound(SoundType.SAND).strength(0.6F).mapColor(MapColor.COLOR_LIGHT_GRAY)));
 	}
 
 	@Override

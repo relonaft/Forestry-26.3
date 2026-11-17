@@ -1,5 +1,6 @@
 package forestry.apiculture.bees;
 
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,7 +22,7 @@ public class WaxBlock extends Block {
 	private final Supplier<Fluid> meltingFluid;
 
 	public WaxBlock(Properties properties, boolean melts, @Nullable Supplier<Fluid> meltingFluid) {
-		super(properties);
+		super(PendingId.block(properties));
 		this.meltable = melts;
 		this.meltingFluid = meltingFluid;
 	}

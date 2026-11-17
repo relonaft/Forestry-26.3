@@ -24,8 +24,8 @@ public class FeatureBlock<B extends Block, I extends BlockItem> extends ModFeatu
 
 	public FeatureBlock(IFeatureRegistry features, Identifier moduleId, String identifier, Supplier<B> constructorBlock, @Nullable Function<B, I> constructorItem) {
 		super(moduleId, identifier);
-		this.blockObject = features.getRegistry(Registries.BLOCK).register(identifier, constructorBlock);
-		this.itemObject = constructorItem == null ? null : features.getRegistry(Registries.ITEM).register(identifier, () -> constructorItem.apply(this.blockObject.get()));
+		this.blockObject = features.getRegistry(Registries.BLOCK).register(identifier, id -> PendingId.construct(Registries.BLOCK, id, constructorBlock));
+		this.itemObject = constructorItem == null ? null : features.getRegistry(Registries.ITEM).register(identifier, id -> PendingId.construct(Registries.ITEM, id, () -> constructorItem.apply(this.blockObject.get())));
 	}
 
 	public String getTranslationKey() {

@@ -1,5 +1,6 @@
 package forestry.core.content.lighting;
 
+import forestry.core.platform.registration.PendingId;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -31,7 +32,7 @@ public class WaterloggableWallTorchBlock extends WallTorchBlock implements Simpl
 	private static final DustParticleOptions PHOSPHOR_PARTICLE = new DustParticleOptions(0xADFFE3, 0.8f);
 
 	public WaterloggableWallTorchBlock(BlockBehaviour.Properties properties) {
-		super(ParticleTypes.SOUL_FIRE_FLAME, properties);
+		super(ParticleTypes.SOUL_FIRE_FLAME, PendingId.block(properties));
 		this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, false));
 	}
 

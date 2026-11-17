@@ -6,7 +6,6 @@ import forestry.api.core.backpacks.EnumBackpackType;
 import forestry.api.core.backpacks.IBackpackDefinition;
 import forestry.core.platform.util.datastructures.TriFunction;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
@@ -113,24 +112,4 @@ public interface IFeatureRegistry {
 	Collection<IModFeature> getFeatures(ResourceKey<? extends Registry<?>> type);
 
 	Identifier getModuleId();
-
-	static BlockBehaviour.Properties setBlockId(Identifier id, BlockBehaviour.Properties properties) {
-		return setId(Registries.BLOCK, id, properties);
-	}
-
-	static Item.Properties setItemId(Identifier id, Item.Properties properties) {
-		return setId(Registries.ITEM, id, properties);
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T, P> P setId(ResourceKey<? extends Registry<T>> registry, Identifier id, P properties) {
-		try {
-			properties.getClass().getMethod("setId", ResourceKey.class).invoke(properties, ResourceKey.create((ResourceKey<? extends Registry<T>>) registry, id));
-		} catch (NoSuchMethodException ignored) {
-			// Minecraft 1.21.1 does not require registry keys on block/item properties.
-		} catch (ReflectiveOperationException exception) {
-			throw new IllegalStateException("Failed to set registry id " + id + " on " + properties.getClass().getName(), exception);
-		}
-		return properties;
-	}
 }

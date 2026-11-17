@@ -4,6 +4,7 @@ import forestry.api.ForestryConstants;
 import forestry.api.core.ISpectacleVision;
 import forestry.core.platform.capabilities.SpectacleVision;
 import forestry.core.platform.config.Constants;
+import forestry.core.platform.registration.PendingId;
 import forestry.core.platform.util.ItemTooltipUtil;
 import forestry.core.platform.util.TooltipList;
 import java.util.function.Consumer;
@@ -35,7 +36,7 @@ public class ItemSpectacles extends Item {
 	public static final ISpectacleVision SPECTACLE_VISION = SpectacleVision.INSTANCE;
 
 	public ItemSpectacles() {
-		super(new Item.Properties().humanoidArmor(NATURALIST_ARMOR_MATERIAL, ArmorType.HELMET).durability(100));
+		super(PendingId.item(new Item.Properties().humanoidArmor(NATURALIST_ARMOR_MATERIAL, ArmorType.HELMET).durability(100)));
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package forestry.core.platform.item;
 
+import forestry.core.platform.registration.PendingId;
 import forestry.core.platform.util.ItemTooltipUtil;
 import forestry.core.platform.util.TooltipList;
 import java.util.function.Consumer;
@@ -17,7 +18,7 @@ public class ItemForestry extends Item {
 	}
 
 	public ItemForestry(Item.Properties properties) {
-		super(properties);
+		super(PendingId.item(properties));
 	}
 
 	@Override

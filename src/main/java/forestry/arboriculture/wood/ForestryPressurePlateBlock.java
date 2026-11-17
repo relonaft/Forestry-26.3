@@ -2,6 +2,7 @@ package forestry.arboriculture.wood;
 
 import forestry.api.arboriculture.IWoodType;
 import forestry.api.arboriculture.WoodBlockKind;
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
@@ -11,7 +12,7 @@ public class ForestryPressurePlateBlock extends PressurePlateBlock implements IW
 	private final ForestryWoodType type;
 
 	public ForestryPressurePlateBlock(ForestryWoodType type) {
-		super(type.getBlockSetType(), Properties.of().mapColor(MapColor.WOOD).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(0.5f).ignitedByLava().pushReaction(PushReaction.POPPED));
+		super(type.getBlockSetType(), PendingId.block(Properties.of().mapColor(MapColor.WOOD).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(0.5f).ignitedByLava().pushReaction(PushReaction.POPPED)));
 
 		this.type = type;
 	}

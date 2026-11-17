@@ -5,6 +5,7 @@ import forestry.api.IForestryApi;
 import forestry.api.arboriculture.ICharcoalManager;
 import forestry.api.arboriculture.ICharcoalPileWall;
 import forestry.arboriculture.features.CharcoalBlocks;
+import forestry.core.platform.registration.PendingId;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -36,7 +37,7 @@ public class LogPileBlock extends Block {
 	public static final int TICK_RATE = 960;
 
 	public LogPileBlock(Block.Properties properties) {
-		super(properties.strength(1.5f).sound(SoundType.WOOD).noOcclusion());
+		super(PendingId.block(properties.strength(1.5f).sound(SoundType.WOOD).noOcclusion()));
 		registerDefaultState(getStateDefinition().any().setValue(AGE, 0).setValue(IS_ACTIVE, false));
 	}
 

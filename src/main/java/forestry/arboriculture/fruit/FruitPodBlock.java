@@ -1,5 +1,6 @@
 package forestry.arboriculture.fruit;
 
+import forestry.core.platform.registration.PendingId;
 import forestry.core.platform.tile.TileUtil;
 import forestry.core.platform.util.BlockUtil;
 import net.minecraft.core.BlockPos;
@@ -32,7 +33,7 @@ public class FruitPodBlock extends CocoaBlock implements EntityBlock {
 	private final ForestryPodType podType;
 
 	public FruitPodBlock(ForestryPodType podType) {
-		super(SaplingBlock.Properties.of().randomTicks().strength(0.2f, 3.0f).sound(SoundType.WOOD));
+		super(PendingId.block(SaplingBlock.Properties.of().randomTicks().strength(0.2f, 3.0f).sound(SoundType.WOOD)));
 		this.podType = podType;
 	}
 

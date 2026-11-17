@@ -1,5 +1,6 @@
 package forestry.lepidopterology.cocoons;
 
+import forestry.core.platform.registration.PendingId;
 import forestry.core.platform.util.ItemStackUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -28,10 +29,10 @@ import java.util.List;
 
 public class SolidCocoonBlock extends Block implements EntityBlock {
 	public SolidCocoonBlock(Block.Properties properties) {
-		super(properties
+		super(PendingId.block(properties
 			.strength(0.5F)
 			.randomTicks()
-			.sound(SoundType.GRAVEL));
+			.sound(SoundType.GRAVEL)));
 		registerDefaultState(getStateDefinition().any().setValue(CocoonBlock.AGE, 0));
 	}
 

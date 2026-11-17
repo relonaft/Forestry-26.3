@@ -1,5 +1,6 @@
 package forestry.core.platform.item;
 
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
@@ -12,7 +13,7 @@ public class ItemForestryFood extends Item {
 
 	//Constructor for when properties are constructed manually
 	public ItemForestryFood(Item.Properties properties) {
-		super(properties);
+		super(PendingId.item(properties));
 	}
 
 	//Simplified constructor for only declaring heal amount and saturation
@@ -28,7 +29,7 @@ public class ItemForestryFood extends Item {
 
 	//Actual constructor that puts everything together.
 	public ItemForestryFood(int heal, float saturation, Item.Properties properties) {
-		super(properties.food(new FoodProperties.Builder().nutrition(heal).saturationModifier(saturation).build()));
+		super(PendingId.item(properties.food(new FoodProperties.Builder().nutrition(heal).saturationModifier(saturation).build())));
 	}
 
 	@Override

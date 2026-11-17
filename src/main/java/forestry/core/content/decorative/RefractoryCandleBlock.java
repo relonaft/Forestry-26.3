@@ -1,5 +1,6 @@
 package forestry.core.content.decorative;
 
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -13,7 +14,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class RefractoryCandleBlock extends CandleBlock {
 	public RefractoryCandleBlock(BlockBehaviour.Properties properties) {
-		super(properties);
+		super(PendingId.block(properties));
 	}
 
 	@Override

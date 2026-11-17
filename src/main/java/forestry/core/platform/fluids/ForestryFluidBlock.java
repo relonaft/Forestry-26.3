@@ -2,6 +2,7 @@ package forestry.core.platform.fluids;
 
 import forestry.core.platform.registration.FeatureFluid;
 import forestry.core.platform.registration.FluidProperties;
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -28,7 +29,7 @@ public class ForestryFluidBlock extends LiquidBlock {
 	private final boolean explodes;
 
 	public ForestryFluidBlock(BlockBehaviour.Properties blockProperties, FeatureFluid feature) {
-		super(feature.fluid(), createBlockProperties(blockProperties, feature.properties()));
+		super(feature.fluid(), PendingId.block(createBlockProperties(blockProperties, feature.properties())));
 		FluidProperties properties = feature.properties();
 		this.flammability = properties.flammability;
 		this.spreadsFire = properties.spreadsFire;
