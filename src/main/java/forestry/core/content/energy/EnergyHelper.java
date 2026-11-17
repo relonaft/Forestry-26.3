@@ -5,7 +5,7 @@ import forestry.core.content.energy.tiles.EngineBlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import forestry.core.platform.transfer.IEnergyStorage;
 
 import javax.annotation.Nullable;
 

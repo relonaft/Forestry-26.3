@@ -39,8 +39,8 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import forestry.core.platform.transfer.IFluidHandler;
+import forestry.core.platform.transfer.IFluidHandlerItem;
 
 import javax.annotation.Nullable;
 

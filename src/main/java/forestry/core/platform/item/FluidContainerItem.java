@@ -20,12 +20,12 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.fluids.FluidActionResult;
+import forestry.core.platform.transfer.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.transfer.fluid.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import forestry.core.platform.transfer.FluidUtil;
+import forestry.core.platform.transfer.IFluidHandler;
+import forestry.core.platform.transfer.IFluidHandlerItem;
+import forestry.core.platform.transfer.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 

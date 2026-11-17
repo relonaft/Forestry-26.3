@@ -41,6 +41,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import forestry.core.platform.transfer.Transfers;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -133,13 +134,13 @@ public class ModuleCore extends BlankForestryModule {
 	private static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.registerItem(ForestryCapabilities.SPECTACLE_VISION, (stack, context) -> ItemSpectacles.SPECTACLE_VISION, CoreItems.SPECTACLES.item());
 		event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> ((ItemPipette) stack.getItem()).createFluidHandler(stack), CoreItems.PIPETTE.item());
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CoreTiles.ANALYZER.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CoreTiles.ESCRITOIRE.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CoreTiles.APIARIST_CHEST.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CoreTiles.ARBORIST_CHEST.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CoreTiles.LEPIDOPTERIST_CHEST.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, CoreTiles.ANALYZER.tileType(), (tile, side) -> tile.getEnergyHandler(side));
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, CoreTiles.ANALYZER.tileType(), (tile, side) -> tile.getTankManager());
+		event.registerBlockEntity(Capabilities.Item.BLOCK, CoreTiles.ANALYZER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, CoreTiles.ESCRITOIRE.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, CoreTiles.APIARIST_CHEST.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, CoreTiles.ARBORIST_CHEST.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, CoreTiles.LEPIDOPTERIST_CHEST.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, CoreTiles.ANALYZER.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, CoreTiles.ANALYZER.tileType(), (tile, side) -> Transfers.exposeFluid(tile.getTankManager()));
 	}
 
 	private static void registerGlobalLootModifiers(RegisterEvent event) {

@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import forestry.core.platform.transfer.IEnergyStorage;
 
 import javax.annotation.Nullable;
 

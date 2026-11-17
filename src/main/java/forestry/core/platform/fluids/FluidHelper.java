@@ -7,12 +7,12 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.fluids.FluidActionResult;
+import forestry.core.platform.transfer.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.fluid.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import forestry.core.platform.transfer.FluidUtil;
+import forestry.core.platform.transfer.IFluidHandler;
+import forestry.core.platform.transfer.IFluidHandlerItem;
 
 import javax.annotation.Nullable;
 import java.util.Optional;

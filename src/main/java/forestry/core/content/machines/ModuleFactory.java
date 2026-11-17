@@ -14,6 +14,7 @@ import forestry.core.platform.network.PacketIdServer;
 import forestry.modules.BlankForestryModule;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
+import forestry.core.platform.transfer.Transfers;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
@@ -23,33 +24,33 @@ import java.util.function.Consumer;
 @ForestryModule
 public class ModuleFactory extends BlankForestryModule {
 	private static void registerCapabilities(RegisterCapabilitiesEvent event) {
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FactoryBlockEntities.BOTTLER.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FactoryBlockEntities.CARPENTER.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FactoryBlockEntities.CENTRIFUGE.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FactoryBlockEntities.FABRICATOR.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FactoryBlockEntities.FERMENTER.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FactoryBlockEntities.RAINMAKER.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FactoryBlockEntities.MOISTENER.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FactoryBlockEntities.SMELTER.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FactoryBlockEntities.SQUEEZER.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FactoryBlockEntities.STILL.tileType(), (tile, side) -> tile.getItemHandler(side));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, FactoryBlockEntities.BOTTLER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, FactoryBlockEntities.CARPENTER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, FactoryBlockEntities.CENTRIFUGE.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, FactoryBlockEntities.FABRICATOR.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, FactoryBlockEntities.FERMENTER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, FactoryBlockEntities.RAINMAKER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, FactoryBlockEntities.MOISTENER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, FactoryBlockEntities.SMELTER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, FactoryBlockEntities.SQUEEZER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, FactoryBlockEntities.STILL.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
 
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, FactoryBlockEntities.BOTTLER.tileType(), (tile, side) -> tile.getEnergyHandler(side));
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, FactoryBlockEntities.CARPENTER.tileType(), (tile, side) -> tile.getEnergyHandler(side));
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, FactoryBlockEntities.CENTRIFUGE.tileType(), (tile, side) -> tile.getEnergyHandler(side));
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, FactoryBlockEntities.FABRICATOR.tileType(), (tile, side) -> tile.getEnergyHandler(side));
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, FactoryBlockEntities.FERMENTER.tileType(), (tile, side) -> tile.getEnergyHandler(side));
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, FactoryBlockEntities.SMELTER.tileType(), (tile, side) -> tile.getEnergyHandler(side));
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, FactoryBlockEntities.SQUEEZER.tileType(), (tile, side) -> tile.getEnergyHandler(side));
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, FactoryBlockEntities.STILL.tileType(), (tile, side) -> tile.getEnergyHandler(side));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, FactoryBlockEntities.BOTTLER.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, FactoryBlockEntities.CARPENTER.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, FactoryBlockEntities.CENTRIFUGE.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, FactoryBlockEntities.FABRICATOR.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, FactoryBlockEntities.FERMENTER.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, FactoryBlockEntities.SMELTER.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, FactoryBlockEntities.SQUEEZER.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, FactoryBlockEntities.STILL.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
 
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FactoryBlockEntities.BOTTLER.tileType(), (tile, side) -> tile.getFluidHandler(side));
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FactoryBlockEntities.CARPENTER.tileType(), (tile, side) -> tile.getFluidHandler(side));
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FactoryBlockEntities.FABRICATOR.tileType(), (tile, side) -> tile.getFluidHandler(side));
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FactoryBlockEntities.FERMENTER.tileType(), (tile, side) -> tile.getFluidHandler(side));
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FactoryBlockEntities.MOISTENER.tileType(), (tile, side) -> tile.getFluidHandler(side));
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FactoryBlockEntities.SQUEEZER.tileType(), (tile, side) -> tile.getFluidHandler(side));
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FactoryBlockEntities.STILL.tileType(), (tile, side) -> tile.getFluidHandler(side));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, FactoryBlockEntities.BOTTLER.tileType(), (tile, side) -> Transfers.exposeFluid(tile.getFluidHandler(side)));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, FactoryBlockEntities.CARPENTER.tileType(), (tile, side) -> Transfers.exposeFluid(tile.getFluidHandler(side)));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, FactoryBlockEntities.FABRICATOR.tileType(), (tile, side) -> Transfers.exposeFluid(tile.getFluidHandler(side)));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, FactoryBlockEntities.FERMENTER.tileType(), (tile, side) -> Transfers.exposeFluid(tile.getFluidHandler(side)));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, FactoryBlockEntities.MOISTENER.tileType(), (tile, side) -> Transfers.exposeFluid(tile.getFluidHandler(side)));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, FactoryBlockEntities.SQUEEZER.tileType(), (tile, side) -> Transfers.exposeFluid(tile.getFluidHandler(side)));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, FactoryBlockEntities.STILL.tileType(), (tile, side) -> Transfers.exposeFluid(tile.getFluidHandler(side)));
 	}
 
 	@Override

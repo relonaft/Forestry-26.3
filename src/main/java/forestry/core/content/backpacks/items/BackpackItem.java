@@ -35,7 +35,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.items.IItemHandler;
+import forestry.core.platform.transfer.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;

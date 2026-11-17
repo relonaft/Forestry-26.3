@@ -40,7 +40,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import forestry.core.platform.transfer.InvWrapper;
 import forestry.arboriculture.tab.ArboricultureCreativeTab;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;

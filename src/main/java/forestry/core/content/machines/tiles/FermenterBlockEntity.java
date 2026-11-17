@@ -35,7 +35,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import forestry.core.platform.transfer.IFluidHandler;
 
 import javax.annotation.Nullable;
 import forestry.api.ForestryDataMaps;

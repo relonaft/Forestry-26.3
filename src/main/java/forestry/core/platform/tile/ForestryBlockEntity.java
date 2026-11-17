@@ -29,9 +29,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
-import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
+import forestry.core.platform.transfer.IItemHandler;
+import forestry.core.platform.transfer.InvWrapper;
+import forestry.core.platform.transfer.SidedInvWrapper;
 
 import javax.annotation.Nullable;
 

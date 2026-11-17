@@ -26,7 +26,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import forestry.core.platform.transfer.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;

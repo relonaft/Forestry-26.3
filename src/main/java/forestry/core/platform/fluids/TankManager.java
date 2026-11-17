@@ -8,6 +8,7 @@ import forestry.core.platform.network.IStreamable;
 import forestry.core.platform.network.packets.PacketTankLevelUpdate;
 import forestry.core.platform.tile.ILiquidTankTile;
 import forestry.core.platform.tile.IRenderableTile;
+import forestry.core.platform.transfer.HandlerJournal;
 import forestry.core.platform.util.NetworkUtil;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -18,7 +19,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
+import forestry.core.platform.transfer.IFluidTank;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,6 +36,36 @@ public class TankManager implements ITankManager, ITankUpdateHandler, IStreamabl
 	// tank tile updates, for blocks that show fluid levels on the outside
 	@Nullable
 	private final ILiquidTankTile tile;
+
+	// rolls the tanks back when another mod aborts its transaction
+	// the level packets wait for the end, a simulation is a transaction that is aborted
+	private final HandlerJournal<FluidStack[]> journal = new HandlerJournal<>() {
+		@Override
+		protected FluidStack[] save() {
+			FluidStack[] fluids = new FluidStack[TankManager.this.tanks.size()];
+			for (int i = 0; i < fluids.length; i++) {
+				fluids[i] = TankManager.this.tanks.get(i).getFluid().copy();
+			}
+			return fluids;
+		}
+
+		@Override
+		protected void restore(FluidStack[] fluids) {
+			for (int i = 0; i < fluids.length; i++) {
+				TankManager.this.tanks.get(i).setFluid(fluids[i]);
+			}
+		}
+
+		@Override
+		protected void onEnd(FluidStack[] start) {
+			for (int i = 0; i < start.length; i++) {
+				StandardTank tank = TankManager.this.tanks.get(i);
+				if (!FluidHelper.areFluidStacksEqual(start[i], tank.getFluid())) {
+					updateTankLevels(tank);
+				}
+			}
+		}
+	};
 
 	public TankManager() {
 		this.tile = null;
@@ -222,8 +254,13 @@ public class TankManager implements ITankManager, ITankUpdateHandler, IStreamabl
 	}
 
 	@Override
+	public void updateSnapshots(TransactionContext transaction) {
+		this.journal.updateSnapshots(transaction);
+	}
+
+	@Override
 	public void updateTankLevels(StandardTank tank) {
-		if (!(this.tile instanceof IRenderableTile)) {
+		if (!(this.tile instanceof IRenderableTile) || this.journal.isActive()) {
 			return;
 		}
 
