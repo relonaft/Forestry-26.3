@@ -12,7 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import forestry.core.platform.transfer.IEnergyStorage;
 
 import javax.annotation.Nullable;
 

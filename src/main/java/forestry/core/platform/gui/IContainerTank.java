@@ -1,6 +1,6 @@
 package forestry.core.platform.gui;
 
-import net.neoforged.neoforge.fluids.IFluidTank;
+import forestry.core.platform.transfer.IFluidTank;
 
 import javax.annotation.Nullable;
 

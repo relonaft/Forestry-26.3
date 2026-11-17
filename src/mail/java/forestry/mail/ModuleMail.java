@@ -22,6 +22,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import forestry.core.platform.transfer.Transfers;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -47,7 +48,7 @@ public class ModuleMail extends BlankForestryModule {
 	}
 
 	private static void registerCapabilities(RegisterCapabilitiesEvent event) {
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, MailBlockEntities.MAILBOX.tileType(), (tile, side) -> tile.getAutomatedMailHandler());
+		event.registerBlockEntity(Capabilities.Item.BLOCK, MailBlockEntities.MAILBOX.tileType(), (tile, side) -> Transfers.exposeItems(tile.getAutomatedMailHandler()));
 	}
 
 	private static void registerDataMaps(RegisterDataMapTypesEvent event) {

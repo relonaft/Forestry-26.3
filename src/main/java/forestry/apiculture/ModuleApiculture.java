@@ -37,6 +37,7 @@ import forestry.apiculture.proxy.ApicultureClientHandler;
 import forestry.apiculture.tab.ApicultureCreativeTab;
 import forestry.apiimpl.client.ForestryClientApiImpl;
 import forestry.apiimpl.client.plugin.ClientRegistration;
+import forestry.core.platform.transfer.Transfers;
 import forestry.core.platform.util.NetworkUtil;
 import forestry.core.platform.util.SpeciesUtil;
 import forestry.modules.BlankForestryModule;
@@ -93,17 +94,17 @@ public class ModuleApiculture extends BlankForestryModule {
 			ApicultureItems.APIARIST_CHEST.item(),
 			ApicultureItems.APIARIST_LEGS.item(),
 			ApicultureItems.APIARIST_BOOTS.item());
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.ALVEARY_PLAIN.tileType(), AbstractAlvearyBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.ALVEARY_SIEVE.tileType(), AbstractAlvearyBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.ALVEARY_SWARMER.tileType(), AbstractAlvearyBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.ALVEARY_HYGROREGULATOR.tileType(), AbstractAlvearyBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.ALVEARY_STABILISER.tileType(), AbstractAlvearyBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.ALVEARY_FAN.tileType(), AbstractAlvearyBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.ALVEARY_HEATER.tileType(), AbstractAlvearyBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.APIARY.tileType(), ApiaryBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ApicultureTiles.ALVEARY_FAN.tileType(), AlvearyClimatizerBlockEntity::getEnergyHandler);
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ApicultureTiles.ALVEARY_HEATER.tileType(), AlvearyClimatizerBlockEntity::getEnergyHandler);
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ApicultureTiles.ALVEARY_HYGROREGULATOR.tileType(), AlvearyHygroregulatorBlockEntity::getFluidHandler);
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.ALVEARY_PLAIN.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.ALVEARY_SIEVE.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.ALVEARY_SWARMER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.ALVEARY_HYGROREGULATOR.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.ALVEARY_STABILISER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.ALVEARY_FAN.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.ALVEARY_HEATER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.APIARY.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, ApicultureTiles.ALVEARY_FAN.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, ApicultureTiles.ALVEARY_HEATER.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, ApicultureTiles.ALVEARY_HYGROREGULATOR.tileType(), (tile, side) -> Transfers.exposeFluid(tile.getFluidHandler(side)));
 	}
 
 	private static void onNetherBeeMate(ForestryEvent.BeeMatingEvent event) {

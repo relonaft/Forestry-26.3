@@ -4,6 +4,7 @@ import forestry.api.core.IToolPipette;
 import forestry.core.features.CoreDataComponents;
 import forestry.core.platform.fluids.PipetteContents;
 import forestry.core.platform.item.ITintedItem;
+import forestry.core.platform.transfer.Transfers;
 import forestry.core.platform.util.RenderUtil;
 import forestry.core.platform.util.TooltipList;
 import java.util.function.Consumer;
@@ -13,8 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
+import forestry.core.platform.transfer.IFluidHandlerItem;
 
 import java.util.List;
 import forestry.core.platform.item.ItemForestry;
@@ -42,7 +42,7 @@ public class ItemPipette extends ItemForestry implements IToolPipette, ITintedIt
 	}
 
 	public IFluidHandlerItem createFluidHandler(ItemStack stack) {
-		return new FluidHandlerItemStack(CoreDataComponents.FLUID_CONTENT, stack, FluidType.BUCKET_VOLUME);
+		return Transfers.viewFluid(stack, PipetteFluidHandler::new);
 	}
 
 	@Override

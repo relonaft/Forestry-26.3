@@ -2,10 +2,11 @@ package forestry.core.content.energy;
 
 import forestry.core.platform.config.Preference;
 import forestry.core.content.energy.tiles.EngineBlockEntity;
+import forestry.core.platform.transfer.Transfers;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import forestry.core.platform.transfer.IEnergyStorage;
 
 import javax.annotation.Nullable;
 
@@ -61,7 +62,7 @@ public class EnergyHelper {
 			return 0;
 		}
 
-		IEnergyStorage storage = tile.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, tile.getBlockPos(), side);
+		IEnergyStorage storage = Transfers.viewEnergy(tile.getLevel().getCapability(Capabilities.Energy.BLOCK, tile.getBlockPos(), side));
 		return storage != null ? storage.receiveEnergy(extractable, simulate) : 0;
 	}
 
@@ -81,7 +82,7 @@ public class EnergyHelper {
 			return false;
 		}
 
-		IEnergyStorage energyStorage = tile.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, tile.getBlockPos(), side);
+		IEnergyStorage energyStorage = Transfers.viewEnergy(tile.getLevel().getCapability(Capabilities.Energy.BLOCK, tile.getBlockPos(), side));
 		return energyStorage != null && energyStorage.canReceive();
 	}
 

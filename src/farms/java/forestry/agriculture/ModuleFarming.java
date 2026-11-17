@@ -19,6 +19,7 @@ import forestry.modules.BlankForestryModule;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
+import forestry.core.platform.transfer.Transfers;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
@@ -39,9 +40,9 @@ public class ModuleFarming extends BlankForestryModule {
 	}
 
 	private static void registerCapabilities(RegisterCapabilitiesEvent event) {
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, FarmingBlockEntities.GEARBOX.tileType(), (tile, side) -> tile.getEnergyHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FarmingBlockEntities.HATCH.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FarmingBlockEntities.VALVE.tileType(), (tile, side) -> tile.getFluidHandler(side));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, FarmingBlockEntities.GEARBOX.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, FarmingBlockEntities.HATCH.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, FarmingBlockEntities.VALVE.tileType(), (tile, side) -> Transfers.exposeFluid(tile.getFluidHandler(side)));
 
 		registerMinifarmCapabilities(event, FarmingBlockEntities.ARBORETUM.tileType());
 		registerMinifarmCapabilities(event, FarmingBlockEntities.BOG.tileType());

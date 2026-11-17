@@ -3,8 +3,8 @@ package forestry.core.content.sorting.inventory;
 import forestry.core.content.sorting.tiles.GeneticFilterBlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import forestry.core.platform.transfer.IItemHandler;
+import forestry.core.platform.transfer.InvWrapper;
 
 public class ItemHandlerFilter implements IItemHandler {
 	private final GeneticFilterBlockEntity filter;

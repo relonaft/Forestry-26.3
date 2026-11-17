@@ -5,7 +5,7 @@ import forestry.core.platform.fluids.ITankManager;
 import forestry.core.platform.tile.ILiquidTankTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import forestry.core.platform.transfer.IFluidHandler;
 
 public class MultifarmValveBlockEntity extends MultifarmBlockEntity implements ILiquidTankTile {
 	public MultifarmValveBlockEntity(BlockPos pos, BlockState state) {

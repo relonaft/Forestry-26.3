@@ -1,5 +1,6 @@
 package forestry.arboriculture;
 
+import forestry.core.platform.transfer.Transfers;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import forestry.arboriculture.loot.GrafterLootModifier;
@@ -40,7 +41,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import forestry.core.platform.transfer.InvWrapper;
 import forestry.arboriculture.tab.ArboricultureCreativeTab;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -138,7 +139,7 @@ public class ModuleArboriculture extends BlankForestryModule {
 	}
 
 	private static void registerCapabilities(RegisterCapabilitiesEvent event) {
-		event.registerEntity(Capabilities.ItemHandler.ENTITY, ArboricultureEntities.CHEST_BOAT.entityType(), (boat, context) -> boat.isAlive() ? new InvWrapper(boat) : null);
+		event.registerEntity(Capabilities.Item.ENTITY, ArboricultureEntities.CHEST_BOAT.entityType(), (boat, context) -> boat.isAlive() ? Transfers.exposeItems(new InvWrapper(boat)) : null);
 	}
 
 	private static void commonSetup(FMLCommonSetupEvent event) {

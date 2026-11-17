@@ -5,12 +5,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import forestry.core.platform.transfer.IFluidTank;
+import forestry.core.platform.transfer.IFluidHandler;
+import forestry.core.platform.transfer.ITransactional;
 
 import javax.annotation.Nullable;
 
-public interface ITankManager extends IFluidHandler {
+public interface ITankManager extends IFluidHandler, ITransactional {
 	// Used to send all tanks to the player upon first opening the screen
 	void sendAllTanks(AbstractContainerMenu container, ServerPlayer player);
 

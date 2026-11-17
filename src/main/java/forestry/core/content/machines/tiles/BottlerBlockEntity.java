@@ -33,9 +33,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.fluid.FluidUtil;
-import net.neoforged.neoforge.fluids.IFluidTank;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import forestry.core.platform.transfer.FluidUtil;
+import forestry.core.platform.transfer.IFluidTank;
+import forestry.core.platform.transfer.IFluidHandler;
 
 import javax.annotation.Nullable;
 import java.util.EnumMap;
