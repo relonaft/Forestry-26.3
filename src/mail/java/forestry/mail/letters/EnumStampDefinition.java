@@ -2,6 +2,7 @@ package forestry.mail.letters;
 
 import forestry.api.ForestryTags;
 import forestry.core.platform.item.TwoTintItem;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -30,7 +31,7 @@ public enum EnumStampDefinition implements TwoTintItem.ITwoTintItemSubtype {
 	private final int postage;
 
 	EnumStampDefinition(String name, int postage, TagKey<Item> crafting, TextColor primaryColor, TextColor secondaryColor) {
-		this(name, postage, () -> Ingredient.of(crafting), primaryColor, secondaryColor);
+		this(name, postage, () -> Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(crafting)), primaryColor, secondaryColor);
 	}
 
 	EnumStampDefinition(String name, int postage, Item crafting, TextColor primaryColor, TextColor secondaryColor) {

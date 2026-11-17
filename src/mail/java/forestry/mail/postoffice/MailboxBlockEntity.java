@@ -83,7 +83,7 @@ public class MailboxBlockEntity extends BaseBlockEntity {
 	/* GUI */
 	@Override
 	public void openGui(ServerPlayer player, InteractionHand hand, BlockPos pos) {
-		if (this.level.isClientSide) {
+		if (this.level.isClientSide()) {
 			return;
 		}
 
@@ -107,7 +107,7 @@ public class MailboxBlockEntity extends BaseBlockEntity {
 	}
 
 	public Container getOrCreateMailInventory(Level world, GameProfile playerProfile) {
-		if (world.isClientSide) {
+		if (world.isClientSide()) {
 			return getInternalInventory();
 		}
 

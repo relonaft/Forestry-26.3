@@ -15,6 +15,7 @@ import forestry.core.platform.util.SpeciesUtil;
 import forestry.agriculture.farmlogic.*;
 import forestry.agriculture.farmlogic.farmables.*;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.BeetrootBlock;
@@ -75,7 +76,7 @@ public class DefaultFarms {
 		poales.addFarmable(new FarmableStacked(new ItemStack(Items.SUGAR_CANE), Blocks.SUGAR_CANE, 3));
 
 		// Cactus
-		IFarmTypeBuilder cactus = farming.createFarmType(ForestryFarmTypes.SUCCULENTES, FarmLogicSucculent::new, new ItemStack(Items.GREEN_DYE))
+		IFarmTypeBuilder cactus = farming.createFarmType(ForestryFarmTypes.SUCCULENTES, FarmLogicSucculent::new, new ItemStack(Items.DYE.pick(DyeColor.GREEN)))
 			.setFertilizerConsumption(10)
 			.setWaterConsumption(1)
 			.addSoil(Blocks.SAND);

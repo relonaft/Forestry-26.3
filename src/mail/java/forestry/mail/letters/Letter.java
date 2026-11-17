@@ -61,8 +61,9 @@ public class Letter implements ILetter {
 		this.recipient = recipient.orElse(null);
 		this.text = text;
 		this.uid = uid;
-		for (int i = 0; i < Math.min(this.inventory.getContainerSize(), contents.getSlots()); i++) {
-			this.inventory.setItem(i, contents.getStackInSlot(i));
+		List<ItemStack> stacks = contents.itemCopies().toList();
+		for (int i = 0; i < Math.min(this.inventory.getContainerSize(), stacks.size()); i++) {
+			this.inventory.setItem(i, stacks.get(i));
 		}
 	}
 

@@ -99,7 +99,7 @@ public class LetterScreen extends ForestryScreen<LetterMenu> {
 				// Name autocomplete
 				String currentValue = this.address.getValue().toLowerCase(Locale.ENGLISH);
 				Minecraft.getInstance().getConnection().getOnlinePlayers().stream()
-					.map(info -> info.getProfile().getName())
+					.map(info -> info.getProfile().name())
 					.filter(name -> name.toLowerCase(Locale.ENGLISH).contains(currentValue))
 					.findFirst()
 					.ifPresent(name -> this.address.setValue(name));
@@ -239,7 +239,7 @@ public class LetterScreen extends ForestryScreen<LetterMenu> {
 		String recipient = SessionVars.getStringVar("mail.letter.recipient");
 		String typeName = SessionVars.getStringVar("mail.letter.carrier");
 		Identifier carrierId = Identifier.tryParse(typeName);
-		IPostalCarrier carrier = ForestryRegistries.POSTAL_CARRIER.get(carrierId);
+		IPostalCarrier carrier = ForestryRegistries.POSTAL_CARRIER.getValue(carrierId);
 
 		if (StringUtils.isNotBlank(recipient) && carrier != null) {
             this.menu.setCarrier(carrier);

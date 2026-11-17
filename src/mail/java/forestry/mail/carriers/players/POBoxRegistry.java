@@ -1,5 +1,6 @@
 package forestry.mail.carriers.players;
 
+import forestry.api.ForestryConstants;
 import forestry.api.mail.IMailAddress;
 import forestry.api.mail.IWatchable;
 import forestry.mail.letters.MailAddress;
@@ -9,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -61,18 +63,17 @@ public class POBoxRegistry extends SavedData implements IWatchable.Watcher {
 
 	private static POBoxRegistry load(CompoundTag compoundTag, HolderLookup.Provider registries) {
 		POBoxRegistry registry = new POBoxRegistry();
-		ListTag tradeStations = compoundTag.getList("poboxes", 10);
+		ListTag tradeStations = compoundTag.getListOrEmpty("poboxes");
 		for (int i = 0; i < tradeStations.size(); ++i) {
-			CompoundTag stationTag = tradeStations.getCompound(i);
+			CompoundTag stationTag = tradeStations.getCompoundOrEmpty(i);
 
-			IMailAddress address = new MailAddress(stationTag.getCompound("address"));
-			POBox pobox = new POBox(stationTag.getCompound("pobox"), registries);
+			IMailAddress address = new MailAddress(stationTag.getCompoundOrEmpty("address"));
+			POBox pobox = new POBox(stationTag.getCompoundOrEmpty("pobox"), registries);
 			registry.registerPOBOx(address, pobox);
 		}
 		return registry;
 	}
 
-	@Override
 	public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider registries) {
 		ListTag poboxes = new ListTag();
 		for (Map.Entry<IMailAddress, POBox> entry : this.cachedPOBoxes.entrySet()) {
@@ -85,8 +86,11 @@ public class POBoxRegistry extends SavedData implements IWatchable.Watcher {
 		return compoundTag;
 	}
 
+	// deviation: saved data has a namespaced ID now, so the file moved from data/forestry_poboxes.dat to
+	// data/forestry/poboxes.dat and the post office box list of a world from 1.21.1 is not read
 	public static POBoxRegistry getOrCreate(ServerLevel level) {
-		SavedData.Factory<POBoxRegistry> factory = new SavedData.Factory<>(POBoxRegistry::create, POBoxRegistry::load);
-		return level.getDataStorage().computeIfAbsent(factory, SAVE_NAME);
+		SavedDataType<POBoxRegistry> type = new SavedDataType<>(ForestryConstants.forestry("poboxes"), ignored -> create(),
+			levelForCodec -> CompoundTag.CODEC.xmap(tag -> load(tag, levelForCodec.registryAccess()), data -> data.save(new CompoundTag(), levelForCodec.registryAccess())));
+		return level.getDataStorage().computeIfAbsent(type);
 	}
 }

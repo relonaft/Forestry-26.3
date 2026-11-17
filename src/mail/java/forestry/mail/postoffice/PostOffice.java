@@ -2,6 +2,7 @@ package forestry.mail.postoffice;
 
 import forestry.Forestry;
 import forestry.api.mail.*;
+import forestry.api.ForestryConstants;
 import forestry.mail.features.MailItems;
 import forestry.mail.letters.EnumStampDefinition;
 import forestry.mail.letters.EnumDeliveryState;
@@ -12,7 +13,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
@@ -24,6 +24,7 @@ import forestry.mail.letters.LetterUtils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import net.minecraft.world.level.saveddata.SavedDataType;
 
 public class PostOffice extends SavedData implements IPostOffice {
 	public static final String SAVE_NAME = "forestry_mail";
@@ -43,22 +44,22 @@ public class PostOffice extends SavedData implements IPostOffice {
 	}
 
 	public PostOffice(CompoundTag tag) {
-		if (tag.contains(KEY_COLLECTED, Tag.TAG_COMPOUND)) {
-			readCollected(tag.getCompound(KEY_COLLECTED));
+		if (tag.getCompound(KEY_COLLECTED).isPresent()) {
+			readCollected(tag.getCompoundOrEmpty(KEY_COLLECTED));
 		} else {
 			readLegacy(tag);
 		}
 	}
 
 	private void readCollected(CompoundTag collected) {
-		for (String key : collected.getAllKeys()) {
-			int count = collected.getInt(key);
+		for (String key : collected.keySet()) {
+			int count = collected.getIntOr(key, 0);
 			if (count <= 0) {
 				continue;
 			}
 
 			Identifier id = Identifier.tryParse(key);
-			Item item = id == null ? Items.AIR : BuiltInRegistries.ITEM.get(id);
+			Item item = id == null ? Items.AIR : BuiltInRegistries.ITEM.getValue(id);
 
 			// Nothing can be handed back for an item that no longer exists, so drop it loudly
 			if (item == Items.AIR) {
@@ -76,13 +77,13 @@ public class PostOffice extends SavedData implements IPostOffice {
 		EnumStampDefinition[] byLegacyIndex = EnumStampDefinition.VALUES;
 
 		for (int i = 1; i <= byLegacyIndex.length; i++) {
-			int count = tag.getInt(KEY_LEGACY + i);
+			int count = tag.getIntOr(KEY_LEGACY + i, 0);
 			if (count > 0) {
 				this.collectedStamps.put(MailItems.STAMPS.item(byLegacyIndex[i - 1]), count);
 			}
 		}
 
-		int dropped = tag.getInt(KEY_LEGACY + "0") + tag.getInt(KEY_LEGACY + (byLegacyIndex.length + 1));
+		int dropped = tag.getIntOr(KEY_LEGACY + "0", 0) + tag.getIntOr(KEY_LEGACY + (byLegacyIndex.length + 1), 0);
 		if (dropped > 0) {
 			Forestry.LOGGER.warn("Post office dropped {} collected stamp(s) from a denomination that never had an item", dropped);
 		}
@@ -92,7 +93,6 @@ public class PostOffice extends SavedData implements IPostOffice {
 		setDirty();
 	}
 
-	@Override
 	public CompoundTag save(CompoundTag compoundNBT, HolderLookup.Provider registries) {
 		CompoundTag collected = new CompoundTag();
 
@@ -193,8 +193,11 @@ public class PostOffice extends SavedData implements IPostOffice {
 
 	}
 
+	// deviation: saved data has a namespaced ID now, so the file moved from data/forestry_mail.dat to
+	// data/forestry/mail.dat and the mail in transit of a world from 1.21.1 is not read
 	public static PostOffice getOrCreate(ServerLevel level) {
-		SavedData.Factory<PostOffice> factory = new SavedData.Factory<>(PostOffice::new, (tag, registries) -> new PostOffice(tag));
-		return level.getDataStorage().computeIfAbsent(factory, PostOffice.SAVE_NAME);
+		SavedDataType<PostOffice> type = new SavedDataType<>(ForestryConstants.forestry("mail"), ignored -> new PostOffice(),
+			levelForCodec -> CompoundTag.CODEC.xmap(tag -> new PostOffice(tag), data -> data.save(new CompoundTag(), levelForCodec.registryAccess())));
+		return level.getDataStorage().computeIfAbsent(type);
 	}
 }

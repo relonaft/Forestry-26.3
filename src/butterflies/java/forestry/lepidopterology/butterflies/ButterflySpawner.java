@@ -10,6 +10,7 @@ import forestry.core.platform.config.ForestryConfig;
 import forestry.core.platform.util.SpeciesUtil;
 import forestry.lepidopterology.entities.EntityButterfly;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.gamerules.GameRules;
@@ -26,7 +27,7 @@ public class ButterflySpawner implements ILeafTickHandler {
 
 	@Override
 	public boolean onRandomLeafTick(ITree tree, Level world, RandomSource rand, BlockPos pos, boolean isDestroyed) {
-		if (!world.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) || ForestryConfig.SERVER.disableButterflySpawning.get()) {
+		if (!(world instanceof ServerLevel serverLevel) || !serverLevel.getGameRules().get(GameRules.SPAWN_MOBS) || ForestryConfig.SERVER.disableButterflySpawning.get()) {
 			return false;
 		}
 

@@ -76,7 +76,7 @@ public class TradeStationBlockEntity extends BaseBlockEntity implements IOwnedTi
 		super.loadAdditional(compoundNBT, registries);
 
 		if (compoundNBT.contains("address")) {
-            this.address = new MailAddress(compoundNBT.getCompound("address"));
+            this.address = new MailAddress(compoundNBT.getCompoundOrEmpty("address"));
 		}
         this.ownerHandler.read(compoundNBT, registries);
 	}
@@ -242,7 +242,7 @@ public class TradeStationBlockEntity extends BaseBlockEntity implements IOwnedTi
 			return false;
 		}
 
-		if (!this.level.isClientSide) {
+		if (!this.level.isClientSide()) {
 			ServerLevel world = (ServerLevel) this.level;
 			IErrorLogic errorLogic = getErrorLogic();
 
@@ -269,7 +269,7 @@ public class TradeStationBlockEntity extends BaseBlockEntity implements IOwnedTi
 	@Override
 	public IInventoryAdapter getInternalInventory() {
 		// Handle client side
-		if (this.level.isClientSide || !this.address.isValid()) {
+		if (this.level.isClientSide() || !this.address.isValid()) {
 			return super.getInternalInventory();
 		}
 

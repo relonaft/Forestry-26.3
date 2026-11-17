@@ -46,7 +46,7 @@ public class LetterItem extends WithScreenItem {
 	private final State state;
 
 	public LetterItem(Size size, State state) {
-		super(new Item.Properties().stacksTo(64));
+		super(new Item.Properties().stacksTo(64).overrideDescription("item.forestry.letter"));
 		this.size = size;
 		this.state = state;
 	}
@@ -59,10 +59,6 @@ public class LetterItem extends WithScreenItem {
 		return this.state;
 	}
 
-	@Override
-	public String getDescriptionId() {
-		return "item.forestry.letter";
-	}
 
 	@Override
 	public InteractionResult use(Level worldIn, Player player, InteractionHand handIn) {

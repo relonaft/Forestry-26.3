@@ -1,24 +1,25 @@
 package forestry.lepidopterology.recipe;
 
+import com.mojang.serialization.MapCodec;
 import forestry.Forestry;
 import forestry.api.core.genetics.IIndividual;
 import forestry.api.core.genetics.ILifeStage;
 import forestry.api.lepidopterology.genetics.ButterflyLifeStage;
 import forestry.api.lepidopterology.genetics.IButterfly;
 import forestry.api.core.genetics.capability.IIndividualHandlerItem;
-import forestry.lepidopterology.features.LepidopterologyRecipes;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 public class ButterflyMatingRecipe extends CustomRecipe {
-	public ButterflyMatingRecipe(CraftingBookCategory category) {
-		super(category);
-	}
+	// the recipe has no fields, the JSON only names the type
+	public static final MapCodec<ButterflyMatingRecipe> MAP_CODEC = MapCodec.unit(ButterflyMatingRecipe::new);
+	public static final StreamCodec<RegistryFriendlyByteBuf, ButterflyMatingRecipe> STREAM_CODEC = StreamCodec.unit(new ButterflyMatingRecipe());
+	public static final RecipeSerializer<ButterflyMatingRecipe> SERIALIZER = new RecipeSerializer<>(MAP_CODEC, STREAM_CODEC);
 
 	@Override
 	public boolean matches(CraftingInput grid, Level level) {
@@ -57,7 +58,7 @@ public class ButterflyMatingRecipe extends CustomRecipe {
 	}
 
 	@Override
-	public ItemStack assemble(CraftingInput grid, HolderLookup.Provider lookup) {
+	public ItemStack assemble(CraftingInput grid) {
 		IButterfly butterfly = null;
 		IIndividual serum = null;
 		int containerSize = grid.size();
@@ -88,12 +89,7 @@ public class ButterflyMatingRecipe extends CustomRecipe {
 	}
 
 	@Override
-	public boolean canCraftInDimensions(int width, int height) {
-		return width * height >= 2;
-	}
-
-	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return LepidopterologyRecipes.MATING_SERIALIZER.get();
+	public RecipeSerializer<ButterflyMatingRecipe> getSerializer() {
+		return SERIALIZER;
 	}
 }

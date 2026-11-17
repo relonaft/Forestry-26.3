@@ -13,8 +13,6 @@ import forestry.api.modules.ForestryModuleIds;
 import forestry.api.plugin.IForestryPlugin;
 import forestry.apiimpl.ForestryApiImpl;
 import forestry.apiimpl.plugin.PluginManager;
-import forestry.core.platform.tile.ForestryBlockEntity;
-import forestry.core.platform.tile.PoweredBlockEntity;
 import forestry.modules.BlankForestryModule;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -54,9 +52,9 @@ public class ModuleFarming extends BlankForestryModule {
 	}
 
 	private static <T extends AbstractMinifarmBlockEntity> void registerMinifarmCapabilities(RegisterCapabilitiesEvent event, BlockEntityType<T> type) {
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, ForestryBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, type, PoweredBlockEntity::getEnergyHandler);
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, type, AbstractMinifarmBlockEntity::getFluidHandler);
+		event.registerBlockEntity(Capabilities.Item.BLOCK, type, (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, type, (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, type, (tile, side) -> Transfers.exposeFluid(tile.getFluidHandler(side)));
 	}
 
 	private static void registerDataMaps(RegisterDataMapTypesEvent event) {

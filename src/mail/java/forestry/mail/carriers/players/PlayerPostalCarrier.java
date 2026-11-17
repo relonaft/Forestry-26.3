@@ -1,5 +1,6 @@
 package forestry.mail.carriers.players;
 
+import com.mojang.authlib.GameProfile;
 import forestry.api.ForestryConstants;
 import forestry.api.client.IForestryClientApi;
 import forestry.api.mail.IMailAddress;
@@ -57,7 +58,7 @@ public class PlayerPostalCarrier implements IPostalCarrier {
 
 	@Override
 	public IMailAddress getRecipient(MinecraftServer minecraftServer, String recipientName) {
-		return minecraftServer.getProfileCache().get(recipientName).map(MailAddress::new).orElse(MailAddress.INVALID);
+		return minecraftServer.services().nameToIdCache().get(recipientName).map(found -> new MailAddress(new GameProfile(found.id(), found.name()))).orElse(MailAddress.INVALID);
 	}
 
 	@Override

@@ -43,8 +43,8 @@ public class FarmLogicMushroom extends FarmLogicArboreal {
 
 			if (state.getBlock() instanceof MushroomBlock mushroom
 				&& isAcceptedSoil(level.getBlockState(position.below()))
-				&& level.random.nextInt(GROWTH_CHANCE) == 0
-				&& mushroom.growMushroom(level, position, state, level.random)) {
+				&& level.getRandom().nextInt(GROWTH_CHANCE) == 0
+				&& mushroom.growMushroom(level, position, state, level.getRandom())) {
 				return true;
 			}
 		}

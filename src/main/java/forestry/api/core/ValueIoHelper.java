@@ -7,6 +7,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * Used to keep block entities reading and writing {@link CompoundTag} now that Minecraft hands them
@@ -28,6 +29,18 @@ public final class ValueIoHelper {
 			input.read(key, ExtraCodecs.NBT).ifPresent(value -> tag.put(key, value));
 		}
 		return tag;
+	}
+
+	/**
+	 * Writes every entry of a tag to an output, so code that builds a tag can save through the new API.
+	 *
+	 * @param output The output to write to
+	 * @param tag    The tag whose entries are written
+	 */
+	public static void storeAll(ValueOutput output, CompoundTag tag) {
+		for (String key : tag.keySet()) {
+			output.store(key, ExtraCodecs.NBT, tag.get(key));
+		}
 	}
 
 	/**

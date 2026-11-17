@@ -36,8 +36,8 @@ public class MultifarmGearboxBlockEntity extends MultifarmBlockEntity implements
 
         this.energyStorage.read(compoundNBT, registries);
 
-        this.activationDelay = compoundNBT.getInt("ActivationDelay");
-        this.previousDelays = compoundNBT.getInt("PrevDelays");
+        this.activationDelay = compoundNBT.getIntOr("ActivationDelay", 0);
+        this.previousDelays = compoundNBT.getIntOr("PrevDelays", 0);
 	}
 
 

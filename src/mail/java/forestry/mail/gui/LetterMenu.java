@@ -59,7 +59,7 @@ public class LetterMenu extends ItemInventoryMenu<LetterInventory> implements IL
 		}
 
 		// Rip open delivered mails
-		if (!player.level().isClientSide) {
+		if (!player.level().isClientSide()) {
 			if (inventory.getLetter().isProcessed()) {
 				inventory.onLetterOpened();
 			}
@@ -75,7 +75,7 @@ public class LetterMenu extends ItemInventoryMenu<LetterInventory> implements IL
 
 	@Override
 	public void removed(Player playerEntity) {
-		if (!playerEntity.level().isClientSide) {
+		if (!playerEntity.level().isClientSide()) {
 			ILetter letter = this.inventory.getLetter();
 			if (!letter.isProcessed()) {
 				IMailAddress sender = new MailAddress(playerEntity.getGameProfile());
@@ -119,7 +119,7 @@ public class LetterMenu extends ItemInventoryMenu<LetterInventory> implements IL
 	}
 
 	public void handleRequestLetterInfo(Player player, String recipientName, IPostalCarrier carrier) {
-		MinecraftServer server = player.getServer();
+		MinecraftServer server = player.level().getServer();
 		if (server == null) {
 			Forestry.LOGGER.error("Could not get server");
 			return;
@@ -169,7 +169,7 @@ public class LetterMenu extends ItemInventoryMenu<LetterInventory> implements IL
 	/* Managing Trade info */
 	private void updateTradeInfo(Level world, @Nullable IMailAddress address) {
 		// Updating is done by the server.
-		if (world.isClientSide) {
+		if (world.isClientSide()) {
 			return;
 		}
 

@@ -1,6 +1,7 @@
 package forestry.mail.carriers.trading;
 
 import com.mojang.authlib.GameProfile;
+import forestry.api.ForestryConstants;
 import forestry.api.mail.IMailAddress;
 import forestry.api.mail.ITradeStation;
 import forestry.api.mail.IWatchable;
@@ -16,6 +17,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+import net.minecraft.world.level.saveddata.SavedDataType;
 
 public class TradeStationRegistry extends SavedData implements IWatchable.Watcher {
 	private static final String SAVE_NAME = "forestry_trade_stations";
@@ -93,18 +95,17 @@ public class TradeStationRegistry extends SavedData implements IWatchable.Watche
 
 	private static TradeStationRegistry load(CompoundTag compoundTag, HolderLookup.Provider registries) {
 		TradeStationRegistry registry = new TradeStationRegistry();
-		ListTag tradeStations = compoundTag.getList("tradeStations", 10);
+		ListTag tradeStations = compoundTag.getListOrEmpty("tradeStations");
 		for (int i = 0; i < tradeStations.size(); ++i) {
-			CompoundTag stationTag = tradeStations.getCompound(i);
+			CompoundTag stationTag = tradeStations.getCompoundOrEmpty(i);
 
-			IMailAddress address = new MailAddress(stationTag.getCompound("address"));
-			ITradeStation station = new TradeStation(stationTag.getCompound("station"), registries);
+			IMailAddress address = new MailAddress(stationTag.getCompoundOrEmpty("address"));
+			ITradeStation station = new TradeStation(stationTag.getCompoundOrEmpty("station"), registries);
 			registry.registerTradeStation(address, station);
 		}
 		return registry;
 	}
 
-	@Override
 	public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider registries) {
 		ListTag tradeStations = new ListTag();
 		for (Map.Entry<IMailAddress, ITradeStation> entry : this.cachedTradeStations.entrySet()) {
@@ -117,8 +118,11 @@ public class TradeStationRegistry extends SavedData implements IWatchable.Watche
 		return compoundTag;
 	}
 
+	// deviation: saved data has a namespaced ID now, so the file moved from data/forestry_trade_stations.dat to
+	// data/forestry/trade_stations.dat and the trade station list of a world from 1.21.1 is not read
 	public static TradeStationRegistry getOrCreate(ServerLevel level) {
-		SavedData.Factory<TradeStationRegistry> factory = new SavedData.Factory<>(TradeStationRegistry::create, TradeStationRegistry::load);
-		return level.getDataStorage().computeIfAbsent(factory, SAVE_NAME);
+		SavedDataType<TradeStationRegistry> type = new SavedDataType<>(ForestryConstants.forestry("trade_stations"), ignored -> create(),
+			levelForCodec -> CompoundTag.CODEC.xmap(tag -> load(tag, levelForCodec.registryAccess()), data -> data.save(new CompoundTag(), levelForCodec.registryAccess())));
+		return level.getDataStorage().computeIfAbsent(type);
 	}
 }
