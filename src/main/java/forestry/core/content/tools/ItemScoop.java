@@ -29,9 +29,10 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
-public class ItemScoop extends TieredItem {
+public class ItemScoop extends Item {
 	public ItemScoop(int durability) {
-		super(Tiers.WOOD, new Item.Properties().durability(durability));
+		// until 1.21.5 this was a TieredItem of wood, which also forced the durability of wood (59) on both scoops
+		super(new Item.Properties().durability(durability).enchantable(ToolMaterial.WOOD.enchantmentValue()).repairable(ToolMaterial.WOOD.repairItems()));
 	}
 
 	@Override
@@ -44,9 +45,8 @@ public class ItemScoop extends TieredItem {
 	}
 
 	@Override
-	public boolean hurtEnemy(ItemStack stack, LivingEntity entity, LivingEntity player) {
+	public void postHurtEnemy(ItemStack stack, LivingEntity entity, LivingEntity player) {
 		stack.hurtAndBreak(2, player, EquipmentSlot.MAINHAND);
-		return true;
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class ItemScoop extends TieredItem {
 				interactionTarget.setRemoved(Entity.RemovalReason.DISCARDED);
 				stack.hurtAndBreak(1, player, usedHand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
 			}
-			return InteractionResult.sidedSuccess(level.isClientSide());
+			return InteractionResult.SUCCESS;
 		}
 		return InteractionResult.PASS;
 	}

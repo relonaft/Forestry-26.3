@@ -17,13 +17,8 @@ import forestry.core.content.tools.ToolTier;
 import forestry.core.platform.registration.*;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.StandingAndWallBlockItem;
-import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.PickaxeItem;
-import net.minecraft.world.item.ShovelItem;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.component.ItemContainerContents;
 
 @FeatureProvider
@@ -71,11 +66,11 @@ public class CoreItems {
 	public static final FeatureItem<ItemForestry> BROKEN_SURVIVALISTS_AXE = REGISTRY.item(ItemForestry::new, "broken_survivalists_axe");
 	public static final FeatureItem<ItemForestry> BROKEN_SURVIVALISTS_SWORD = REGISTRY.item(ItemForestry::new, "broken_survivalists_sword");
 	public static final FeatureItem<ItemForestry> BROKEN_SURVIVALISTS_HOE = REGISTRY.item(ItemForestry::new, "broken_survivalists_hoe");
-	public static final FeatureItem<PickaxeItem> SURVIVALISTS_PICKAXE = REGISTRY.item(() -> new HasRemnants.Pickaxe(ToolTier.SURVIVALIST, 1, -2.8f, new Item.Properties(), BROKEN_SURVIVALISTS_PICKAXE::stack), "survivalists_pickaxe");
-	public static final FeatureItem<ShovelItem> SURVIVALISTS_SHOVEL = REGISTRY.item(() -> new HasRemnants.Shovel(ToolTier.SURVIVALIST, 1.5f, -3.0f, new Item.Properties(), BROKEN_SURVIVALISTS_SHOVEL::stack), "survivalists_shovel");
-	public static final FeatureItem<AxeItem> SURVIVALISTS_AXE = REGISTRY.item(() -> new HasRemnants.Axe(ToolTier.SURVIVALIST, 5.5f, -3.2f, new Item.Properties(), BROKEN_SURVIVALISTS_AXE::stack), "survivalists_axe");
-	public static final FeatureItem<SwordItem> SURVIVALISTS_SWORD = REGISTRY.item(() -> new HasRemnants.Sword(ToolTier.SURVIVALIST, 3, -2.4f, new Item.Properties(), BROKEN_SURVIVALISTS_SWORD::stack), "survivalists_sword");
-	public static final FeatureItem<HoeItem> SURVIVALISTS_HOE = REGISTRY.item(() -> new HasRemnants.Hoe(ToolTier.SURVIVALIST, -2, -1.0f, new Item.Properties(), BROKEN_SURVIVALISTS_HOE::stack), "survivalists_hoe");
+	public static final FeatureItem<HasRemnants.Pickaxe> SURVIVALISTS_PICKAXE = REGISTRY.item(() -> new HasRemnants.Pickaxe(ToolTier.SURVIVALIST, 1, -2.8f, new Item.Properties(), BROKEN_SURVIVALISTS_PICKAXE::stack), "survivalists_pickaxe");
+	public static final FeatureItem<HasRemnants.Shovel> SURVIVALISTS_SHOVEL = REGISTRY.item(() -> new HasRemnants.Shovel(ToolTier.SURVIVALIST, 1.5f, -3.0f, new Item.Properties(), BROKEN_SURVIVALISTS_SHOVEL::stack), "survivalists_shovel");
+	public static final FeatureItem<HasRemnants.Axe> SURVIVALISTS_AXE = REGISTRY.item(() -> new HasRemnants.Axe(ToolTier.SURVIVALIST, 5.5f, -3.2f, new Item.Properties(), BROKEN_SURVIVALISTS_AXE::stack), "survivalists_axe");
+	public static final FeatureItem<HasRemnants.Sword> SURVIVALISTS_SWORD = REGISTRY.item(() -> new HasRemnants.Sword(ToolTier.SURVIVALIST, 3, -2.4f, new Item.Properties(), BROKEN_SURVIVALISTS_SWORD::stack), "survivalists_sword");
+	public static final FeatureItem<HasRemnants.Hoe> SURVIVALISTS_HOE = REGISTRY.item(() -> new HasRemnants.Hoe(ToolTier.SURVIVALIST, -2, -1.0f, new Item.Properties(), BROKEN_SURVIVALISTS_HOE::stack), "survivalists_hoe");
 	public static final FeatureItem<ItemAssemblyKit> SHOVEL_KIT = REGISTRY.item(() -> new ItemAssemblyKit(SURVIVALISTS_SHOVEL::stack), "shovel_kit");
 	public static final FeatureItem<ItemAssemblyKit> PICKAXE_KIT = REGISTRY.item(() -> new ItemAssemblyKit(SURVIVALISTS_PICKAXE::stack), "pickaxe_kit");
 	public static final FeatureItem<ItemAssemblyKit> AXE_KIT = REGISTRY.item(() -> new ItemAssemblyKit(SURVIVALISTS_AXE::stack), "axe_kit");
