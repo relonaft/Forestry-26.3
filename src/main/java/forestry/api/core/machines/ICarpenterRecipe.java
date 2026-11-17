@@ -7,6 +7,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import java.util.Optional;
+
 public interface ICarpenterRecipe extends IForestryRecipe {
 	/**
 	 * @return Number of work cycles required to craft the recipe once.
@@ -19,10 +21,10 @@ public interface ICarpenterRecipe extends IForestryRecipe {
 	CraftingRecipe getCraftingGridRecipe();
 
 	/**
-	 * @return the box required for this recipe. return empty stack if there is no required box.
+	 * @return the box required for this recipe. return an empty optional if there is no required box.
 	 * Examples of boxes are the Forestry cartons and crates.
 	 */
-	Ingredient getBox();
+	Optional<Ingredient> getBox();
 
 	/**
 	 * @return the fluid required for this recipe. return {@link FluidStack#EMPTY} if there is no required fluid.

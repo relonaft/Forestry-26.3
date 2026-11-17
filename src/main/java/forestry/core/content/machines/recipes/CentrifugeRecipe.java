@@ -8,7 +8,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -27,7 +26,7 @@ public class CentrifugeRecipe implements ICentrifugeRecipe {
 	private static final MapCodec<CentrifugeRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Identifier.CODEC.fieldOf("id").forGetter(CentrifugeRecipe::getId),
 		Codec.INT.fieldOf("time").forGetter(CentrifugeRecipe::getProcessingTime),
-		Ingredient.CODEC_NONEMPTY.fieldOf("input").forGetter(CentrifugeRecipe::getInput),
+		Ingredient.CODEC.fieldOf("input").forGetter(CentrifugeRecipe::getInput),
 		IProduct.LIST_CODEC.fieldOf("products").forGetter(CentrifugeRecipe::getAllProducts)
 	).apply(instance, CentrifugeRecipe::new));
 	private static final StreamCodec<RegistryFriendlyByteBuf, CentrifugeRecipe> STREAM_CODEC = StreamCodec.composite(
@@ -37,6 +36,7 @@ public class CentrifugeRecipe implements ICentrifugeRecipe {
 		IProduct.LIST_STREAM_CODEC, CentrifugeRecipe::getAllProducts,
 		CentrifugeRecipe::new
 	);
+	public static final RecipeSerializer<CentrifugeRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
 	private final Identifier id;
 	private final int processingTime;
@@ -87,7 +87,7 @@ public class CentrifugeRecipe implements ICentrifugeRecipe {
 	}
 
 	@Override
-	public ItemStack getResultItem(HolderLookup.Provider lookupProvider) {
+	public ItemStack getResultItem() {
 		return ItemStack.EMPTY;
 	}
 
@@ -97,24 +97,12 @@ public class CentrifugeRecipe implements ICentrifugeRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return FactoryRecipeTypes.CENTRIFUGE.serializer();
+	public RecipeSerializer<CentrifugeRecipe> getSerializer() {
+		return SERIALIZER;
 	}
 
 	@Override
-	public RecipeType<?> getType() {
+	public RecipeType<ICentrifugeRecipe> getType() {
 		return FactoryRecipeTypes.CENTRIFUGE.type();
-	}
-
-	public static class Serializer implements RecipeSerializer<CentrifugeRecipe> {
-		@Override
-		public MapCodec<CentrifugeRecipe> codec() {
-			return CODEC;
-		}
-
-		@Override
-		public StreamCodec<RegistryFriendlyByteBuf, CentrifugeRecipe> streamCodec() {
-			return STREAM_CODEC;
-		}
 	}
 }

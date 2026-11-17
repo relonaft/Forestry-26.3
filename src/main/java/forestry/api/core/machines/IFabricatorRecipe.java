@@ -7,6 +7,8 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import java.util.Optional;
+
 public interface IFabricatorRecipe extends IForestryRecipe {
 	/**
 	 * @return the molten liquid (and amount) required for this recipe.
@@ -14,9 +16,9 @@ public interface IFabricatorRecipe extends IForestryRecipe {
 	FluidStack getResultFluid();
 
 	/**
-	 * @return the plan for this recipe (the item in the top right slot)
+	 * @return the plan for this recipe (the item in the top right slot). return an empty optional if there is no required plan.
 	 */
-	Ingredient getPlan();
+	Optional<Ingredient> getPlan();
 
 	/**
 	 * @return the crafting grid recipe. The crafting recipe's getRecipeOutput() is used as the IFabricatorRecipe's output.
