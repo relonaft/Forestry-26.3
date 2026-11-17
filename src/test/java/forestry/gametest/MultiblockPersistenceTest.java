@@ -16,8 +16,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import forestry.core.platform.transfer.IItemHandler;
-import forestry.core.platform.transfer.Transfers;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,10 +44,10 @@ public final class MultiblockPersistenceTest {
 			LevelChunk holderChunk = level.getChunkAt(holder);
 			holderChunk.tryMarkSaved();
 
-			IItemHandler handler = Transfers.viewItems(level.getCapability(Capabilities.Item.BLOCK, members.getLast(), null));
+			ResourceHandler<ItemResource> handler = level.getCapability(Capabilities.Item.BLOCK, members.getLast(), null);
 			helper.assertTrue(handler != null, "alveary exposes no item handler");
-			ItemStack extracted = handler.extractItem(PRODUCT_SLOT, 1, false);
-			helper.assertTrue(extracted.getCount() == 1, "extraction through the item handler failed");
+			int extracted = MultiblockTestSupport.extractItem(handler, PRODUCT_SLOT, 1);
+			helper.assertTrue(extracted == 1, "extraction through the item handler failed");
 
 			helper.assertTrue(holderChunk.isUnsaved(), "extraction through the item handler did not mark the holder's chunk unsaved");
 			helper.succeed();

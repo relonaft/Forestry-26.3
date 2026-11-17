@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -27,11 +28,13 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforgespi.language.ModFileScanData;
+import org.slf4j.Logger;
 
 // one test function and one test instance per @GameTest method, named <holder namespace>:<class>.<method>
 @Mod(ForestryGameTests.MOD_ID)
 public final class ForestryGameTests {
 	public static final String MOD_ID = "forestrygametest";
+	private static final Logger LOGGER = LogUtils.getLogger();
 
 	private record Test(Identifier id, Identifier structure, int maxTicks, Method method) {
 	}
@@ -52,6 +55,7 @@ public final class ForestryGameTests {
 					.register(test.id().getPath(), () -> helper -> invoke(test.method(), helper));
 		}
 		functions.values().forEach(register -> register.register(modBus));
+		LOGGER.info("Found {} game tests in {} classes", this.tests.size(), this.tests.stream().map(test -> test.method().getDeclaringClass()).distinct().count());
 		modBus.addListener(this::registerTests);
 	}
 
@@ -86,6 +90,7 @@ public final class ForestryGameTests {
 
 	private void registerTests(RegisterGameTestsEvent event) {
 		Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(Identifier.fromNamespaceAndPath(MOD_ID, "default"));
+		LOGGER.info("Registering {} game test instances", this.tests.size());
 		for (Test test : this.tests) {
 			ResourceKey<Consumer<GameTestHelper>> function = ResourceKey.create(Registries.TEST_FUNCTION, test.id());
 			event.registerTest(test.id(), new FunctionGameTestInstance(function, new TestData<>(environment, test.structure(), test.maxTicks(), 0, true)));

@@ -30,6 +30,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 /**
  * Engine-agnostic mechanics shared by the multiblock inventory-conservation GameTests ({@link MultiblockGameTests}).
@@ -163,6 +166,15 @@ public final class MultiblockTestSupport {
 			}
 		}
 		throw new IllegalStateException("no shared inventory of size " + invSize + " found among members (not assembled?)");
+	}
+
+	// extracts the way automation does, through the capability in a committed transaction
+	public static int extractItem(ResourceHandler<ItemResource> handler, int slot, int amount) {
+		try (Transaction transaction = Transaction.openRoot()) {
+			int extracted = handler.extract(slot, handler.getResource(slot), amount, transaction);
+			transaction.commit();
+			return extracted;
+		}
 	}
 
 	/* ===================== drops ===================== */

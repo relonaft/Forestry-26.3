@@ -96,7 +96,9 @@ public class ModuleCore extends BlankForestryModule {
 		modBus.addListener(ModuleCore::registerCapabilities);
 		modBus.addListener(ModuleCore::registerGlobalLootModifiers);
 		modBus.addListener(ModuleCore::registerForestryRegistries);
-		modBus.addListener(ModuleCore::onGatherData);
+		// the base event is abstract since 1.21.4 and takes no listener
+		modBus.addListener(net.neoforged.neoforge.data.event.GatherDataEvent.Client.class, ModuleCore::onGatherData);
+		modBus.addListener(net.neoforged.neoforge.data.event.GatherDataEvent.Server.class, ModuleCore::onGatherData);
 		modBus.addListener(ModuleCore::modifyDefaultComponents);
 
 		ModuleUtil.loadFeatureProviders();

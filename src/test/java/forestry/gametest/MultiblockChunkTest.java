@@ -14,8 +14,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import forestry.core.platform.transfer.IItemHandler;
-import forestry.core.platform.transfer.Transfers;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -111,9 +111,9 @@ public final class MultiblockChunkTest {
 				return !level.getChunkAt(run.members.getFirst()).isUnsaved();
 			}, "site chunk was never saved before the change")
 			.run(() -> {
-				IItemHandler handler = Transfers.viewItems(level.getCapability(Capabilities.Item.BLOCK, run.members.getLast(), null));
+				ResourceHandler<ItemResource> handler = level.getCapability(Capabilities.Item.BLOCK, run.members.getLast(), null);
 				helper.assertTrue(handler != null, "alveary exposes no item handler");
-				helper.assertTrue(handler.extractItem(ALVEARY_PRODUCT_SLOT, 1, false).getCount() == 1, "extraction through the item handler failed");
+				helper.assertTrue(MultiblockTestSupport.extractItem(handler, ALVEARY_PRODUCT_SLOT, 1) == 1, "extraction through the item handler failed");
 				run.blockEntities = ChunkLifecycle.blockEntities(level, run.members);
 				ChunkLifecycle.release(level, site, 1);
 			})

@@ -18,8 +18,8 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import forestry.core.platform.transfer.IItemHandler;
-import forestry.core.platform.transfer.Transfers;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.function.Consumer;
 
@@ -42,9 +42,9 @@ public final class BeeHousingPersistenceTest {
 		LevelChunk chunk = helper.getLevel().getChunkAt(helper.absolutePos(HOUSING));
 		chunk.tryMarkSaved();
 
-		IItemHandler handler = Transfers.viewItems(helper.getLevel().getCapability(Capabilities.Item.BLOCK, helper.absolutePos(HOUSING), null));
+		ResourceHandler<ItemResource> handler = helper.getLevel().getCapability(Capabilities.Item.BLOCK, helper.absolutePos(HOUSING), null);
 		helper.assertTrue(handler != null, "apiary exposes no item handler");
-		helper.assertTrue(handler.extractItem(BeeHousingInventory.SLOT_PRODUCT_1, 1, false).getCount() == 1, "extraction through the item handler failed");
+		helper.assertTrue(MultiblockTestSupport.extractItem(handler, BeeHousingInventory.SLOT_PRODUCT_1, 1) == 1, "extraction through the item handler failed");
 
 		helper.assertTrue(chunk.isUnsaved(), "extraction through the item handler did not mark the apiary's chunk unsaved");
 		helper.succeed();
