@@ -1,11 +1,18 @@
 package forestry.core.engine.genetics.mutations;
 
+import com.google.common.base.Suppliers;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapLike;
+import com.mojang.serialization.RecordBuilder;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import com.google.gson.JsonParseException;
@@ -31,6 +38,7 @@ import forestry.api.core.genetics.alleles.IKaryotype;
 import forestry.api.core.machines.IForestryRecipe;
 import forestry.core.features.GeneticsRecipeTypes;
 import forestry.core.engine.genetics.GenomeCodecs;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 /**
  * A data-holder recipe representing a single mutation, loaded from a datapack. It is not a crafting recipe;
@@ -121,105 +129,98 @@ public class MutationRecipe implements IForestryRecipe {
 	}
 
 	@Override
-	public ItemStack getResultItem(HolderLookup.Provider lookupProvider) {
+	public ItemStack getResultItem() {
 		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public RecipeType<?> getType() {
+	public RecipeType<MutationRecipe> getType() {
 		return Objects.requireNonNull(GeneticsRecipeTypes.forType(this.speciesTypeId), () -> "No mutation recipe type for species type " + this.speciesTypeId).type();
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<? extends MutationRecipe> getSerializer() {
 		return Objects.requireNonNull(GeneticsRecipeTypes.forType(this.speciesTypeId), () -> "No mutation recipe type for species type " + this.speciesTypeId).serializer();
 	}
 
-	/**
-	 * A per-species-type serializer. The codecs are resolved lazily on first use because the species type's
-	 * karyotype does not exist at {@code RegisterEvent} time (only by datapack-load/recipe-parse time).
-	 */
-	public static class Serializer implements RecipeSerializer<MutationRecipe> {
-		private final Identifier speciesTypeId;
-		@Nullable
-		private MapCodec<MutationRecipe> codec;
-		@Nullable
-		private StreamCodec<RegistryFriendlyByteBuf, MutationRecipe> streamCodec;
+	// one serializer per species type. The codecs are built on first use, because the karyotype of the
+	// species type does not exist at RegisterEvent time
+	public static RecipeSerializer<MutationRecipe> serializer(Identifier speciesTypeId) {
+		return new RecipeSerializer<>(new LazyMapCodec<>(() -> buildCodec(speciesTypeId)), NeoForgeStreamCodecs.lazy(() -> buildStreamCodec(speciesTypeId)));
+	}
 
-		public Serializer(Identifier speciesTypeId) {
-			this.speciesTypeId = speciesTypeId;
+	private static final class LazyMapCodec<A> extends MapCodec<A> {
+		private final Supplier<MapCodec<A>> delegate;
+
+		private LazyMapCodec(Supplier<MapCodec<A>> delegate) {
+			this.delegate = Suppliers.memoize(delegate::get);
 		}
 
 		@Override
-		public MapCodec<MutationRecipe> codec() {
-			MapCodec<MutationRecipe> codec = this.codec;
-			if (codec == null) {
-				codec = buildCodec(this.speciesTypeId);
-				this.codec = codec;
-			}
-			return codec;
+		public <T> Stream<T> keys(DynamicOps<T> ops) {
+			return this.delegate.get().keys(ops);
 		}
 
 		@Override
-		public StreamCodec<RegistryFriendlyByteBuf, MutationRecipe> streamCodec() {
-			StreamCodec<RegistryFriendlyByteBuf, MutationRecipe> streamCodec = this.streamCodec;
-			if (streamCodec == null) {
-				streamCodec = buildStreamCodec(this.speciesTypeId);
-				this.streamCodec = streamCodec;
+		public <T> DataResult<A> decode(DynamicOps<T> ops, MapLike<T> input) {
+			return this.delegate.get().decode(ops, input);
+		}
+
+		@Override
+		public <T> RecordBuilder<T> encode(A input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
+			return this.delegate.get().encode(input, ops, prefix);
+		}
+	}
+
+	private static IKaryotype karyotype(Identifier speciesTypeId) {
+		// The mutation recipe types are registered by base, but a species type only exists when the
+		// jar that defines it is installed. Reporting that as a parse failure lets RecipeManager log
+		// the recipe and carry on; the manager's own lookup throws IllegalStateException, which
+		// RecipeManager does not catch and which takes the server down with it
+		ISpeciesType<?, ?> speciesType = IForestryApi.INSTANCE.getGeneticManager().getSpeciesTypeSafe(speciesTypeId);
+		if (speciesType == null) {
+			throw new JsonParseException("No species type is registered with id " + speciesTypeId + ", so its mutations cannot be read");
+		}
+		return speciesType.getKaryotype();
+	}
+
+	private static MapCodec<MutationRecipe> buildCodec(Identifier speciesTypeId) {
+		Codec<Map<Identifier, Allele<?>>> resultAllelesCodec = GenomeCodecs.alleleMapCodec(karyotype(speciesTypeId));
+		return RecordCodecBuilder.mapCodec(instance -> instance.group(
+			Identifier.CODEC.fieldOf("id").forGetter(MutationRecipe::getId),
+			Identifier.CODEC.fieldOf("first").forGetter(MutationRecipe::getFirstParentId),
+			Identifier.CODEC.fieldOf("second").forGetter(MutationRecipe::getSecondParentId),
+			Identifier.CODEC.fieldOf("result").forGetter(MutationRecipe::getResultId),
+			Codec.FLOAT.fieldOf("chance").forGetter(MutationRecipe::getChance),
+			IMutationCondition.LIST_CODEC.optionalFieldOf("conditions", List.of()).forGetter(MutationRecipe::getConditions),
+			resultAllelesCodec.optionalFieldOf("result_alleles", Map.of()).forGetter(MutationRecipe::getResultAlleles)
+		).apply(instance, (id, first, second, result, chance, conditions, resultAlleles) ->
+			new MutationRecipe(speciesTypeId, id, first, second, result, chance, conditions, resultAlleles)));
+	}
+
+	private static StreamCodec<RegistryFriendlyByteBuf, MutationRecipe> buildStreamCodec(Identifier speciesTypeId) {
+		IKaryotype karyotype = karyotype(speciesTypeId);
+		StreamCodec<RegistryFriendlyByteBuf, Map<Identifier, Allele<?>>> resultAllelesStreamCodec = GenomeCodecs.alleleMapStreamCodec(karyotype);
+		return StreamCodec.of(
+			(buf, recipe) -> {
+				Identifier.STREAM_CODEC.encode(buf, recipe.id);
+				Identifier.STREAM_CODEC.encode(buf, recipe.firstParentId);
+				Identifier.STREAM_CODEC.encode(buf, recipe.secondParentId);
+				Identifier.STREAM_CODEC.encode(buf, recipe.resultId);
+				buf.writeFloat(recipe.chance);
+				IMutationCondition.LIST_STREAM_CODEC.encode(buf, recipe.conditions);
+				resultAllelesStreamCodec.encode(buf, recipe.resultAlleles);
+			},
+			buf -> {
+				Identifier id = Identifier.STREAM_CODEC.decode(buf);
+				Identifier first = Identifier.STREAM_CODEC.decode(buf);
+				Identifier second = Identifier.STREAM_CODEC.decode(buf);
+				Identifier result = Identifier.STREAM_CODEC.decode(buf);
+				float chance = buf.readFloat();
+				List<IMutationCondition> conditions = IMutationCondition.LIST_STREAM_CODEC.decode(buf);
+				Map<Identifier, Allele<?>> resultAlleles = resultAllelesStreamCodec.decode(buf);
+				return new MutationRecipe(speciesTypeId, id, first, second, result, chance, conditions, resultAlleles);
 			}
-			return streamCodec;
-		}
-
-		private static IKaryotype karyotype(Identifier speciesTypeId) {
-			// The mutation recipe types are registered by base, but a species type only exists when the
-			// jar that defines it is installed. Reporting that as a parse failure lets RecipeManager log
-			// the recipe and carry on; the manager's own lookup throws IllegalStateException, which
-			// RecipeManager does not catch and which takes the server down with it
-			ISpeciesType<?, ?> speciesType = IForestryApi.INSTANCE.getGeneticManager().getSpeciesTypeSafe(speciesTypeId);
-			if (speciesType == null) {
-				throw new JsonParseException("No species type is registered with id " + speciesTypeId + ", so its mutations cannot be read");
-			}
-			return speciesType.getKaryotype();
-		}
-
-		private static MapCodec<MutationRecipe> buildCodec(Identifier speciesTypeId) {
-			Codec<Map<Identifier, Allele<?>>> resultAllelesCodec = GenomeCodecs.alleleMapCodec(karyotype(speciesTypeId));
-			return RecordCodecBuilder.mapCodec(instance -> instance.group(
-				Identifier.CODEC.fieldOf("id").forGetter(MutationRecipe::getId),
-				Identifier.CODEC.fieldOf("first").forGetter(MutationRecipe::getFirstParentId),
-				Identifier.CODEC.fieldOf("second").forGetter(MutationRecipe::getSecondParentId),
-				Identifier.CODEC.fieldOf("result").forGetter(MutationRecipe::getResultId),
-				Codec.FLOAT.fieldOf("chance").forGetter(MutationRecipe::getChance),
-				IMutationCondition.LIST_CODEC.optionalFieldOf("conditions", List.of()).forGetter(MutationRecipe::getConditions),
-				resultAllelesCodec.optionalFieldOf("result_alleles", Map.of()).forGetter(MutationRecipe::getResultAlleles)
-			).apply(instance, (id, first, second, result, chance, conditions, resultAlleles) ->
-				new MutationRecipe(speciesTypeId, id, first, second, result, chance, conditions, resultAlleles)));
-		}
-
-		private static StreamCodec<RegistryFriendlyByteBuf, MutationRecipe> buildStreamCodec(Identifier speciesTypeId) {
-			IKaryotype karyotype = karyotype(speciesTypeId);
-			StreamCodec<RegistryFriendlyByteBuf, Map<Identifier, Allele<?>>> resultAllelesStreamCodec = GenomeCodecs.alleleMapStreamCodec(karyotype);
-			return StreamCodec.of(
-				(buf, recipe) -> {
-					Identifier.STREAM_CODEC.encode(buf, recipe.id);
-					Identifier.STREAM_CODEC.encode(buf, recipe.firstParentId);
-					Identifier.STREAM_CODEC.encode(buf, recipe.secondParentId);
-					Identifier.STREAM_CODEC.encode(buf, recipe.resultId);
-					buf.writeFloat(recipe.chance);
-					IMutationCondition.LIST_STREAM_CODEC.encode(buf, recipe.conditions);
-					resultAllelesStreamCodec.encode(buf, recipe.resultAlleles);
-				},
-				buf -> {
-					Identifier id = Identifier.STREAM_CODEC.decode(buf);
-					Identifier first = Identifier.STREAM_CODEC.decode(buf);
-					Identifier second = Identifier.STREAM_CODEC.decode(buf);
-					Identifier result = Identifier.STREAM_CODEC.decode(buf);
-					float chance = buf.readFloat();
-					List<IMutationCondition> conditions = IMutationCondition.LIST_STREAM_CODEC.decode(buf);
-					Map<Identifier, Allele<?>> resultAlleles = resultAllelesStreamCodec.decode(buf);
-					return new MutationRecipe(speciesTypeId, id, first, second, result, chance, conditions, resultAlleles);
-				}
-			);
-		}
+		);
 	}
 }

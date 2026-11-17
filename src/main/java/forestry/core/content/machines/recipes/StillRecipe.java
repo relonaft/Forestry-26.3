@@ -24,9 +24,10 @@ public class StillRecipe implements IStillRecipe {
 		FluidStack.CODEC.fieldOf("output").forGetter(StillRecipe::getOutput)
 	).apply(instance, StillRecipe::new));
 	private static final StreamCodec<RegistryFriendlyByteBuf, StillRecipe> STREAM_CODEC = StreamCodec.of(
-		Serializer::toNetwork,
-		Serializer::fromNetwork
+		StillRecipe::toNetwork,
+		StillRecipe::fromNetwork
 	);
+	public static final RecipeSerializer<StillRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
 	private final Identifier id;
 	private final int timePerUnit;
@@ -65,7 +66,7 @@ public class StillRecipe implements IStillRecipe {
 	}
 
 	@Override
-	public ItemStack getResultItem(HolderLookup.Provider lookupProvider) {
+	public ItemStack getResultItem() {
 		return ItemStack.EMPTY;
 	}
 
@@ -75,40 +76,28 @@ public class StillRecipe implements IStillRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return FactoryRecipeTypes.STILL.serializer();
+	public RecipeSerializer<StillRecipe> getSerializer() {
+		return SERIALIZER;
 	}
 
 	@Override
-	public RecipeType<?> getType() {
+	public RecipeType<IStillRecipe> getType() {
 		return FactoryRecipeTypes.STILL.type();
 	}
 
-	public static class Serializer implements RecipeSerializer<StillRecipe> {
-		@Override
-		public MapCodec<StillRecipe> codec() {
-			return CODEC;
-		}
+	private static StillRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
+		Identifier id = Identifier.STREAM_CODEC.decode(buffer);
+		int timePerUnit = ByteBufCodecs.VAR_INT.decode(buffer);
+		FluidStack input = FluidStack.STREAM_CODEC.decode(buffer);
+		FluidStack output = FluidStack.STREAM_CODEC.decode(buffer);
 
-		@Override
-		public StreamCodec<RegistryFriendlyByteBuf, StillRecipe> streamCodec() {
-			return STREAM_CODEC;
-		}
+		return new StillRecipe(id, timePerUnit, input, output);
+	}
 
-		private static StillRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
-			Identifier id = Identifier.STREAM_CODEC.decode(buffer);
-			int timePerUnit = ByteBufCodecs.VAR_INT.decode(buffer);
-			FluidStack input = FluidStack.STREAM_CODEC.decode(buffer);
-			FluidStack output = FluidStack.STREAM_CODEC.decode(buffer);
-
-			return new StillRecipe(id, timePerUnit, input, output);
-		}
-
-		private static void toNetwork(RegistryFriendlyByteBuf buffer, StillRecipe recipe) {
-			Identifier.STREAM_CODEC.encode(buffer, recipe.id);
-			ByteBufCodecs.VAR_INT.encode(buffer, recipe.timePerUnit);
-			FluidStack.STREAM_CODEC.encode(buffer, recipe.input);
-			FluidStack.STREAM_CODEC.encode(buffer, recipe.output);
-		}
+	private static void toNetwork(RegistryFriendlyByteBuf buffer, StillRecipe recipe) {
+		Identifier.STREAM_CODEC.encode(buffer, recipe.id);
+		ByteBufCodecs.VAR_INT.encode(buffer, recipe.timePerUnit);
+		FluidStack.STREAM_CODEC.encode(buffer, recipe.input);
+		FluidStack.STREAM_CODEC.encode(buffer, recipe.output);
 	}
 }

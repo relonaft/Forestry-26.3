@@ -23,16 +23,17 @@ import net.neoforged.neoforge.fluids.FluidStack;
 public class FermenterRecipe implements IFermenterRecipe {
 	private static final MapCodec<FermenterRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Identifier.CODEC.fieldOf("id").forGetter(FermenterRecipe::getId),
-		Ingredient.CODEC_NONEMPTY.fieldOf("resource").forGetter(FermenterRecipe::getInputItem),
+		Ingredient.CODEC.fieldOf("resource").forGetter(FermenterRecipe::getInputItem),
 		Codec.INT.fieldOf("fermentationValue").forGetter(FermenterRecipe::getFermentationValue),
 		Codec.FLOAT.fieldOf("modifier").forGetter(FermenterRecipe::getModifier),
 		BuiltInRegistries.FLUID.byNameCodec().fieldOf("output").forGetter(FermenterRecipe::getOutput),
 		FluidStack.CODEC.fieldOf("fluidResource").forGetter(FermenterRecipe::getInputFluid)
 	).apply(instance, (id, resource, value, mod, out, fluidRes) -> new FermenterRecipe(id, resource, value, mod, out, fluidRes)));
 	private static final StreamCodec<RegistryFriendlyByteBuf, FermenterRecipe> STREAM_CODEC = StreamCodec.of(
-		Serializer::toNetwork,
-		Serializer::fromNetwork
+		FermenterRecipe::toNetwork,
+		FermenterRecipe::fromNetwork
 	);
+	public static final RecipeSerializer<FermenterRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
 	private final Identifier id;
 	private final Ingredient resource;
@@ -50,19 +51,6 @@ public class FermenterRecipe implements IFermenterRecipe {
 
 		this.id = id;
 		this.resource = resource;
-		this.fermentationValue = fermentationValue;
-		this.modifier = modifier;
-		this.output = output;
-		this.fluidResource = fluidResource;
-	}
-
-	public FermenterRecipe(Identifier id, int fermentationValue, float modifier, Fluid output, FluidStack fluidResource) {
-		Preconditions.checkNotNull(id, "Recipe identifier cannot be null");
-		Preconditions.checkNotNull(output, "Fermenter output cannot be null!");
-		Preconditions.checkNotNull(fluidResource, "Fermenter liquid cannot be null!");
-
-		this.id = id;
-		this.resource = Ingredient.EMPTY;
 		this.fermentationValue = fermentationValue;
 		this.modifier = modifier;
 		this.output = output;
@@ -100,7 +88,7 @@ public class FermenterRecipe implements IFermenterRecipe {
 	}
 
 	@Override
-	public ItemStack getResultItem(HolderLookup.Provider lookupProvider) {
+	public ItemStack getResultItem() {
 		return ItemStack.EMPTY;
 	}
 
@@ -110,44 +98,32 @@ public class FermenterRecipe implements IFermenterRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return FactoryRecipeTypes.FERMENTER.serializer();
+	public RecipeSerializer<FermenterRecipe> getSerializer() {
+		return SERIALIZER;
 	}
 
 	@Override
-	public RecipeType<?> getType() {
+	public RecipeType<IFermenterRecipe> getType() {
 		return FactoryRecipeTypes.FERMENTER.type();
 	}
 
-	public static class Serializer implements RecipeSerializer<FermenterRecipe> {
-		@Override
-		public MapCodec<FermenterRecipe> codec() {
-			return CODEC;
-		}
+	private static FermenterRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
+		Identifier recipeId = Identifier.STREAM_CODEC.decode(buffer);
+		Ingredient resource = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
+		int fermentationValue = ByteBufCodecs.VAR_INT.decode(buffer);
+		float modifier = ByteBufCodecs.FLOAT.decode(buffer);
+		Fluid output = ByteBufCodecs.registry(Registries.FLUID).decode(buffer);
+		FluidStack fluidResource = FluidStack.STREAM_CODEC.decode(buffer);
 
-		@Override
-		public StreamCodec<RegistryFriendlyByteBuf, FermenterRecipe> streamCodec() {
-			return STREAM_CODEC;
-		}
+		return new FermenterRecipe(recipeId, resource, fermentationValue, modifier, output, fluidResource);
+	}
 
-		private static FermenterRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
-			Identifier recipeId = Identifier.STREAM_CODEC.decode(buffer);
-			Ingredient resource = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
-			int fermentationValue = ByteBufCodecs.VAR_INT.decode(buffer);
-			float modifier = ByteBufCodecs.FLOAT.decode(buffer);
-			Fluid output = ByteBufCodecs.registry(Registries.FLUID).decode(buffer);
-			FluidStack fluidResource = FluidStack.STREAM_CODEC.decode(buffer);
-
-			return new FermenterRecipe(recipeId, resource, fermentationValue, modifier, output, fluidResource);
-		}
-
-		private static void toNetwork(RegistryFriendlyByteBuf buffer, FermenterRecipe recipe) {
-			Identifier.STREAM_CODEC.encode(buffer, recipe.id);
-			Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.resource);
-			ByteBufCodecs.VAR_INT.encode(buffer, recipe.fermentationValue);
-			ByteBufCodecs.FLOAT.encode(buffer, recipe.modifier);
-			ByteBufCodecs.registry(Registries.FLUID).encode(buffer, recipe.output);
-			FluidStack.STREAM_CODEC.encode(buffer, recipe.fluidResource);
-		}
+	private static void toNetwork(RegistryFriendlyByteBuf buffer, FermenterRecipe recipe) {
+		Identifier.STREAM_CODEC.encode(buffer, recipe.id);
+		Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.resource);
+		ByteBufCodecs.VAR_INT.encode(buffer, recipe.fermentationValue);
+		ByteBufCodecs.FLOAT.encode(buffer, recipe.modifier);
+		ByteBufCodecs.registry(Registries.FLUID).encode(buffer, recipe.output);
+		FluidStack.STREAM_CODEC.encode(buffer, recipe.fluidResource);
 	}
 }

@@ -7,15 +7,18 @@ import forestry.core.content.machines.features.FactoryRecipeTypes;
 import forestry.core.content.machines.recipes.SmelterRecipe;
 import forestry.core.platform.registration.FeatureRecipeType;
 import forestry.core.content.worktable.inventory.WorktableCraftingContainer;
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.api.distmarker.Dist;
@@ -48,7 +51,7 @@ public class RecipeUtils {
 
 	public static Registry<Fluid> getFluidRegistry() {
 		MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-		return server == null ? (FMLEnvironment.getDist() == Dist.CLIENT ? ClientsideCode.getFluidRegistry() : null) : server.registryAccess().registryOrThrow(Registries.FLUID);
+		return server == null ? (FMLEnvironment.getDist() == Dist.CLIENT ? ClientsideCode.getFluidRegistry() : null) : server.registryAccess().lookupOrThrow(Registries.FLUID);
 	}
 
 	@Nullable
@@ -60,7 +63,7 @@ public class RecipeUtils {
 		if (manager == null) {
 			return null;
 		}
-		Optional<RecipeHolder<?>> holder = manager.byKey(name);
+		Optional<RecipeHolder<?>> holder = manager.byKey(ResourceKey.create(Registries.RECIPE, name));
 		return (RecipeHolder<T>) holder.orElse(null);
 	}
 
@@ -69,11 +72,13 @@ public class RecipeUtils {
 		if (manager == null || world == null) {
 			return Collections.emptyList();
 		}
-		return manager.getRecipesFor(recipeType, inventory, world);
+		return manager.recipeMap().getRecipesFor(recipeType, inventory, world).toList();
 	}
 
 	public static List<RecipeHolder<CraftingRecipe>> findMatchingRecipes(CraftingInput inventory, Level level) {
-		return level.getRecipeManager().getRecipesFor(RecipeType.CRAFTING, inventory, level);
+		// not level.recipeAccess(), a client level has no recipe manager since 1.21.2
+		RecipeManager manager = getRecipeManager();
+		return manager == null ? List.of() : manager.recipeMap().getRecipesFor(RecipeType.CRAFTING, inventory, level).toList();
 	}
 
 	// Returns a crafting matrix for a certain recipe using available items
@@ -85,7 +90,7 @@ public class RecipeUtils {
 			return null;
 		}
 
-		ItemStack expectedOutput = recipe.assemble(input, level.registryAccess());
+		ItemStack expectedOutput = recipe.assemble(input);
 		if (expectedOutput.isEmpty()) {
 			return null;
 		}
@@ -109,7 +114,7 @@ public class RecipeUtils {
 		CraftingInput usedInput = usedMatrix.asCraftInput();
 
 		if (recipe.matches(usedInput, level)) {
-			ItemStack output = recipe.assemble(usedInput, level.registryAccess());
+			ItemStack output = recipe.assemble(usedInput);
 			if (ItemStack.matches(output, expectedOutput)) {
 				return usedMatrix;
 			}
@@ -129,7 +134,7 @@ public class RecipeUtils {
 				originalMatrix.setItem(slot, singleStockStack);
 
 				if (recipe.matches(input, level)) {
-					ItemStack output = recipe.assemble(input, level.registryAccess());
+					ItemStack output = recipe.assemble(input);
 					if (ItemStack.matches(output, expectedOutput)) {
 						originalMatrix.setItem(slot, originalStack);
 						return stockStack.split(1);
@@ -157,7 +162,7 @@ public class RecipeUtils {
 	}
 
 	public static boolean isCarpenterBox(RecipeManager manager, ItemStack stack) {
-		return getMatchingRecipe(manager, FactoryRecipeTypes.CARPENTER, recipe -> recipe.getBox().test(stack)) != null;
+		return getMatchingRecipe(manager, FactoryRecipeTypes.CARPENTER, recipe -> Ingredient.testOptionalIngredient(recipe.getBox(), stack)) != null;
 	}
 
 	// Returns true if the item is part of any squeezer recipe.
@@ -196,7 +201,7 @@ public class RecipeUtils {
 	}
 
 	public static boolean isFabricatorPlan(RecipeManager manager, ItemStack stack) {
-		return getMatchingRecipe(manager, FactoryRecipeTypes.FABRICATOR, recipe -> recipe.getPlan().test(stack)) != null;
+		return getMatchingRecipe(manager, FactoryRecipeTypes.FABRICATOR, recipe -> Ingredient.testOptionalIngredient(recipe.getPlan(), stack)) != null;
 	}
 
 	@Nullable
@@ -228,11 +233,11 @@ public class RecipeUtils {
 	}
 
 	public static <R extends IForestryRecipe> Stream<R> getRecipes(RecipeManager manager, FeatureRecipeType<R> type) {
-		return manager.byType(type.type()).stream().map(RecipeHolder::value);
+		return manager.recipeMap().byType(type.type()).stream().map(RecipeHolder::value);
 	}
 
 	public static <R extends Recipe<C>, C extends RecipeInput> Set<Identifier> getTargetFluidsFromIngredients(RecipeManager manager, RecipeType<R> type, Function<R, FluidIngredient> targetFluid) {
-		return getTargetFluidStreams(manager, type, recipe -> Arrays.stream(targetFluid.apply(recipe).getStacks()).map(FluidStack::getFluid));
+		return getTargetFluidStreams(manager, type, recipe -> targetFluid.apply(recipe).fluids().stream().map(Holder::value));
 	}
 
 	public static <R extends Recipe<I>, I extends RecipeInput> Set<Identifier> getTargetFluidsFromStacks(RecipeManager manager, RecipeType<R> type, Function<R, FluidStack> targetFluid) {
@@ -244,7 +249,7 @@ public class RecipeUtils {
 	}
 
 	private static <R extends Recipe<I>, I extends RecipeInput> Set<Identifier> getTargetFluidStreams(RecipeManager manager, RecipeType<R> type, Function<R, Stream<Fluid>> targetFluid) {
-		return manager.byType(type).stream()
+		return manager.recipeMap().byType(type).stream()
 			.flatMap(holder -> targetFluid.apply(holder.value()).map(ModUtil::getRegistryName))
 			.collect(Collectors.toSet());
 	}
@@ -255,7 +260,7 @@ public class RecipeUtils {
 	@Nullable
 	public static <R extends IForestryRecipe> R getRecipeByOutput(FeatureRecipeType<R> recipeType, RegistryAccess registryAccess, ItemStack output) {
 		return getRecipes(getRecipeManager(), recipeType)
-			.filter(recipe -> ItemStack.isSameItem(recipe.getResultItem(registryAccess), output))
+			.filter(recipe -> ItemStack.isSameItem(recipe.getResultItem(), output))
 			.findFirst()
 			.orElse(null);
 	}

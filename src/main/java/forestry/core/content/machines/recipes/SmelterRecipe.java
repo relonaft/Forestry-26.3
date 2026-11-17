@@ -35,6 +35,7 @@ public class SmelterRecipe implements ISmelterRecipe {
 		ByteBufCodecs.VAR_INT, SmelterRecipe::getProcessingTime,
 		SmelterRecipe::new
 	);
+	public static final RecipeSerializer<SmelterRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
 	private final Identifier id;
 	private final List<SizedIngredient> inputs;
@@ -62,8 +63,9 @@ public class SmelterRecipe implements ISmelterRecipe {
 	public ItemStack getOutput() {
 		// The output is an ingredient so a recipe can name an alloy by tag and let whichever mod
 		// fills that tag supply the item. A tag no loaded mod fills resolves to nothing
-		ItemStack[] items = this.output.getItems();
-		return items.length == 0 ? ItemStack.EMPTY : items[0].copyWithCount(this.output.count());
+		return this.output.ingredient().items().findFirst()
+			.map(item -> new ItemStack(item, this.output.count()))
+			.orElse(ItemStack.EMPTY);
 	}
 
 	@Override
@@ -72,7 +74,7 @@ public class SmelterRecipe implements ISmelterRecipe {
 	}
 
 	@Override
-	public ItemStack getResultItem(HolderLookup.Provider lookupProvider) {
+	public ItemStack getResultItem() {
 		return getOutput();
 	}
 
@@ -82,12 +84,12 @@ public class SmelterRecipe implements ISmelterRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return FactoryRecipeTypes.SMELTER.serializer();
+	public RecipeSerializer<SmelterRecipe> getSerializer() {
+		return SERIALIZER;
 	}
 
 	@Override
-	public RecipeType<?> getType() {
+	public RecipeType<ISmelterRecipe> getType() {
 		return FactoryRecipeTypes.SMELTER.type();
 	}
 
@@ -125,15 +127,5 @@ public class SmelterRecipe implements ISmelterRecipe {
 		return this.id + "= \n[ " + this.inputs + " ]: " + this.output;
 	}
 
-	public static class Serializer implements RecipeSerializer<SmelterRecipe> {
-		@Override
-		public MapCodec<SmelterRecipe> codec() {
-			return CODEC;
-		}
 
-		@Override
-		public StreamCodec<RegistryFriendlyByteBuf, SmelterRecipe> streamCodec() {
-			return STREAM_CODEC;
-		}
-	}
 }

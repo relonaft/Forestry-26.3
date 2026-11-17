@@ -14,6 +14,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -38,15 +39,16 @@ public class SqueezerContainerRecipe implements ISqueezerContainerRecipe {
 
 	private static final MapCodec<SqueezerContainerRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Identifier.CODEC.fieldOf("id").forGetter(SqueezerContainerRecipe::getId),
-		ItemStack.STRICT_CODEC.fieldOf("container").forGetter(SqueezerContainerRecipe::getEmptyContainer),
+		ItemStackTemplate.CODEC.xmap(ItemStackTemplate::create, ItemStackTemplate::fromNonEmptyStack).fieldOf("container").forGetter(SqueezerContainerRecipe::getEmptyContainer),
 		Codec.INT.fieldOf("time").forGetter(SqueezerContainerRecipe::getProcessingTime),
-		ItemStack.STRICT_CODEC.fieldOf("remnants").forGetter(SqueezerContainerRecipe::getRemnants),
+		ItemStackTemplate.CODEC.xmap(ItemStackTemplate::create, ItemStackTemplate::fromNonEmptyStack).fieldOf("remnants").forGetter(SqueezerContainerRecipe::getRemnants),
 		Codec.FLOAT.fieldOf("remnantsChance").forGetter(SqueezerContainerRecipe::getRemnantsChance)
 	).apply(instance, SqueezerContainerRecipe::new));
 	private static final StreamCodec<RegistryFriendlyByteBuf, SqueezerContainerRecipe> STREAM_CODEC = StreamCodec.of(
-		Serializer::toNetwork,
-		Serializer::fromNetwork
+		SqueezerContainerRecipe::toNetwork,
+		SqueezerContainerRecipe::fromNetwork
 	);
+	public static final RecipeSerializer<SqueezerContainerRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
 	private final Identifier id;
 	private final ItemStack emptyContainer;
@@ -97,7 +99,7 @@ public class SqueezerContainerRecipe implements ISqueezerContainerRecipe {
 	}
 
 	@Override
-	public ItemStack getResultItem(HolderLookup.Provider lookupProvider) {
+	public ItemStack getResultItem() {
 		return this.remnants;
 	}
 
@@ -107,42 +109,30 @@ public class SqueezerContainerRecipe implements ISqueezerContainerRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return FactoryRecipeTypes.SQUEEZER_CONTAINER.serializer();
+	public RecipeSerializer<SqueezerContainerRecipe> getSerializer() {
+		return SERIALIZER;
 	}
 
 	@Override
-	public RecipeType<?> getType() {
+	public RecipeType<ISqueezerContainerRecipe> getType() {
 		return FactoryRecipeTypes.SQUEEZER_CONTAINER.type();
 	}
 
-	public static class Serializer implements RecipeSerializer<SqueezerContainerRecipe> {
-		@Override
-		public MapCodec<SqueezerContainerRecipe> codec() {
-			return CODEC;
-		}
+	private static SqueezerContainerRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
+		Identifier recipeId = Identifier.STREAM_CODEC.decode(buffer);
+		ItemStack emptyContainer = ItemStack.STREAM_CODEC.decode(buffer);
+		int processingTime = ByteBufCodecs.VAR_INT.decode(buffer);
+		ItemStack remnants = ItemStack.STREAM_CODEC.decode(buffer);
+		float remnantsChance = ByteBufCodecs.FLOAT.decode(buffer);
 
-		@Override
-		public StreamCodec<RegistryFriendlyByteBuf, SqueezerContainerRecipe> streamCodec() {
-			return STREAM_CODEC;
-		}
+		return new SqueezerContainerRecipe(recipeId, emptyContainer, processingTime, remnants, remnantsChance);
+	}
 
-		private static SqueezerContainerRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
-			Identifier recipeId = Identifier.STREAM_CODEC.decode(buffer);
-			ItemStack emptyContainer = ItemStack.STREAM_CODEC.decode(buffer);
-			int processingTime = ByteBufCodecs.VAR_INT.decode(buffer);
-			ItemStack remnants = ItemStack.STREAM_CODEC.decode(buffer);
-			float remnantsChance = ByteBufCodecs.FLOAT.decode(buffer);
-
-			return new SqueezerContainerRecipe(recipeId, emptyContainer, processingTime, remnants, remnantsChance);
-		}
-
-		private static void toNetwork(RegistryFriendlyByteBuf buffer, SqueezerContainerRecipe recipe) {
-			Identifier.STREAM_CODEC.encode(buffer, recipe.id);
-			ItemStack.STREAM_CODEC.encode(buffer, recipe.emptyContainer);
-			ByteBufCodecs.VAR_INT.encode(buffer, recipe.processingTime);
-			ItemStack.STREAM_CODEC.encode(buffer, recipe.remnants);
-			ByteBufCodecs.FLOAT.encode(buffer, recipe.remnantsChance);
-		}
+	private static void toNetwork(RegistryFriendlyByteBuf buffer, SqueezerContainerRecipe recipe) {
+		Identifier.STREAM_CODEC.encode(buffer, recipe.id);
+		ItemStack.STREAM_CODEC.encode(buffer, recipe.emptyContainer);
+		ByteBufCodecs.VAR_INT.encode(buffer, recipe.processingTime);
+		ItemStack.STREAM_CODEC.encode(buffer, recipe.remnants);
+		ByteBufCodecs.FLOAT.encode(buffer, recipe.remnantsChance);
 	}
 }

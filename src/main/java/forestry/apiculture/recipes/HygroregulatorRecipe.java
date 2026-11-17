@@ -26,9 +26,10 @@ public class HygroregulatorRecipe implements IHygroregulatorRecipe {
 		Codec.BYTE.fieldOf("temperature_steps").forGetter(HygroregulatorRecipe::getTemperatureSteps)
 	).apply(instance, HygroregulatorRecipe::new));
 	private static final StreamCodec<RegistryFriendlyByteBuf, HygroregulatorRecipe> STREAM_CODEC = StreamCodec.of(
-		Serializer::toNetwork,
-		Serializer::fromNetwork
+		HygroregulatorRecipe::toNetwork,
+		HygroregulatorRecipe::fromNetwork
 	);
+	public static final RecipeSerializer<HygroregulatorRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
 	private final Identifier id;
 	private final FluidStack liquid;
@@ -67,7 +68,7 @@ public class HygroregulatorRecipe implements IHygroregulatorRecipe {
 	}
 
 	@Override
-	public ItemStack getResultItem(HolderLookup.Provider lookupProvider) {
+	public ItemStack getResultItem() {
 		return ItemStack.EMPTY;
 	}
 
@@ -77,42 +78,30 @@ public class HygroregulatorRecipe implements IHygroregulatorRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return ApicultureRecipeTypes.HYGROREGULATOR.serializer();
+	public RecipeSerializer<HygroregulatorRecipe> getSerializer() {
+		return SERIALIZER;
 	}
 
 	@Override
-	public RecipeType<?> getType() {
+	public RecipeType<IHygroregulatorRecipe> getType() {
 		return ApicultureRecipeTypes.HYGROREGULATOR.type();
 	}
 
-	public static class Serializer implements RecipeSerializer<HygroregulatorRecipe> {
-		@Override
-		public MapCodec<HygroregulatorRecipe> codec() {
-			return CODEC;
-		}
+	private static HygroregulatorRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
+		Identifier recipeId = Identifier.STREAM_CODEC.decode(buffer);
+		FluidStack liquid = FluidStack.STREAM_CODEC.decode(buffer);
+		int retainTime = ByteBufCodecs.VAR_INT.decode(buffer);
+		byte humiditySteps = ByteBufCodecs.BYTE.decode(buffer);
+		byte temperatureSteps = ByteBufCodecs.BYTE.decode(buffer);
 
-		@Override
-		public StreamCodec<RegistryFriendlyByteBuf, HygroregulatorRecipe> streamCodec() {
-			return STREAM_CODEC;
-		}
+		return new HygroregulatorRecipe(recipeId, liquid, retainTime, humiditySteps, temperatureSteps);
+	}
 
-		private static HygroregulatorRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
-			Identifier recipeId = Identifier.STREAM_CODEC.decode(buffer);
-			FluidStack liquid = FluidStack.STREAM_CODEC.decode(buffer);
-			int retainTime = ByteBufCodecs.VAR_INT.decode(buffer);
-			byte humiditySteps = ByteBufCodecs.BYTE.decode(buffer);
-			byte temperatureSteps = ByteBufCodecs.BYTE.decode(buffer);
-
-			return new HygroregulatorRecipe(recipeId, liquid, retainTime, humiditySteps, temperatureSteps);
-		}
-
-		private static void toNetwork(RegistryFriendlyByteBuf buffer, HygroregulatorRecipe recipe) {
-			Identifier.STREAM_CODEC.encode(buffer, recipe.id);
-			FluidStack.STREAM_CODEC.encode(buffer, recipe.liquid);
-			ByteBufCodecs.VAR_INT.encode(buffer, recipe.retainTime);
-			ByteBufCodecs.BYTE.encode(buffer, recipe.humiditySteps);
-			ByteBufCodecs.BYTE.encode(buffer, recipe.temperatureSteps);
-		}
+	private static void toNetwork(RegistryFriendlyByteBuf buffer, HygroregulatorRecipe recipe) {
+		Identifier.STREAM_CODEC.encode(buffer, recipe.id);
+		FluidStack.STREAM_CODEC.encode(buffer, recipe.liquid);
+		ByteBufCodecs.VAR_INT.encode(buffer, recipe.retainTime);
+		ByteBufCodecs.BYTE.encode(buffer, recipe.humiditySteps);
+		ByteBufCodecs.BYTE.encode(buffer, recipe.temperatureSteps);
 	}
 }
