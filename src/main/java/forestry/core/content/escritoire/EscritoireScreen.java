@@ -1,13 +1,13 @@
 package forestry.core.content.escritoire;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import org.joml.Matrix3x2fStack;
 import forestry.core.platform.config.Constants;
 import forestry.core.platform.gui.widgets.GameTokenWidget;
 import forestry.core.platform.gui.widgets.ProbeButton;
 import forestry.core.platform.gui.widgets.Widget;
 import forestry.core.platform.render.ColourProperties;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -21,11 +21,9 @@ public class EscritoireScreen extends ForestryScreen<EscritoireMenu> {
 	private final EscritoireBlockEntity tile;
 
 	public EscritoireScreen(EscritoireMenu container, Inventory inv, Component title) {
-		super(Constants.TEXTURE_PATH_GUI + "/escritoire.png", container, inv, title);
+		super(Constants.TEXTURE_PATH_GUI + "/escritoire.png", container, inv, title, 228, 235);
 
 		this.tile = container.getTile();
-		this.imageWidth = 228;
-		this.imageHeight = 235;
 
 		this.widgetManager.add(new ProbeButton(this, this.widgetManager, 14, 16));
 
@@ -69,8 +67,8 @@ public class EscritoireScreen extends ForestryScreen<EscritoireMenu> {
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseY, int mouseX) {
-		super.renderBg(graphics, partialTicks, mouseY, mouseX);
+	protected void extractBg(GuiGraphicsExtractor graphics, float partialTicks, int mouseY, int mouseX) {
+		super.extractBg(graphics, partialTicks, mouseY, mouseX);
 
 		for (int i = 0; i <= this.tile.getGame().getBountyLevel() / 4; i++) {
 			GuiUtil.drawItemStack(graphics, this, this.LEVEL_ITEM, this.leftPos + 170 + i * 8, this.topPos + 7);
@@ -78,9 +76,9 @@ public class EscritoireScreen extends ForestryScreen<EscritoireMenu> {
 
         this.textLayout.startPage(graphics);
 		{
-			PoseStack stack = graphics.pose();
-			stack.scale(0.5F, 0.5F, 0.5F);
-			stack.translate(this.leftPos + 170, this.topPos + 10, 0.0);
+			Matrix3x2fStack stack = graphics.pose();
+			stack.scale(0.5F, 0.5F);
+			stack.translate(this.leftPos + 170, this.topPos + 10);
 
             this.textLayout.newLine();
             this.textLayout.newLine();

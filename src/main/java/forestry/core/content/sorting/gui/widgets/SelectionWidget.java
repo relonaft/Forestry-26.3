@@ -3,12 +3,14 @@ package forestry.core.content.sorting.gui.widgets;
 import forestry.api.ForestryConstants;
 import forestry.api.core.tooltips.ToolTip;
 import forestry.core.platform.config.Constants;
+import forestry.core.platform.gui.GuiUtil;
 import forestry.core.platform.gui.widgets.Widget;
 import forestry.core.platform.gui.widgets.WidgetManager;
 import forestry.core.platform.gui.widgets.WidgetScrollBar;
 import forestry.core.content.sorting.gui.GeneticFilterScreen;
 import forestry.core.content.sorting.gui.ISelectableProvider;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -47,15 +49,15 @@ public class SelectionWidget extends Widget {
 	}
 
 	@Override
-	public void draw(GuiGraphics graphics, int startX, int startY) {
+	public void draw(GuiGraphicsExtractor graphics, int startX, int startY) {
 		if (this.logic == null) {
 			return;
 		}
 
-		graphics.blit(TEXTURE, startX + this.xPos, startY + this.yPos, 0, 0, this.width, this.height);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, startX + this.xPos, startY + this.yPos, 0, 0, this.width, this.height, 256, 256);
         this.logic.draw(graphics);
 
-		graphics.drawString(this.gui.font(), Component.translatable("for.gui.filter.seletion"), startX + this.xPos + 12, startY + this.yPos + 4, this.manager.gui.getFontColor().get("gui.title"));
+		graphics.text(this.gui.font(), Component.translatable("for.gui.filter.seletion"), startX + this.xPos + 12, startY + this.yPos + 4, GuiUtil.textColor(this.manager.gui.getFontColor().get("gui.title")));
 	}
 
 	@Override

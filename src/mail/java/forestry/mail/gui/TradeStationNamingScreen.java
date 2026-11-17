@@ -6,22 +6,21 @@ import forestry.core.platform.render.ColourProperties;
 import forestry.core.platform.util.NetworkUtil;
 import forestry.mail.network.packets.PacketTraderAddressRequest;
 import forestry.mail.tradestation.TradeStationBlockEntity;
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import org.apache.commons.lang3.StringUtils;
-import org.lwjgl.glfw.GLFW;
 
 public class TradeStationNamingScreen extends ForestryScreen<TradeStationNamingMenu> {
 	private final TradeStationBlockEntity tile;
 	private EditBox addressNameField;
 
 	public TradeStationNamingScreen(TradeStationNamingMenu container, Inventory inv, Component title) {
-		super(Constants.TEXTURE_PATH_GUI + "/trade_station_naming.png", container, inv, title);
+		super(Constants.TEXTURE_PATH_GUI + "/trade_station_naming.png", container, inv, title, 176, 90);
 		this.tile = container.getTile();
-		this.imageWidth = 176;
-		this.imageHeight = 90;
 	}
 
 	@Override
@@ -41,24 +40,25 @@ public class TradeStationNamingScreen extends ForestryScreen<TradeStationNamingM
 	}
 
 	@Override
-	public boolean keyPressed(int key, int scanCode, int modifiers) {
-		if (key == GLFW.GLFW_KEY_ESCAPE) {
+	public boolean keyPressed(KeyEvent event) {
+		int key = event.key();
+		if (key == InputConstants.KEY_ESCAPE) {
 			this.minecraft.player.closeContainer();
 		}
 
-		if (key == GLFW.GLFW_KEY_ENTER && this.addressNameField.isFocused()) {
+		if (key == InputConstants.KEY_RETURN && this.addressNameField.isFocused()) {
 			setAddress();
 			return true;
 		}
 
-		return this.addressNameField.keyPressed(key, scanCode, modifiers)
+		return this.addressNameField.keyPressed(event)
 			|| this.addressNameField.canConsumeInput()
-			|| super.keyPressed(key, scanCode, modifiers);
+			|| super.keyPressed(event);
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
-		super.renderBg(graphics, partialTicks, mouseX, mouseY);
+	protected void extractBg(GuiGraphicsExtractor graphics, float partialTicks, int mouseX, int mouseY) {
+		super.extractBg(graphics, partialTicks, mouseX, mouseY);
 
         this.textLayout.startPage(graphics);
         this.textLayout.newLine();
@@ -66,7 +66,7 @@ public class TradeStationNamingScreen extends ForestryScreen<TradeStationNamingM
         this.textLayout.newLine(38);
         this.textLayout.drawCenteredLine(graphics, Component.translatable("for.gui.mail.nametrader.finish"), 0, ColourProperties.INSTANCE.get("gui.mail.text"));
         this.textLayout.endPage(graphics);
-        this.addressNameField.render(graphics, mouseY, mouseX, partialTicks);
+        this.addressNameField.extractRenderState(graphics, mouseY, mouseX, partialTicks);
 	}
 
 	private void setAddress() {

@@ -5,23 +5,23 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.util.ARGB;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import vazkii.patchouli.api.IComponentRenderContext;
 import vazkii.patchouli.api.ICustomComponent;
 import vazkii.patchouli.api.IVariable;
+import org.joml.Matrix3x2fStack;
 
 @SuppressWarnings("unused")
 public class FluidComponent implements ICustomComponent {
@@ -41,19 +41,19 @@ public class FluidComponent implements ICustomComponent {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, IComponentRenderContext context, float pticks, int mouseX, int mouseY) {
-		PoseStack stack = graphics.pose();
-		stack.pushPose();
-		IClientFluidTypeExtensions fluidAttributes = IClientFluidTypeExtensions.of(this.fluidStack.getFluid());
-		Identifier fluidStill = fluidAttributes.getStillTexture(this.fluidStack);
-		if (fluidStill != null) {
-			TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
+	public void render(GuiGraphicsExtractor graphics, IComponentRenderContext context, float pticks, int mouseX, int mouseY) {
+		Matrix3x2fStack stack = graphics.pose();
+		stack.pushMatrix();
+		if (!this.fluidStack.isEmpty()) {
+			FluidModel fluidModel = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(this.fluidStack.getFluid().defaultFluidState());
+			TextureAtlasSprite sprite = fluidModel.stillMaterial().sprite();
+			FluidTintSource tintSource = fluidModel.fluidTintSource();
 			Identifier spriteLocation = sprite.contents().name();
 			Identifier fluidTexture = Identifier.fromNamespaceAndPath(spriteLocation.getNamespace(), "textures/" + spriteLocation.getPath() + ".png");
-			setGLColorFromInt(fluidAttributes.getTintColor(this.fluidStack));
+			int color = ARGB.opaque(tintSource == null ? 0xffffff : tintSource.colorAsStack(this.fluidStack));
 
 			// MatrixStack transform, int x, int y, float u, float v, int width, int height, int ?, int ?
-			graphics.blit(fluidTexture, this.x, (int) (this.y + this.h - Math.floor(this.h * ((float) this.level / this.maxLevel))), sprite.getU0(), sprite.getV0(), this.w, this.h * this.level / this.maxLevel, 8, 8);
+			graphics.blit(RenderPipelines.GUI_TEXTURED, fluidTexture, this.x, (int) (this.y + this.h - Math.floor(this.h * ((float) this.level / this.maxLevel))), sprite.getU0(), sprite.getV0(), this.w, this.h * this.level / this.maxLevel, 8, 8, color);
 
 			if (context.isAreaHovered(mouseX, mouseY, this.x, this.y, this.w, this.h)) {
 				List<Component> toolTips = new ArrayList<>();
@@ -64,7 +64,7 @@ public class FluidComponent implements ICustomComponent {
 			}
 		}
 
-		stack.popPose();
+		stack.popMatrix();
 	}
 
 	@Override
@@ -83,13 +83,5 @@ public class FluidComponent implements ICustomComponent {
 		this.h = lookup.apply(this.height).asNumber().intValue();
 		this.level = lookup.apply(this.amount).asNumber().intValue();
 		this.maxLevel = lookup.apply(this.max).asNumber().intValue();
-	}
-
-	private static void setGLColorFromInt(int color) {
-		float red = (color >> 16 & 0xFF) / 255.0F;
-		float green = (color >> 8 & 0xFF) / 255.0F;
-		float blue = (color & 0xFF) / 255.0F;
-
-		RenderSystem.setShaderColor(red, green, blue, 1.0F);
 	}
 }

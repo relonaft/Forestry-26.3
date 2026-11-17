@@ -8,7 +8,8 @@ import forestry.agriculture.minifarm.gui.widgets.GhostItemStackWidget;
 import forestry.agriculture.minifarm.inventory.MinifarmInventory;
 import forestry.agriculture.minifarm.tiles.AbstractMinifarmBlockEntity;
 import forestry.agriculture.multifarm.gui.FarmLedger;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -19,10 +20,8 @@ public class MinifarmScreen extends TitledForestryScreen<MinifarmMenu> {
 	private final AbstractMinifarmBlockEntity tile;
 
 	public MinifarmScreen(MinifarmMenu container, Inventory playerInventory, Component title) {
-		super(Constants.TEXTURE_PATH_GUI + "/planter.png", container, playerInventory, title);
+		super(Constants.TEXTURE_PATH_GUI + "/planter.png", container, playerInventory, title, 202, 192);
 		this.tile = container.getTile();
-		this.imageWidth = 202;
-		this.imageHeight = 192;
 
 		List<ItemStack> resourceStacks = this.tile.createResourceStacks();
 		List<ItemStack> germlingStacks = this.tile.createGermlingStacks();
@@ -73,13 +72,13 @@ public class MinifarmScreen extends TitledForestryScreen<MinifarmMenu> {
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseY, int mouseX) {
-		super.renderBg(graphics, partialTicks, mouseY, mouseX);
+	protected void extractBg(GuiGraphicsExtractor graphics, float partialTicks, int mouseY, int mouseX) {
+		super.extractBg(graphics, partialTicks, mouseY, mouseX);
 
 		// Fuel remaining
 		int fertilizerRemain = this.tile.getStoredFertilizerScaled(16);
 		if (fertilizerRemain > 0) {
-			graphics.blit(this.textureFile, this.leftPos + 101, this.topPos + 21 + 17 - fertilizerRemain, this.imageWidth, 17 - fertilizerRemain, 4, fertilizerRemain);
+			graphics.blit(RenderPipelines.GUI_TEXTURED, this.textureFile, this.leftPos + 101, this.topPos + 21 + 17 - fertilizerRemain, this.imageWidth, 17 - fertilizerRemain, 4, fertilizerRemain, 256, 256);
 		}
 	}
 }

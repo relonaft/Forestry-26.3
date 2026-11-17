@@ -6,7 +6,8 @@ import forestry.core.platform.gui.widgets.SocketWidget;
 import forestry.core.platform.gui.widgets.TankWidget;
 import forestry.agriculture.multifarm.multiblock.IFarmControllerInternal;
 import forestry.agriculture.multifarm.tiles.MultifarmBlockEntity;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -15,7 +16,7 @@ public class MultifarmScreen extends TitledForestryScreen<MultifarmMenu> {
 	private final MultifarmBlockEntity tile;
 
 	public MultifarmScreen(MultifarmMenu container, Inventory inv, Component title) {
-		super(Constants.TEXTURE_PATH_GUI + "/mfarm.png", container, inv, title);
+		super(Constants.TEXTURE_PATH_GUI + "/mfarm.png", container, inv, title, 216, 220);
 		this.tile = container.getTile();
 
         this.widgetManager.add(new TankWidget(this.widgetManager, 15, 19, 0).setOverlayOrigin(216, 18));
@@ -28,9 +29,6 @@ public class MultifarmScreen extends TitledForestryScreen<MultifarmMenu> {
         this.widgetManager.add(new MultifarmLogicSlot(farmController, this.widgetManager, 69, 58, Direction.SOUTH));
         this.widgetManager.add(new MultifarmLogicSlot(farmController, this.widgetManager, 51, 40, Direction.WEST));
         this.widgetManager.add(new MultifarmLogicSlot(farmController, this.widgetManager, 87, 40, Direction.EAST));
-
-		this.imageWidth = 216;
-		this.imageHeight = 220;
 	}
 
 	@Override
@@ -44,13 +42,13 @@ public class MultifarmScreen extends TitledForestryScreen<MultifarmMenu> {
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
-		super.renderBg(graphics, partialTicks, mouseX, mouseY);
+	protected void extractBg(GuiGraphicsExtractor graphics, float partialTicks, int mouseX, int mouseY) {
+		super.extractBg(graphics, partialTicks, mouseX, mouseY);
 
 		// Fuel remaining
 		int fertilizerRemain = this.tile.getMultiblockLogic().getController().getStoredFertilizerScaled(16);
 		if (fertilizerRemain > 0) {
-			graphics.blit(this.textureFile, this.leftPos + 81, this.topPos + 94 + 17 - fertilizerRemain, this.imageWidth, 17 - fertilizerRemain, 4, fertilizerRemain);
+			graphics.blit(RenderPipelines.GUI_TEXTURED, this.textureFile, this.leftPos + 81, this.topPos + 94 + 17 - fertilizerRemain, this.imageWidth, 17 - fertilizerRemain, 4, fertilizerRemain, 256, 256);
 		}
 	}
 }

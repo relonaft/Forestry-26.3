@@ -26,7 +26,6 @@ import forestry.core.platform.util.GeneticsUtil;
 import forestry.core.platform.util.SpeciesUtil;
 import forestry.core.platform.util.Translator;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -60,7 +59,7 @@ public class BeeAnalyzerPlugin implements IAnalyzerPlugin<IBeeSpecies, IBee> {
 				ArrayList<TextOptions> lineOptions = Lists.newArrayList(null, new TextOptions().setColor(ForestryColors.LIGHT_GRAY));
 				TextOptions gray = new TextOptions().setColor(ForestryColors.GRAY);
 
-				if (Screen.hasShiftDown()) {
+				if (Minecraft.getInstance().hasShiftDown()) {
 					ClientLevel level = Minecraft.getInstance().level;
 					level.registryAccess().lookupOrThrow(Registries.BLOCK).getTag(type.acceptableFlowers()).ifPresent(list -> {
 						int length = list.size();

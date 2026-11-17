@@ -1,35 +1,31 @@
 package forestry.core.platform.gui.widgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.renderpearl.api.vertex.VertexFormat;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import forestry.api.core.IToolPipette;
 import forestry.api.core.tooltips.ToolTip;
 import forestry.core.platform.fluids.StandardTank;
 import forestry.core.platform.gui.IContainerLiquidTanks;
 import forestry.core.platform.gui.IContainerTank;
-import forestry.core.platform.util.ResourceUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.render.TextureSetup;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.state.gui.BlitRenderState;
+import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.fluids.FluidStack;
 import forestry.core.platform.transfer.IFluidTank;
-import org.joml.Matrix4f;
+import org.joml.Matrix3x2f;
 
 import javax.annotation.Nullable;
 
@@ -38,6 +34,8 @@ import javax.annotation.Nullable;
  */
 @OnlyIn(Dist.CLIENT)
 public class TankWidget extends Widget {
+	// the tank was drawn with blending turned off
+	private static final RenderPipeline NO_BLEND = RenderPipelines.GUI_OPAQUE_TEXTURED_BACKGROUND;
 
 	private int overlayTexX = 176;
 	private int overlayTexY = 0;
@@ -66,8 +64,7 @@ public class TankWidget extends Widget {
 	}
 
 	@Override
-	public void draw(GuiGraphics graphics, int startX, int startY) {
-		RenderSystem.disableBlend();
+	public void draw(GuiGraphicsExtractor graphics, int startX, int startY) {
 		IFluidTank tank = getTank();
 
 		if (tank == null || tank.getCapacity() <= 0) {
@@ -80,18 +77,12 @@ public class TankWidget extends Widget {
 			Fluid fluid = contents.getFluid();
 
 			if (fluid != null) {
-				IClientFluidTypeExtensions type = IClientFluidTypeExtensions.of(fluid);
+				// the still texture and the tint moved from the fluid type extensions to the fluid model
+				FluidModel fluidModel = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState());
+				TextureAtlasSprite fluidStillSprite = fluidModel.stillMaterial().sprite();
+				FluidTintSource tintSource = fluidModel.fluidTintSource();
 
-				Identifier fluidStill = type.getStillTexture(contents);
-				TextureAtlasSprite fluidStillSprite = null;
-				if (fluidStill != null) {
-					fluidStillSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
-				}
-				if (fluidStillSprite == null) {
-					fluidStillSprite = ResourceUtil.getMissingTexture();
-				}
-
-				int fluidColor = type.getTintColor(contents);
+				int fluidColor = ARGB.opaque(tintSource == null ? 0xffffff : tintSource.colorAsStack(contents));
 
 				int scaledAmount = contents.getAmount() * this.height / tank.getCapacity();
 				if (contents.getAmount() > 0 && scaledAmount < 1) {
@@ -100,10 +91,6 @@ public class TankWidget extends Widget {
 				if (scaledAmount > this.height) {
 					scaledAmount = this.height;
 				}
-
-				RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
-				RenderSystem.setShader(GameRenderer::getPositionTexShader);
-				setGLColorFromInt(fluidColor);
 
 				final int xTileCount = this.width / 16;
 				final int xRemainder = this.width - xTileCount * 16;
@@ -122,7 +109,7 @@ public class TankWidget extends Widget {
 							int maskTop = 16 - height;
 							int maskRight = 16 - width;
 
-							drawFluidTexture(graphics.pose().last().pose(), x + this.xPos, y + this.yPos, fluidStillSprite, maskTop, maskRight, 100);
+							drawFluidTexture(graphics, x + this.xPos, y + this.yPos, fluidStillSprite, maskTop, maskRight, fluidColor);
 						}
 					}
 				}
@@ -130,16 +117,8 @@ public class TankWidget extends Widget {
 		}
 
 		if (this.drawOverlay) {
-			// RenderSystem.enableAlphaTest();
-			RenderSystem.disableDepthTest();
-			setGLColorFromInt(0xffffff);
-			graphics.blit(this.manager.gui.textureFile, startX + this.xPos, startY + this.yPos, this.overlayTexX, this.overlayTexY, 16, 60);
-			RenderSystem.enableDepthTest();
-			// RenderSystem.disableAlphaTest();
+			graphics.blit(NO_BLEND, this.manager.gui.textureFile, startX + this.xPos, startY + this.yPos, this.overlayTexX, this.overlayTexY, 16, 60, 256, 256);
 		}
-
-		RenderSystem.setShaderColor(1, 1, 1, 1);
-		//RenderSystem.enableBlend();
 	}
 
 	@Override
@@ -151,15 +130,7 @@ public class TankWidget extends Widget {
 		return standardTank.getToolTip();
 	}
 
-	private static void setGLColorFromInt(int color) {
-		float red = (color >> 16 & 0xFF) / 255.0F;
-		float green = (color >> 8 & 0xFF) / 255.0F;
-		float blue = (color & 0xFF) / 255.0F;
-
-		RenderSystem.setShaderColor(red, green, blue, 1.0F);
-	}
-
-	private static void drawFluidTexture(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, float zLevel) {
+	private static void drawFluidTexture(GuiGraphicsExtractor graphics, int xCoord, int yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, int color) {
 		float uMin = textureSprite.getU0();
 		float uMax = textureSprite.getU1();
 		float vMin = textureSprite.getV0();
@@ -167,13 +138,17 @@ public class TankWidget extends Widget {
 		uMax = uMax - maskRight / 16.0F * (uMax - uMin);
 		vMax = vMax - maskTop / 16.0F * (vMax - vMin);
 
-		Tesselator tessellator = Tesselator.getInstance();
-		BufferBuilder buffer = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-		buffer.addVertex(matrix, xCoord, yCoord + 16, zLevel).setUv(uMin, vMax);
-		buffer.addVertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).setUv(uMax, vMax);
-		buffer.addVertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).setUv(uMax, vMin);
-		buffer.addVertex(matrix, xCoord, yCoord + maskTop, zLevel).setUv(uMin, vMin);
-		BufferUploader.drawWithShader(buffer.buildOrThrow());
+		// a plain blit takes either custom uv or a tint, not both
+		AbstractTexture atlas = Minecraft.getInstance().getTextureManager().getTexture(textureSprite.atlasLocation());
+		graphics.submitGuiElementRenderState(new BlitRenderState(
+			NO_BLEND,
+			TextureSetup.singleTexture(atlas.getTextureView(), atlas.getSampler()),
+			new Matrix3x2f(graphics.pose()),
+			xCoord, yCoord + maskTop, xCoord + 16 - maskRight, yCoord + 16,
+			uMin, uMax, vMin, vMax,
+			color,
+			graphics.peekScissorStack()
+		));
 	}
 
 	@Override

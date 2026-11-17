@@ -1,5 +1,6 @@
 package forestry.core.content.analyzer;
 
+import forestry.core.platform.gui.GuiUtil;
 import forestry.api.client.IForestryClientApi;
 import forestry.api.client.genetics.IAnalyzerGraphics;
 import forestry.api.client.genetics.IAnalyzerPlugin;
@@ -14,7 +15,7 @@ import forestry.core.platform.config.Constants;
 import forestry.core.platform.gui.widgets.WidgetManager;
 import forestry.core.platform.inventory.PortableAnalyzerInventory;
 import forestry.core.platform.render.ColourProperties;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -27,11 +28,9 @@ public class PortableAnalyzerScreen extends ForestryScreen<PortableAnalyzerMenu>
 	private final PortableAnalyzerInventory itemInventory;
 
 	public PortableAnalyzerScreen(PortableAnalyzerMenu container, Inventory playerInv, Component name) {
-		super(Constants.TEXTURE_PATH_GUI + "/portablealyzer.png", container, playerInv, name);
+		super(Constants.TEXTURE_PATH_GUI + "/portablealyzer.png", container, playerInv, name, 247, 238);
 
 		this.itemInventory = container.getItemInventory();
-		this.imageWidth = 247;
-		this.imageHeight = 238;
 	}
 
 	public static int getColorCoding(boolean dominant) {
@@ -39,8 +38,8 @@ public class PortableAnalyzerScreen extends ForestryScreen<PortableAnalyzerMenu>
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
-		super.renderBg(graphics, partialTicks, mouseX, mouseY);
+	protected void extractBg(GuiGraphicsExtractor graphics, float partialTicks, int mouseX, int mouseY) {
+		super.extractBg(graphics, partialTicks, mouseX, mouseY);
 		this.widgetManager.clear();
 
 		int specimenSlot = getSpecimenSlot();
@@ -56,7 +55,7 @@ public class PortableAnalyzerScreen extends ForestryScreen<PortableAnalyzerMenu>
 		});
 	}
 
-	private <S extends ISpecies<I>, I extends IIndividual> void drawIndividualInfo(GuiGraphics graphics, int mouseX, int mouseY, int slot, I individual, ILifeStage stage, ItemStack stack) {
+	private <S extends ISpecies<I>, I extends IIndividual> void drawIndividualInfo(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int slot, I individual, ILifeStage stage, ItemStack stack) {
 		ISpeciesType<S, I> type = individual.getType().cast();
 		IAnalyzerPlugin<S, I> plugin = IForestryClientApi.INSTANCE.getGeneticManager().getAnalyzerPlugin(type);
 
@@ -88,7 +87,7 @@ public class PortableAnalyzerScreen extends ForestryScreen<PortableAnalyzerMenu>
 		return -1;
 	}
 
-	public void drawAnalyticsOverview(GuiGraphics graphics) {
+	public void drawAnalyticsOverview(GuiGraphicsExtractor graphics) {
 		this.textLayout.startPage(graphics);
 
 		this.textLayout.newLine();
@@ -96,7 +95,7 @@ public class PortableAnalyzerScreen extends ForestryScreen<PortableAnalyzerMenu>
 		this.textLayout.drawCenteredLine(graphics, title, 8, 208, ColourProperties.INSTANCE.get("gui.screen"));
 		this.textLayout.newLine();
 
-		graphics.drawWordWrap(this.font, Component.translatable("for.gui.portablealyzer.help"), this.leftPos + 0 + 16, this.topPos + 42, 200, ColourProperties.INSTANCE.get("gui.screen"));
+		graphics.textWithWordWrap(this.font, Component.translatable("for.gui.portablealyzer.help"), this.leftPos + 0 + 16, this.topPos + 42, 200, GuiUtil.textColor(ColourProperties.INSTANCE.get("gui.screen")), false);
 		this.textLayout.newLine();
 		this.textLayout.newLine();
 		this.textLayout.newLine();

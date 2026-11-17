@@ -1,6 +1,7 @@
 package forestry.core.platform.gui;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.platform.InputConstants;
 import forestry.api.apiculture.IApiaristTracker;
 import forestry.api.core.genetics.*;
 import forestry.api.core.genetics.alleles.IChromosome;
@@ -11,7 +12,9 @@ import forestry.core.platform.gui.ledgers.Ledger;
 import forestry.core.platform.network.packets.PacketGuiSelectRequest;
 import forestry.core.platform.util.NBTUtilForestry;
 import forestry.core.platform.util.NetworkUtil;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -48,11 +51,9 @@ public class NaturalistInventoryScreen<C extends AbstractContainerMenu & INatura
 	private boolean scrolling;
 
 	public NaturalistInventoryScreen(C menu, Inventory playerInv, Component name) {
-		super(Constants.TEXTURE_PATH_GUI + "/naturalistinventory.png", menu, playerInv, name);
+		super(Constants.TEXTURE_PATH_GUI + "/naturalistinventory.png", menu, playerInv, name, 176, 189);
 
 		this.speciesType = menu.getSpeciesType();
-		this.imageWidth = 176;
-		this.imageHeight = 189;
 
 		// todo have one place where icon stacks are stored
 		for (ISpecies species : this.speciesType.getAllSpecies()) {
@@ -64,35 +65,35 @@ public class NaturalistInventoryScreen<C extends AbstractContainerMenu & INatura
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTicks, int j, int i) {
-		super.renderBg(graphics, partialTicks, j, i);
+	protected void extractBg(GuiGraphicsExtractor graphics, float partialTicks, int j, int i) {
+		super.extractBg(graphics, partialTicks, j, i);
 		this.timer.onDraw();
 		drawScrollBar(graphics);
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-		if (mouseButton == 0 && isOverScrollBar(mouseX, mouseY)) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+		if (event.button() == InputConstants.MOUSE_BUTTON_LEFT && isOverScrollBar(event.x(), event.y())) {
 			this.scrolling = true;
-			scrollTo(mouseY);
+			scrollTo(event.y());
 			return true;
 		}
-		return super.mouseClicked(mouseX, mouseY, mouseButton);
+		return super.mouseClicked(event, doubleClick);
 	}
 
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
-		if (this.scrolling && mouseButton == 0) {
-			scrollTo(mouseY);
+	public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+		if (this.scrolling && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
+			scrollTo(event.y());
 			return true;
 		}
-		return super.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY);
+		return super.mouseDragged(event, dragX, dragY);
 	}
 
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
+	public boolean mouseReleased(MouseButtonEvent event) {
 		this.scrolling = false;
-		return super.mouseReleased(mouseX, mouseY, mouseButton);
+		return super.mouseReleased(event);
 	}
 
 	@Override
@@ -104,15 +105,16 @@ public class NaturalistInventoryScreen<C extends AbstractContainerMenu & INatura
 		return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
 	}
 
-	private void drawScrollBar(GuiGraphics graphics) {
+	private void drawScrollBar(GuiGraphicsExtractor graphics) {
 		graphics.blit(
+			RenderPipelines.GUI_TEXTURED,
 			this.textureFile,
 			this.leftPos + SCROLL_X + 1,
 			this.topPos + SCROLL_Y,
-			SCROLL_WIDTH,
-			SCROLL_HEIGHT,
 			SCROLL_U,
 			SCROLL_V,
+			SCROLL_WIDTH,
+			SCROLL_HEIGHT,
 			SCROLL_WIDTH,
 			SCROLL_HEIGHT,
 			256,
@@ -127,6 +129,7 @@ public class NaturalistInventoryScreen<C extends AbstractContainerMenu & INatura
 		);
 
 		graphics.blitSprite(
+			RenderPipelines.GUI_TEXTURED,
 			SCROLLER_SPRITE,
 			this.leftPos + SCROLL_X + 2,
 			this.topPos + SCROLL_Y + offset,
@@ -173,7 +176,7 @@ public class NaturalistInventoryScreen<C extends AbstractContainerMenu & INatura
 		return IIndividualHandlerItem.getIndividual(slot.getItem());
 	}
 
-	private void drawUnknownIcon(GuiGraphics graphics, IMutation<?> mutation, int x, int y) {
+	private void drawUnknownIcon(GuiGraphicsExtractor graphics, IMutation<?> mutation, int x, int y) {
 		float chance = mutation.getChance();
 
 		int line;
@@ -198,7 +201,7 @@ public class NaturalistInventoryScreen<C extends AbstractContainerMenu & INatura
 			column = 196;
 		}
 
-		graphics.blit(this.textureFile, x, y, column, line, 16, 16);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, this.textureFile, x, y, column, line, 16, 16, 256, 256);
 	}
 
 	private static List<List<? extends IMutation<?>>> splitMutations(List<? extends IMutation<?>> mutations, int maxMutationCount) {
@@ -237,7 +240,7 @@ public class NaturalistInventoryScreen<C extends AbstractContainerMenu & INatura
 		}
 
 		@Override
-		public void draw(GuiGraphics graphics, int y, int x) {
+		public void draw(GuiGraphicsExtractor graphics, int y, int x) {
 			drawBackground(graphics, y, x);
 			GuiUtil.drawItemStack(graphics, NaturalistInventoryScreen.this, NaturalistInventoryScreen.this.ledgerIcon, x + 4, y + 4);
 
@@ -255,7 +258,7 @@ public class NaturalistInventoryScreen<C extends AbstractContainerMenu & INatura
 			}
 		}
 
-		private void drawStatistics(GuiGraphics graphics, int x, int y) {
+		private void drawStatistics(GuiGraphicsExtractor graphics, int x, int y) {
 			int textY = y + 28;
 
 			drawSplitText(
@@ -285,7 +288,7 @@ public class NaturalistInventoryScreen<C extends AbstractContainerMenu & INatura
 			}
 		}
 
-		private void drawIndividual(GuiGraphics graphics, IIndividual individual, int x, int y) {
+		private void drawIndividual(GuiGraphicsExtractor graphics, IIndividual individual, int x, int y) {
 			IGenome genome = individual.getGenome();
 			IChromosome<Identifier> chromosome = individual.getType().getKaryotype().getSpeciesChromosome();
 			boolean pureBred = genome.getAllelePair(chromosome).isSameAlleles();
@@ -296,7 +299,7 @@ public class NaturalistInventoryScreen<C extends AbstractContainerMenu & INatura
 			}
 		}
 
-		private int drawSpecies(GuiGraphics graphics, boolean analyzed, ISpecies<?> species, int x, int y, int maxMutationCount) {
+		private int drawSpecies(GuiGraphicsExtractor graphics, boolean analyzed, ISpecies<?> species, int x, int y, int maxMutationCount) {
 			if (!analyzed) {
 				drawHeader(graphics, Component.translatable("for.gui.unknown"), x + 22, y);
 				return y + 22;

@@ -4,7 +4,8 @@ import forestry.core.content.machines.tiles.SmelterBlockEntity;
 import forestry.core.platform.config.Constants;
 import forestry.core.platform.gui.TitledForestryScreen;
 import forestry.core.platform.gui.widgets.SocketWidget;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -18,22 +19,22 @@ public class SmelterScreen extends TitledForestryScreen<SmelterMenu> {
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseY, int mouseX) {
-		super.renderBg(graphics, partialTicks, mouseY, mouseX);
+	protected void extractBg(GuiGraphicsExtractor graphics, float partialTicks, int mouseY, int mouseX) {
+		super.extractBg(graphics, partialTicks, mouseY, mouseX);
 
 		// Smelting progress bar
 		int progress = this.tile.getProgressScaled(50);
-		graphics.blit(this.textureFile,
+		graphics.blit(RenderPipelines.GUI_TEXTURED, this.textureFile,
 			this.leftPos + 81, this.topPos + 39, // where to draw thing
 			176, 52, // coordinates of thing to be drawn
-			progress, 16); // width and height of thing to be drawn
+			progress, 16, 256, 256); // width and height of thing to be drawn
 
 		// Status indicator. Kinda redundant but it's a nice visual indicator
 		if (!this.tile.getErrorLogic().hasErrors()) {
-			graphics.blit(this.textureFile,
+			graphics.blit(RenderPipelines.GUI_TEXTURED, this.textureFile,
 				this.leftPos + 96, this.topPos + 58,
 				176, 68,
-				14, 14);
+				14, 14, 256, 256);
 		}
 	}
 
