@@ -10,61 +10,46 @@ import forestry.core.content.backpacks.features.BackpackMenuTypes;
 import forestry.core.content.backpacks.gui.NaturalistBackpackMenu;
 import forestry.core.content.backpacks.gui.BackpackScreen;
 import forestry.core.content.backpacks.items.BackpackItem;
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.client.renderer.item.ItemPropertyFunction;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.client.event.ModelEvent;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
+import net.minecraft.world.entity.ItemOwner;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.event.RegisterRangeSelectItemModelPropertyEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
-public class StorageClientHandler implements IClientModuleHandler {
-	// Standalone models resolve through ModelBakery.MODEL_LISTER ("models/<path>.json"),
-	// without the legacy "item/" prefix that vanilla item lookups added in pre-1.21
-	// versions. Use the explicit "item/filled_crate" path so the loader finds
-	// assets/forestry/models/item/filled_crate.json.
-	public static final ModelResourceLocation FILLED_CRATE_MODEL = ModelResourceLocation.standalone(ForestryConstants.forestry("item/filled_crate"));
+import javax.annotation.Nullable;
 
+public class StorageClientHandler implements IClientModuleHandler {
 	@Override
 	public void registerEvents(IEventBus modBus) {
-		modBus.addListener(StorageClientHandler::registerAdditionalModels);
-		modBus.addListener(StorageClientHandler::registerModelLoaders);
-		modBus.addListener(StorageClientHandler::onModelBake);
 		modBus.addListener(StorageClientHandler::onClientSetup);
 		modBus.addListener(StorageClientHandler::registerBackpackItemProperties);
 	}
 
-	@SuppressWarnings("deprecation")
-	private static void registerBackpackItemProperties(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
-		event.enqueueWork(() -> {
-			ItemPropertyFunction itemPropertyFunction = (stack, clientLevel, holder, idk) -> BackpackItem.getMode(stack).ordinal();
-			// all registered backpacks, so addon backpacks from IBackpackInterface get the property too
-			for (Item item : BuiltInRegistries.ITEM) {
-				if (item instanceof BackpackItem) {
-					ItemProperties.register(item, Identifier.withDefaultNamespace("mode"), itemPropertyFunction);
-				}
-			}
-		});
-	}
-
-	private static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
-		event.register(FILLED_CRATE_MODEL);
-	}
-
-	private static void registerModelLoaders(ModelEvent.RegisterGeometryLoaders event) {
-		event.register(ForestryConstants.forestry("filled_crate"), new FilledCrateModel.Loader());
-	}
-
-	private static void onModelBake(ModelEvent.BakingCompleted event) {
-		FilledCrateModel.cachedBaseModel = null;
-		FilledCrateModel.cachedTransforms = null;
-		FilledCrateModel.cachedQuads = null;
+	private static void registerBackpackItemProperties(RegisterRangeSelectItemModelPropertyEvent event) {
+		// addon backpacks from IBackpackInterface name this property in their item model definition
+		event.register(ForestryConstants.forestry("backpack_mode"), BackpackModeProperty.MAP_CODEC);
 	}
 
 	private static void onClientSetup(RegisterMenuScreensEvent event) {
 		event.register(BackpackMenuTypes.BACKPACK.menuType(), BackpackScreen::new);
 		event.register(BackpackMenuTypes.NATURALIST_BACKPACK.menuType(), NaturalistInventoryScreen<NaturalistBackpackMenu>::new);
+	}
+
+	// replaces the "mode" item property that backpack models selected their overrides with
+	public record BackpackModeProperty() implements RangeSelectItemModelProperty {
+		public static final MapCodec<BackpackModeProperty> MAP_CODEC = MapCodec.unit(new BackpackModeProperty());
+
+		@Override
+		public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+			return BackpackItem.getMode(stack).ordinal();
+		}
+
+		@Override
+		public MapCodec<BackpackModeProperty> type() {
+			return MAP_CODEC;
+		}
 	}
 }

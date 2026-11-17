@@ -7,15 +7,12 @@ import forestry.api.client.arboriculture.ILeafSprite;
 import forestry.arboriculture.leaves.AbstractLeavesBlock;
 import forestry.arboriculture.leaves.DefaultLeavesBlock;
 import forestry.core.platform.models.ModelBlockCached;
-import forestry.core.platform.models.ModelTransforms;
 import forestry.core.platform.models.baker.ModelBaker;
 import forestry.core.platform.models.baker.ModelBakerModel;
 import forestry.core.platform.util.ResourceUtil;
 import forestry.core.platform.util.SpeciesUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -30,6 +27,11 @@ import java.util.Objects;
 public class DefaultLeavesModel extends ModelBlockCached<DefaultLeavesBlock, DefaultLeavesModel.Key> {
 	public DefaultLeavesModel() {
 		super(DefaultLeavesBlock.class);
+	}
+
+	// the fancy graphics switch became the cutout leaves option, read by every leaf model
+	public static boolean fancyLeaves() {
+		return Minecraft.getInstance().options.cutoutLeaves().get();
 	}
 
 	public static final class Key {
@@ -64,14 +66,14 @@ public class DefaultLeavesModel extends ModelBlockCached<DefaultLeavesBlock, Def
 		Block block = Block.byItem(stack.getItem());
 		Preconditions.checkArgument(block instanceof DefaultLeavesBlock, "ItemStack must be for default leaves.");
 		DefaultLeavesBlock bBlock = (DefaultLeavesBlock) block;
-		return new Key(bBlock.getSpeciesId(), Minecraft.useFancyGraphics());
+		return new Key(bBlock.getSpeciesId(), fancyLeaves());
 	}
 
 	@Override
 	protected DefaultLeavesModel.Key getWorldKey(BlockState state, ModelData extraData) {
 		if (state.getBlock() instanceof DefaultLeavesBlock block) {
 			Identifier treeDefinition = block.getSpeciesId();
-			return new DefaultLeavesModel.Key(treeDefinition, Minecraft.useFancyGraphics());
+			return new DefaultLeavesModel.Key(treeDefinition, fancyLeaves());
 		} else {
 			throw new IllegalArgumentException("state must be for default leaves.");
 		}
@@ -105,7 +107,7 @@ public class DefaultLeavesModel extends ModelBlockCached<DefaultLeavesBlock, Def
 
 
 	@Override
-	protected BakedModel bakeModel(BlockState state, Key key, DefaultLeavesBlock block, ModelData extraData) {
+	protected ModelBakerModel bakeModel(BlockState state, Key key, DefaultLeavesBlock block, ModelData extraData) {
 		ModelBaker baker = new ModelBaker();
 
 		bakeBlock(block, extraData, key, baker, false);
@@ -115,10 +117,5 @@ public class DefaultLeavesModel extends ModelBlockCached<DefaultLeavesBlock, Def
 		onCreateModel(model);
 		this.blockModel = model;
 		return model;
-	}
-
-	@Override
-	public ItemTransforms getTransforms() {
-		return ModelTransforms.BLOCK;
 	}
 }

@@ -8,24 +8,18 @@ import forestry.arboriculture.leaves.ForestryLeavesBlock;
 import forestry.arboriculture.features.ArboricultureBlocks;
 import forestry.arboriculture.leaves.LeavesBlockEntity;
 import forestry.core.platform.models.ModelBlockCached;
-import forestry.core.platform.models.ModelTransforms;
 import forestry.core.platform.models.baker.ModelBaker;
 import forestry.core.platform.util.NBTUtilForestry;
 import forestry.core.platform.util.ResourceUtil;
 import forestry.core.platform.util.SpeciesUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 import net.neoforged.neoforge.model.data.ModelData;
 
 import javax.annotation.Nullable;
@@ -85,7 +79,7 @@ public class LeavesModel extends ModelBlockCached<ForestryLeavesBlock, LeavesMod
 	}
 
 	private Key getKey(ModelData extraData) {
-		boolean fancy = Minecraft.useFancyGraphics();
+		boolean fancy = DefaultLeavesModel.fancyLeaves();
 
 		ITreeSpecies species = extraData.get(LeavesBlockEntity.PROPERTY_SPECIES);
 		if (species == null) {
@@ -113,15 +107,5 @@ public class LeavesModel extends ModelBlockCached<ForestryLeavesBlock, LeavesMod
 
 		// Set the particle sprite
 		baker.setParticleSprite(key.leafSprite);
-	}
-
-	@Override
-	public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
-		return getKey(data).fruitSprite != null ? ChunkRenderTypeSet.of(RenderType.cutoutMipped()) : super.getRenderTypes(state, rand, data);
-	}
-
-	@Override
-	public ItemTransforms getTransforms() {
-		return ModelTransforms.BLOCK;
 	}
 }

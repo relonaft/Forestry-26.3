@@ -4,12 +4,12 @@ import net.minecraft.world.InteractionResult;
 import forestry.core.platform.item.ItemForestry;
 import forestry.core.platform.item.ITintedItem;
 import forestry.core.platform.util.ItemStackUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GrassColor;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -59,13 +59,16 @@ public class CratedItem extends ItemForestry implements ITintedItem {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public int getColorFromItemStack(ItemStack stack, int renderPass) {
-		ItemColors colors = Minecraft.getInstance().getItemColors();
 		ItemStack contained = this.contained.get();
 
 		if (contained.isEmpty() || renderPass == 0) {
 			return -1;
 		}
 
-		return colors.getColor(contained, renderPass - 1);
+		// deviation: no item colour registry in 26.3, only the crates that were registered for a colour are answered
+		if (contained.getItem() instanceof ITintedItem tintedItem) {
+			return tintedItem.getColorFromItemStack(contained, renderPass - 1);
+		}
+		return contained.is(Items.GRASS_BLOCK) ? GrassColor.getDefaultColor() : -1;
 	}
 }

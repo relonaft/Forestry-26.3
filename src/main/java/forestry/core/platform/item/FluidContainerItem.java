@@ -1,7 +1,6 @@
 package forestry.core.platform.item;
 
 import forestry.core.platform.fluids.ForestryFluids;
-import forestry.core.platform.models.FluidContainerModel;
 import forestry.core.platform.transfer.Transfers;
 import forestry.core.platform.util.ModUtil;
 import forestry.core.platform.util.Translator;
@@ -163,6 +162,10 @@ public class FluidContainerItem extends ItemForestry implements ITintedItem {
 
 	@Override
 	public int getColorFromItemStack(ItemStack stack, int tintIndex) {
-		return FluidContainerModel.DYNAMIC_COLOR.getColor(stack, tintIndex);
+		// tint index 1 is the fluid layer of the container model
+		if (tintIndex != 1) {
+			return 0xFFFFFFFF;
+		}
+		return net.neoforged.neoforge.client.color.item.FluidContentsTint.INSTANCE.calculate(stack, null, null);
 	}
 }

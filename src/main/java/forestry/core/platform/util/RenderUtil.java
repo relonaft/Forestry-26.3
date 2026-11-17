@@ -3,6 +3,7 @@ package forestry.core.platform.util;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import forestry.core.platform.fluids.ForestryFluids;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -14,8 +15,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.client.fluid.FluidTintSource;
 
 import java.awt.*;
 
@@ -47,8 +47,9 @@ public class RenderUtil {
 	}
 
 	public static int getFluidColor(Fluid fluid) {
-		FluidType attributes = fluid.getFluidType();
-		int color = IClientFluidTypeExtensions.of(attributes).getTintColor();
+		// the tint of a fluid is part of its fluid model now. No tint source is white, the old default
+		FluidTintSource tint = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState()).fluidTintSource();
+		int color = tint != null ? tint.color(fluid.defaultFluidState()) : 0xFFFFFFFF;
 		ForestryFluids definition = ForestryFluids.getFluidDefinition(fluid);
 		if (color < 0) {
 			color = 0x0000ff;

@@ -1,7 +1,6 @@
 package forestry.arboriculture.client;
 
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import forestry.arboriculture.features.ArboricultureItems;
 import forestry.api.ForestryConstants;
 import forestry.api.client.IClientModuleHandler;
 import forestry.arboriculture.wood.ForestryWoodType;
@@ -13,23 +12,20 @@ import forestry.arboriculture.models.*;
 import forestry.core.platform.models.ClientManager;
 import net.minecraft.client.model.object.boat.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
+import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 public class ArboricultureClientHandler implements IClientModuleHandler {
 	@Override
 	public void registerEvents(IEventBus modBus) {
 		modBus.addListener(ArboricultureClientHandler::registerBlockColors);
-		modBus.addListener(ArboricultureClientHandler::registerItemColors);
-		modBus.addListener(ArboricultureClientHandler::registerModelLoaders);
-		modBus.addListener(ArboricultureClientHandler::onClientSetup);
+		modBus.addListener(ArboricultureClientHandler::registerBlockStateModels);
+		modBus.addListener(ArboricultureClientHandler::registerItemModels);
 		modBus.addListener(ArboricultureClientHandler::registerEntityRenderers);
 		modBus.addListener(ArboricultureClientHandler::registerModelLayers);
 		modBus.addListener(ArboricultureClientHandler::beforeResourceLoad);
@@ -41,27 +37,14 @@ public class ArboricultureClientHandler implements IClientModuleHandler {
 		}
 	}
 
-	private static void onClientSetup(FMLClientSetupEvent event) {
-		event.enqueueWork(() -> {
-			// fruit overlays require CUTOUT_MIPPED, even in Fast graphics
-			ArboricultureBlocks.LEAVES_DEFAULT.getList().forEach(block -> ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutoutMipped()));
-			ItemBlockRenderTypes.setRenderLayer(ArboricultureBlocks.LEAVES.block(), RenderType.cutoutMipped());
-			ArboricultureBlocks.LEAVES_DEFAULT_FRUIT.getList().forEach(block -> ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutoutMipped()));
-			ArboricultureBlocks.LEAVES_DECORATIVE.getList().forEach(block -> ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutoutMipped()));
-			ItemBlockRenderTypes.setRenderLayer(ArboricultureBlocks.SAPLING_GE.block(), RenderType.cutout());
-			ArboricultureBlocks.DOORS.getList().forEach(block -> ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutout()));
-
-			ArboricultureBlocks.PODS.getList().forEach(block -> ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutoutMipped()));
-		});
+	private static void registerItemModels(RegisterItemModelsEvent event) {
+		event.register(ForestryConstants.forestry("sapling_ge"), SaplingModel.ItemUnbaked.MAP_CODEC);
 	}
 
-	private static void registerModelLoaders(ModelEvent.RegisterGeometryLoaders event) {
-		event.register(ForestryConstants.forestry("sapling_ge"), new SaplingModelLoader());
+	private static void registerBlockStateModels(RegisterBlockStateModels event) {
+		event.registerModel(ForestryConstants.forestry("sapling_ge"), SaplingModel.Unbaked.MAP_CODEC);
 
-		// Registered here and not in FMLClientSetupEvent: this event is posted at the top of ModelManager.reload,
-		// so it is ordered before the ModifyBakingResult that reads these models back. Client setup runs on its own
-		// thread during the same reload, and losing that race leaves the leaf blocks on the particle-only models
-		// they fall back to, which bake to no quads at all - a see-through block.
+		// registered here and not in FMLClientSetupEvent, which races the ModifyBakingResult that reads these models back
 		ClientManager clientManager = ClientManager.INSTANCE;
 		clientManager.registerModel(new LeavesModel(), ArboricultureBlocks.LEAVES);
 		clientManager.registerModel(new DecorativeLeavesModel<>(DecorativeLeavesBlock.class), ArboricultureBlocks.LEAVES_DECORATIVE);
@@ -87,20 +70,11 @@ public class ArboricultureClientHandler implements IClientModuleHandler {
 		}
 	}
 
-	private static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
-		event.register(ClientManager.FORESTRY_BLOCK_COLOR, ArboricultureBlocks.LEAVES.block());
-		event.register(ClientManager.FORESTRY_BLOCK_COLOR, ArboricultureBlocks.LEAVES_DEFAULT.blockArray());
-		event.register(ClientManager.FORESTRY_BLOCK_COLOR, ArboricultureBlocks.LEAVES_DEFAULT_FRUIT.blockArray());
-		event.register(ClientManager.FORESTRY_BLOCK_COLOR, ArboricultureBlocks.LEAVES_DECORATIVE.blockArray());
-	}
-
-	private static void registerItemColors(RegisterColorHandlersEvent.Item event) {
-		event.register(ClientManager.FORESTRY_ITEM_COLOR, ArboricultureBlocks.LEAVES.block());
-		event.register(ClientManager.FORESTRY_ITEM_COLOR, ArboricultureBlocks.LEAVES_DEFAULT.blockArray());
-		event.register(ClientManager.FORESTRY_ITEM_COLOR, ArboricultureBlocks.LEAVES_DEFAULT_FRUIT.blockArray());
-		event.register(ClientManager.FORESTRY_ITEM_COLOR, ArboricultureBlocks.LEAVES_DECORATIVE.blockArray());
-		event.register(ClientManager.FORESTRY_ITEM_COLOR, ArboricultureItems.TREE_SAPLING.item());
-		event.register(ClientManager.FORESTRY_ITEM_COLOR, ArboricultureItems.TREE_POLLEN.item());
+	private static void registerBlockColors(RegisterColorHandlersEvent.BlockTintSources event) {
+		event.register(ClientManager.FORESTRY_BLOCK_TINTS, ArboricultureBlocks.LEAVES.block());
+		event.register(ClientManager.FORESTRY_BLOCK_TINTS, ArboricultureBlocks.LEAVES_DEFAULT.blockArray());
+		event.register(ClientManager.FORESTRY_BLOCK_TINTS, ArboricultureBlocks.LEAVES_DEFAULT_FRUIT.blockArray());
+		event.register(ClientManager.FORESTRY_BLOCK_TINTS, ArboricultureBlocks.LEAVES_DECORATIVE.blockArray());
 	}
 
 }

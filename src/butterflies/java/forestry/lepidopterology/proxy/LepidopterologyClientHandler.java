@@ -1,41 +1,39 @@
 package forestry.lepidopterology.proxy;
 
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import forestry.core.platform.models.ClientManager;
 import forestry.api.ForestryConstants;
 import forestry.api.client.IClientModuleHandler;
 import forestry.api.modules.ForestryModuleIds;
 import forestry.core.platform.render.ForestryModelLayers;
 import forestry.lepidopterology.features.LepidopterologyEntities;
-import forestry.lepidopterology.features.LepidopterologyItems;
 import forestry.lepidopterology.butterflies.ItemButterflyGE;
 import forestry.lepidopterology.render.ButterflyEntityRenderer;
 import forestry.lepidopterology.render.ButterflyItemModel;
 import forestry.lepidopterology.render.ButterflyModel;
 import forestry.core.platform.registration.ModFeatureRegistry;
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.client.renderer.item.ItemPropertyFunction;
 import net.minecraft.core.registries.Registries;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
+import net.minecraft.world.entity.ItemOwner;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
+import net.neoforged.neoforge.client.event.RegisterRangeSelectItemModelPropertyEvent;
 import net.neoforged.bus.api.IEventBus;
+
+import javax.annotation.Nullable;
 
 public class LepidopterologyClientHandler implements IClientModuleHandler {
 	@Override
 	public void registerEvents(IEventBus modBus) {
-		modBus.addListener(LepidopterologyClientHandler::registerItemColors);
 		modBus.addListener(LepidopterologyClientHandler::setupRenderers);
 		modBus.addListener(LepidopterologyClientHandler::setupLayers);
-		modBus.addListener(LepidopterologyClientHandler::registerModelLoaders);
+		modBus.addListener(LepidopterologyClientHandler::registerItemModels);
 		modBus.addListener(LepidopterologyClientHandler::registerItemProperties);
 	}
 
-	@SuppressWarnings("deprecation")
-	private static void registerItemProperties(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
-		event.enqueueWork(() -> {
-			ItemPropertyFunction itemPropertyFunction = (stack, clientLevel, holder, idk) -> ItemButterflyGE.getAge(stack);
-			ItemProperties.register(LepidopterologyItems.COCOON_GE.get(), ForestryConstants.forestry("age"), itemPropertyFunction);
-		});
+	private static void registerItemProperties(RegisterRangeSelectItemModelPropertyEvent event) {
+		event.register(ForestryConstants.forestry("cocoon_age"), CocoonAgeProperty.MAP_CODEC);
 	}
 
 	public static void setupRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -46,13 +44,22 @@ public class LepidopterologyClientHandler implements IClientModuleHandler {
 		event.registerLayerDefinition(ForestryModelLayers.BUTTERFLY_LAYER, ButterflyModel::createLayer);
 	}
 
-	public static void registerModelLoaders(ModelEvent.RegisterGeometryLoaders event) {
-		event.register(ForestryConstants.forestry("butterfly_ge"), new ButterflyItemModel.Loader());
+	public static void registerItemModels(RegisterItemModelsEvent event) {
+		event.register(ForestryConstants.forestry("butterfly_ge"), ButterflyItemModel.Unbaked.MAP_CODEC);
 	}
 
-	private static void registerItemColors(RegisterColorHandlersEvent.Item event) {
-		event.register(ClientManager.FORESTRY_ITEM_COLOR, LepidopterologyItems.CATERPILLAR_GE.item());
-		event.register(ClientManager.FORESTRY_ITEM_COLOR, LepidopterologyItems.SERUM_GE.item());
-	}
+	// replaces the "age" item property that the cocoon model selected its overrides with
+	public record CocoonAgeProperty() implements RangeSelectItemModelProperty {
+		public static final MapCodec<CocoonAgeProperty> MAP_CODEC = MapCodec.unit(new CocoonAgeProperty());
 
+		@Override
+		public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+			return ItemButterflyGE.getAge(stack);
+		}
+
+		@Override
+		public MapCodec<CocoonAgeProperty> type() {
+			return MAP_CODEC;
+		}
+	}
 }

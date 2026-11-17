@@ -1,153 +1,180 @@
 package forestry.core.platform.models;
 
-import com.google.common.collect.Maps;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import forestry.core.platform.util.ModUtil;
-import forestry.core.content.backpacks.client.FilledCrateModel;
-import net.minecraft.client.color.item.ItemColor;
+import com.mojang.blaze3d.platform.Transparency;
+import com.mojang.math.Quadrant;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import forestry.core.platform.transfer.FluidUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.renderer.item.CompositeModel;
+import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.item.ModelRenderProperties;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.*;
+import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelDebugName;
+import net.minecraft.client.resources.model.cuboid.CuboidFace;
+import net.minecraft.client.resources.model.cuboid.FaceBakery;
+import net.minecraft.client.resources.model.cuboid.ItemModelGenerator;
+import net.minecraft.client.resources.model.cuboid.ItemTransforms;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.QuadCollection;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.client.resources.model.sprite.MaterialBaker;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ItemOwner;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.client.model.CompositeModel;
+import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.model.item.DynamicFluidContainerModel;
-import net.neoforged.neoforge.client.model.QuadTransformers;
-import net.neoforged.neoforge.client.model.geometry.*;
-import net.neoforged.neoforge.client.ClientHooks;
-import forestry.core.platform.transfer.FluidUtil;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.fluids.FluidStack;
+import org.joml.Matrix4fc;
+import org.joml.Vector3f;
 
-import java.util.Collections;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 // fixes issue in the DynamicFluidContainerModel where fluids have edges
-public class FluidContainerModel implements IUnbakedGeometry<FluidContainerModel> {
-	public static final ItemColor DYNAMIC_COLOR = new DynamicFluidContainerModel.Colors();
+public class FluidContainerModel implements ItemModel {
+	private static final ModelDebugName DEBUG_NAME = () -> "FluidContainerModel";
+	// the old model files took their display from neoforge:item/default, which copies this model
+	private static final Identifier TRANSFORMS_MODEL = Identifier.withDefaultNamespace("item/generated");
 
-	private final Fluid fluid;
-	private final boolean coverIsMask;
-	private final boolean applyFluidLuminosity;
+	private final Unbaked unbaked;
+	private final BakingContext context;
+	private final Matrix4fc transformation;
+	private final ItemTransforms transforms;
+	private final Map<Fluid, ItemModel> cache = new IdentityHashMap<>();
 
-	public FluidContainerModel(Fluid fluid, boolean coverIsMask, boolean applyFluidLuminosity) {
-		this.fluid = fluid;
-		this.coverIsMask = coverIsMask;
-		this.applyFluidLuminosity = applyFluidLuminosity;
-	}
-
-	public FluidContainerModel withFluid(Fluid newFluid) {
-		return new FluidContainerModel(newFluid, this.coverIsMask, this.applyFluidLuminosity);
+	private FluidContainerModel(Unbaked unbaked, BakingContext context, Matrix4fc transformation) {
+		this.unbaked = unbaked;
+		this.context = context;
+		this.transformation = transformation;
+		this.transforms = context.blockModelBaker().getModel(TRANSFORMS_MODEL).getTopTransforms();
 	}
 
 	// Note: The fluid mask is ignored, the fluid element is always from (4, 2) to (12, 14).
-	@Override
-	public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
-		Identifier modelLocation = Identifier.parse(context.getModelName());
-		Material baseLocation = context.hasMaterial("base") ? context.getMaterial("base") : null;
-		Material fluidMaskLocation = context.hasMaterial("fluid") ? context.getMaterial("fluid") : null;
-		Material coverLocation = context.hasMaterial("cover") ? context.getMaterial("cover") : null;
-		TextureAtlasSprite baseSprite = baseLocation != null ? spriteGetter.apply(baseLocation) : null;
-		TextureAtlasSprite fluidSprite = this.fluid != Fluids.EMPTY ? spriteGetter.apply(ClientHooks.getBlockMaterial(IClientFluidTypeExtensions.of(this.fluid).getStillTexture())) : null;
-		TextureAtlasSprite coverSprite = (coverLocation != null && (!this.coverIsMask || baseLocation != null)) ? spriteGetter.apply(coverLocation) : null;
+	private ItemModel bake(Fluid fluid) {
+		ModelBaker baker = this.context.blockModelBaker();
+		MaterialBaker materials = baker.materials();
+		DynamicFluidContainerModel.Textures textures = this.unbaked.textures;
+		boolean coverIsMask = this.unbaked.coverIsMask;
 
-		TextureAtlasSprite particleSprite = fluidSprite;
+		Material.Baked baseSprite = textures.base().map(material -> materials.get(material, DEBUG_NAME)).orElse(null);
+		Material.Baked fluidSprite = fluid != Fluids.EMPTY ? Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState()).stillMaterial() : null;
+		Material.Baked coverSprite = textures.cover().isPresent() && (!coverIsMask || baseSprite != null) ? materials.get(textures.cover().get(), DEBUG_NAME) : null;
+
+		Material.Baked particleSprite = fluidSprite;
 		if (particleSprite == null && baseSprite != null) {
 			particleSprite = baseSprite;
-		} else if (!this.coverIsMask) {
+		} else if (!coverIsMask) {
 			particleSprite = coverSprite;
 		}
 
-		var itemContext = StandaloneGeometryBakingContext.builder(context).withGui3d(false).withUseBlockLight(false).build(modelLocation);
-		var modelBuilder = CompositeModel.Baked.builder(itemContext, particleSprite, new ContainedFluidOverrideHandler(baker, itemContext, this), context.getTransforms());
-		var normalRenderTypes = DynamicFluidContainerModel.getLayerRenderTypes(false);
+		// one sub model per layer: the fluid sprite is on the block atlas, the others on the item atlas, and a
+		// single layer cannot mix atlases
+		List<ItemModel> layers = new ArrayList<>();
+		ModelRenderProperties properties = new ModelRenderProperties(false, particleSprite, this.transforms);
 
-		if (baseLocation != null && baseSprite != null) {
-			var baseElement = UnbakedGeometryHelper.createUnbakedItemElements(0, baseSprite);
-			var quads = UnbakedGeometryHelper.bakeElements(baseElement, $ -> baseSprite, modelState);
-			modelBuilder.addQuads(normalRenderTypes, quads);
+		if (baseSprite != null) {
+			QuadCollection quads = baker.compute(new ItemModelGenerator.ItemLayerKey(baseSprite, BlockModelRotation.IDENTITY, 0));
+			layers.add(new CuboidItemModelWrapper(List.of(), quads, properties, this.transformation));
 		}
 
 		// Fluid layer
-		if (fluidMaskLocation != null && fluidSprite != null) {
+		if (textures.fluid().isPresent() && fluidSprite != null) {
+			boolean emissive = this.unbaked.applyFluidLuminosity && fluid.getFluidType().getLightLevel() > 0;
 			// no edges
-			var fluidElement = Collections.singletonList(FilledCrateModel.make2dElement(1, 4, 2, 12, 14, -0.002f));
-			var quads = UnbakedGeometryHelper.bakeElements(fluidElement, $ -> fluidSprite, modelState);
-
-			var emissive = this.applyFluidLuminosity && this.fluid.getFluidType().getLightLevel() > 0;
-			var renderTypes = DynamicFluidContainerModel.getLayerRenderTypes(emissive);
-			if (emissive) {
-				QuadTransformers.settingMaxEmissivity().processInPlace(quads);
-			}
-
-			modelBuilder.addQuads(renderTypes, quads);
+			QuadCollection quads = make2dQuads(baker, fluidMaterial(fluidSprite, emissive), 4, 2, 12, 14, -0.002f);
+			// tint index 1 of the container item is the colour of the contained fluid
+			layers.add(new CuboidItemModelWrapper(List.of(new ForestryItemTint(1)), quads, properties, this.transformation));
 		}
 
 		if (coverSprite != null) {
-			var sprite = this.coverIsMask ? baseSprite : coverSprite;
+			Material.Baked sprite = coverIsMask ? baseSprite : coverSprite;
 			if (sprite != null) {
 				// no edges
-				var coverElement = Collections.singletonList(FilledCrateModel.make2dElement(2, 0, 0, 16, 16, 0.002f)); // Use cover as mask
-				var quads = UnbakedGeometryHelper.bakeElements(coverElement, $ -> sprite, modelState); // Bake with selected texture
-				modelBuilder.addQuads(normalRenderTypes, quads);
+				BakedQuad.MaterialInfo material = BakedQuad.MaterialInfo.of(sprite, transparency(sprite), -1, null, 0, true);
+				QuadCollection quads = make2dQuads(baker, material, 0, 0, 16, 16, 0.002f);
+				layers.add(new CuboidItemModelWrapper(List.of(), quads, properties, this.transformation));
 			}
 		}
 
-		modelBuilder.setParticle(particleSprite);
-
-		return modelBuilder.build();
+		return new CompositeModel(layers);
 	}
 
-	public enum Loader implements IGeometryLoader<FluidContainerModel> {
-		INSTANCE;
-
-		@Override
-		public FluidContainerModel read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) {
-			boolean coverIsMask = GsonHelper.getAsBoolean(jsonObject, "cover_is_mask", true);
-			boolean applyFluidLuminosity = GsonHelper.getAsBoolean(jsonObject, "apply_fluid_luminosity", true);
-
-			// create new model with correct liquid
-			return new FluidContainerModel(Fluids.EMPTY, coverIsMask, applyFluidLuminosity);
-		}
+	private static Transparency transparency(Material.Baked material) {
+		return material.forceTranslucent() ? Transparency.TRANSLUCENT : material.sprite().transparency();
 	}
 
-	private static final class ContainedFluidOverrideHandler extends ItemOverrides {
-		private final Map<String, BakedModel> cache = Maps.newHashMap();
-		private final ModelBaker bakery;
-		private final IGeometryBakingContext owner;
-		private final FluidContainerModel parent;
+	private static BakedQuad.MaterialInfo fluidMaterial(Material.Baked material, boolean emissive) {
+		Transparency transparency = transparency(material);
+		if (!emissive) {
+			return BakedQuad.MaterialInfo.of(material, transparency, 0, null, 0, true);
+		}
+		// glowing fluids are drawn at full brightness, with the unlit render types
+		TextureAtlasSprite sprite = material.sprite();
+		Identifier atlas = sprite.atlasLocation();
+		if (transparency.hasTranslucent()) {
+			return new BakedQuad.MaterialInfo(sprite, ChunkSectionLayer.TRANSLUCENT, NeoForgeRenderTypes.getItemTranslucentUnlit(atlas), NeoForgeRenderTypes.getItemGlintTranslucentUnlit(atlas), NeoForgeRenderTypes.getItemGlintSpecialTranslucentUnlit(atlas), 0, Direction.UP, Level.MAX_BRIGHTNESS, false);
+		}
+		return new BakedQuad.MaterialInfo(sprite, ChunkSectionLayer.CUTOUT, NeoForgeRenderTypes.getItemCutoutUnlit(atlas), NeoForgeRenderTypes.getItemGlintCutoutUnlit(atlas), NeoForgeRenderTypes.getItemGlintSpecialCutoutUnlit(atlas), 0, Direction.UP, Level.MAX_BRIGHTNESS, false);
+	}
 
-		private ContainedFluidOverrideHandler(ModelBaker bakery, IGeometryBakingContext owner, FluidContainerModel parent) {
-			this.bakery = bakery;
-			this.owner = owner;
-			this.parent = parent;
+	// front and back 2d faces
+	public static QuadCollection make2dQuads(ModelBaker baker, BakedQuad.MaterialInfo material, float startX, float startY, float endX, float endY, float zOffset) {
+		ModelBaker.Interner interner = baker.interner();
+		BakedQuad.MaterialInfo interned = interner.materialInfo(material);
+		Vector3f from = new Vector3f(startX, startY, 7.5f - zOffset);
+		Vector3f to = new Vector3f(endX, endY, 8.5f + zOffset);
+
+		QuadCollection.Builder quads = new QuadCollection.Builder();
+		quads.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, new CuboidFace.UVs(0.0F, 0.0F, 16.0F, 16.0F), Quadrant.R0, interned, Direction.SOUTH, BlockModelRotation.IDENTITY, null));
+		quads.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, new CuboidFace.UVs(16.0F, 0.0F, 0.0F, 16.0F), Quadrant.R0, interned, Direction.NORTH, BlockModelRotation.IDENTITY, null));
+		return quads.build();
+	}
+
+	@Override
+	public void update(ItemStackRenderState output, ItemStack stack, ItemModelResolver resolver, ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+		// not a fluid item apparently, or an empty container
+		Fluid fluid = FluidUtil.getFluidContained(stack).map(FluidStack::getFluid).orElse(Fluids.EMPTY);
+
+		this.cache.computeIfAbsent(fluid, this::bake).update(output, stack, resolver, displayContext, level, owner, seed);
+	}
+
+	public record Unbaked(DynamicFluidContainerModel.Textures textures, boolean coverIsMask, boolean applyFluidLuminosity) implements ItemModel.Unbaked {
+		public static final MapCodec<Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+			DynamicFluidContainerModel.Textures.CODEC.fieldOf("textures").forGetter(Unbaked::textures),
+			Codec.BOOL.optionalFieldOf("cover_is_mask", true).forGetter(Unbaked::coverIsMask),
+			Codec.BOOL.optionalFieldOf("apply_fluid_luminosity", true).forGetter(Unbaked::applyFluidLuminosity)
+		).apply(instance, Unbaked::new));
+
+		@Override
+		public MapCodec<Unbaked> type() {
+			return MAP_CODEC;
 		}
 
 		@Override
-		public BakedModel resolve(BakedModel originalModel, ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
-			return FluidUtil.getFluidContained(stack)
-				.map(fluidStack -> {
-					Fluid fluid = fluidStack.getFluid();
-					String name = ModUtil.getRegistryName(fluid).toString();
+		public ItemModel bake(BakingContext context, Matrix4fc transformation) {
+			return new FluidContainerModel(this, context, transformation);
+		}
 
-					if (!this.cache.containsKey(name)) {
-						FluidContainerModel unbaked = this.parent.withFluid(fluid);
-						BakedModel bakedModel = unbaked.bake(this.owner, this.bakery, Material::sprite, BlockModelRotation.X0_Y0, this);
-                        this.cache.put(name, bakedModel);
-						return bakedModel;
-					}
-
-					return this.cache.get(name);
-				})
-				// not a fluid item apparently
-				.orElse(originalModel); // empty bucket
+		@Override
+		public void resolveDependencies(Resolver resolver) {
+			resolver.markDependency(TRANSFORMS_MODEL);
 		}
 	}
 }

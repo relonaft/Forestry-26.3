@@ -1,145 +1,100 @@
 package forestry.apiculture.models;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import forestry.api.apiculture.genetics.BeeLifeStage;
 import forestry.api.client.IForestryClientApi;
 import forestry.api.client.apiculture.IBeeClientManager;
 import forestry.api.core.genetics.IIndividual;
 import forestry.api.core.genetics.ILifeStage;
 import forestry.api.core.genetics.capability.IIndividualHandlerItem;
+import net.minecraft.client.color.item.ItemTintSource;
+import net.minecraft.client.color.item.ItemTintSources;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.*;
-import net.minecraft.core.Direction;
+import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ItemOwner;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
-import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
+import org.joml.Matrix4fc;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.Optional;
 
 // The item model for a bee, which supports custom bee textures
 // Only supports the four life stages used in base Forestry (DRONE, LARVAE, PRINCESS, QUEEN)
 // If you have a custom life stage, you'll need to implement your own model code
-public class ModelBee implements IUnbakedGeometry<ModelBee> {
-	private final ILifeStage stage;
+public record ModelBee(BeeLifeStage stage, List<ItemTintSource> tints) implements ItemModel.Unbaked {
+	private static final Codec<BeeLifeStage> STAGE_CODEC = Codec.STRING.xmap(
+		name -> BeeLifeStage.valueOf(name.toUpperCase(Locale.ENGLISH)),
+		stage -> stage.name().toLowerCase(Locale.ENGLISH)
+	);
+	public static final MapCodec<ModelBee> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+		STAGE_CODEC.fieldOf("stage").forGetter(ModelBee::stage),
+		ItemTintSources.CODEC.listOf().optionalFieldOf("tints", List.of()).forGetter(ModelBee::tints)
+	).apply(instance, ModelBee::new));
 
-	public ModelBee(ILifeStage stage) {
-		this.stage = stage;
+	@Override
+	public void resolveDependencies(Resolver resolver) {
+		for (Identifier location : IForestryClientApi.INSTANCE.getBeeManager().getAllModelLocations(this.stage)) {
+			resolver.markDependency(location);
+		}
 	}
 
 	@Override
-	public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+	public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
 		IBeeClientManager manager = IForestryClientApi.INSTANCE.getBeeManager();
-		Map<Identifier, BakedModel> bakedModels = new HashMap<>();
+		Map<Identifier, ItemModel> bakedModels = new HashMap<>();
 
 		for (Identifier location : manager.getAllModelLocations(this.stage)) {
-			BakedModel model = baker.bake(location, BlockModelRotation.X0_Y0, spriteGetter);
-
-			if (model != null) {
-				bakedModels.put(location, model);
-			}
+			bakedModels.put(location, new CuboidItemModelWrapper.Unbaked(location, Optional.empty(), this.tints).bake(context, transformation));
 		}
 
 		return new ModelBee.Baked(this.stage, manager, bakedModels);
 	}
 
-	public static class Loader implements IGeometryLoader<ModelBee> {
-		private final ModelBee[] models = new ModelBee[BeeLifeStage.values().length];
-
-		@Override
-		public ModelBee read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) throws JsonParseException {
-			String stageName = GsonHelper.getAsString(jsonObject, "stage");
-			BeeLifeStage stage = BeeLifeStage.valueOf(stageName.toUpperCase(Locale.ENGLISH));
-			int ordinal = stage.ordinal();
-
-			if (this.models[ordinal] == null) {
-				this.models[ordinal] = new ModelBee(stage);
-			}
-
-			return this.models[ordinal];
-		}
+	@Override
+	public MapCodec<ModelBee> type() {
+		return MAP_CODEC;
 	}
 
-	private static class Baked implements BakedModel {
+	private static class Baked implements ItemModel {
 		private final ILifeStage stage;
 		private final IBeeClientManager manager;
-		private final Map<Identifier, BakedModel> bakedModels;
+		private final Map<Identifier, ItemModel> bakedModels;
 
-		public Baked(ILifeStage stage, IBeeClientManager manager, Map<Identifier, BakedModel> bakedModels) {
+		public Baked(ILifeStage stage, IBeeClientManager manager, Map<Identifier, ItemModel> bakedModels) {
 			this.stage = stage;
 			this.manager = manager;
 			this.bakedModels = bakedModels;
 		}
 
 		@Override
-		public List<BakedQuad> getQuads(@Nullable BlockState pState, @Nullable Direction pDirection, RandomSource pRandom) {
-			return List.of();
-		}
+		public void update(ItemStackRenderState output, ItemStack stack, ItemModelResolver resolver, ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+			IIndividual individual = IIndividualHandlerItem.getIndividual(stack);
+			if (individual == null) {
+				// no layers, as before: a bee item without an individual is not drawn
+				return;
+			}
 
-		@Override
-		public boolean useAmbientOcclusion() {
-			return false;
-		}
+			Identifier speciesId = individual.getSpecies().id();
+			Identifier location = this.manager.getModelLocation(this.stage, speciesId);
+			ItemModel resolved = this.bakedModels.get(location);
 
-		@Override
-		public boolean isGui3d() {
-			return false;
-		}
-
-		@Override
-		public boolean usesBlockLight() {
-			return false;
-		}
-
-		@Override
-		public boolean isCustomRenderer() {
-			return false;
-		}
-
-		@Override
-		public TextureAtlasSprite getParticleIcon() {
-			return null;
-		}
-
-		@Override
-		public ItemOverrides getOverrides() {
-			return new OverrideList();
-		}
-
-		public class OverrideList extends ItemOverrides {
-			@Override
-			public BakedModel resolve(BakedModel model, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int p_173469_) {
-				IIndividual individual = IIndividualHandlerItem.getIndividual(stack);
-				if (individual == null) {
-					return model;
-				}
-
-				Identifier speciesId = individual.getSpecies().id();
-				Identifier location = Baked.this.manager.getModelLocation(Baked.this.stage, speciesId);
-				BakedModel resolved = Baked.this.bakedModels.get(location);
-
-				if (resolved != null) {
-					return resolved;
-				}
-
-				// Fall back to the default model for this life stage, then the vanilla-provided model.
-				Identifier defaultLocation = Baked.this.manager.getDefaultModelLocation(Baked.this.stage);
-				return Baked.this.bakedModels.getOrDefault(defaultLocation, model);
+			if (resolved == null) {
+				// Fall back to the default model for this life stage
+				resolved = this.bakedModels.get(this.manager.getDefaultModelLocation(this.stage));
+			}
+			if (resolved != null) {
+				resolved.update(output, stack, resolver, displayContext, level, owner, seed);
 			}
 		}
 	}
