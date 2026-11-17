@@ -1,5 +1,6 @@
 package forestry.core.platform.tile;
 
+import forestry.core.platform.transfer.Transfers;
 import forestry.core.platform.util.NBTUtilForestry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -81,7 +82,7 @@ public abstract class TileUtil {
 
 		Level level = tile.getLevel();
 		if (level != null) {
-			IItemHandler itemCap = level.getCapability(Capabilities.ItemHandler.BLOCK, tile.getBlockPos(), side);
+			IItemHandler itemCap = Transfers.viewItems(level.getCapability(Capabilities.Item.BLOCK, tile.getBlockPos(), side));
 			if (itemCap != null) {
 				return itemCap;
 			}

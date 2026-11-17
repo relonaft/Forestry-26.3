@@ -2,6 +2,7 @@ package forestry.core.platform.item;
 
 import forestry.core.platform.fluids.ForestryFluids;
 import forestry.core.platform.models.FluidContainerModel;
+import forestry.core.platform.transfer.Transfers;
 import forestry.core.platform.util.ModUtil;
 import forestry.core.platform.util.Translator;
 import net.minecraft.network.chat.Component;
@@ -28,6 +29,9 @@ import forestry.core.platform.transfer.IFluidHandlerItem;
 import forestry.core.platform.transfer.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 public class FluidContainerItem extends ItemForestry implements ITintedItem {
 	private final FluidContainerType type;
@@ -42,7 +46,7 @@ public class FluidContainerItem extends ItemForestry implements ITintedItem {
 			itemStack = itemStack.copy();
 			itemStack.setCount(1);
 		}
-		IFluidHandler fluidHandler = new FluidHandlerItemForestry(itemStack, this.type);
+		IFluidHandler fluidHandler = createFluidHandler(itemStack);
 		return fluidHandler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
 	}
 
@@ -149,7 +153,12 @@ public class FluidContainerItem extends ItemForestry implements ITintedItem {
 	}
 
 	public IFluidHandlerItem createFluidHandler(ItemStack stack) {
-		return new FluidHandlerItemForestry(stack, this.type);
+		return Transfers.viewFluid(stack, this::createFluidHandler);
+	}
+
+	// what the item capability hands out
+	public ResourceHandler<FluidResource> createFluidHandler(ItemAccess container) {
+		return new FluidHandlerItemForestry(container, this.type);
 	}
 
 	@Override

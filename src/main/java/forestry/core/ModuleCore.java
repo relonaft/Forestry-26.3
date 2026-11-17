@@ -10,6 +10,7 @@ import forestry.api.modules.ForestryModule;
 import forestry.api.modules.ForestryModuleIds;
 import forestry.api.modules.IForestryModule;
 import forestry.api.modules.IPacketRegistry;
+import forestry.core.content.tools.PipetteFluidHandler;
 import forestry.core.engine.genetics.FlowerTypeManager;
 import forestry.core.engine.genetics.TaxonManager;
 import forestry.apiimpl.plugin.PluginManager;
@@ -133,7 +134,7 @@ public class ModuleCore extends BlankForestryModule {
 
 	private static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.registerItem(ForestryCapabilities.SPECTACLE_VISION, (stack, context) -> ItemSpectacles.SPECTACLE_VISION, CoreItems.SPECTACLES.item());
-		event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> ((ItemPipette) stack.getItem()).createFluidHandler(stack), CoreItems.PIPETTE.item());
+		event.registerItem(Capabilities.Fluid.ITEM, (stack, access) -> new PipetteFluidHandler(access), CoreItems.PIPETTE.item());
 		event.registerBlockEntity(Capabilities.Item.BLOCK, CoreTiles.ANALYZER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
 		event.registerBlockEntity(Capabilities.Item.BLOCK, CoreTiles.ESCRITOIRE.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
 		event.registerBlockEntity(Capabilities.Item.BLOCK, CoreTiles.APIARIST_CHEST.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));

@@ -15,8 +15,8 @@ import forestry.core.features.CoreBlocks;
 import forestry.core.features.CoreItems;
 import forestry.core.features.FluidsItems;
 import forestry.core.platform.fluids.ForestryFluids;
+import forestry.core.platform.item.FluidContainerItem;
 import forestry.core.platform.item.FluidContainerType;
-import forestry.core.platform.item.FluidHandlerItemForestry;
 import forestry.core.content.energy.features.EnergyBlocks;
 import forestry.core.content.machines.blocks.FactoryBlockType;
 import forestry.core.content.machines.features.FactoryBlocks;
@@ -312,7 +312,7 @@ public class ForestryCreativeTabs {
 
 				ItemStack itemStack = FluidsItems.CONTAINERS.stack(type);
 
-				IFluidHandlerItem fluidHandler = new FluidHandlerItemForestry(itemStack, type);
+				IFluidHandlerItem fluidHandler = ((FluidContainerItem) itemStack.getItem()).createFluidHandler(itemStack);
 				if (fluidHandler.fill(new FluidStack(fluid, FluidType.BUCKET_VOLUME), IFluidHandler.FluidAction.EXECUTE) == FluidType.BUCKET_VOLUME) {
 					ItemStack filled = fluidHandler.getContainer();
 					items.accept(filled);
