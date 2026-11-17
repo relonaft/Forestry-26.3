@@ -11,6 +11,8 @@ Changes, each checked against the 26.3 codecs:
   conditions and functions name their type under "type", minecraft:block_state_property is
   minecraft:match_block with "blocks" and "state"
 - advancements: minecraft:recipe_unlocked takes "recipes"
+- worldgen: configured features are worldgen/feature with the config fields at the top level, a block
+  state without properties is written as the block ID
 The script is idempotent and prints every value it could not convert.
 """
 import glob
@@ -94,8 +96,29 @@ def advancement(node, where):
 FOLDERS = {'recipe': recipe, 'loot_table': loot, 'loot_modifiers': loot, 'advancement': advancement}
 
 
+def features(root):
+    moved = 0
+    for path in glob.glob(os.path.join(root, 'data', '*', 'worldgen', 'configured_feature', '**', '*.json'), recursive=True):
+        with open(path, encoding='utf-8') as f:
+            data = json.load(f)
+        feature = {'type': data['type'], **data.get('config', {})}
+        for target in feature.get('targets', []):
+            state = target.get('state')
+            if isinstance(state, dict) and set(state) == {'Name'}:
+                target['state'] = state['Name']
+        new = path.replace(os.sep + 'configured_feature' + os.sep, os.sep + 'feature' + os.sep).replace('/configured_feature/', '/feature/')
+        os.makedirs(os.path.dirname(new), exist_ok=True)
+        with open(new, 'w', encoding='utf-8', newline=chr(10)) as f:
+            json.dump(feature, f, indent=2)
+            f.write(chr(10))
+        os.remove(path)
+        moved += 1
+    return moved
+
+
 def main():
     changed = total = 0
+    print('configured features moved: %d' % sum(features(root) for root in sys.argv[1:]))
     for root in sys.argv[1:]:
         for folder, convert in FOLDERS.items():
             for path in glob.glob(os.path.join(root, 'data', '*', folder, '**', '*.json'), recursive=True):
