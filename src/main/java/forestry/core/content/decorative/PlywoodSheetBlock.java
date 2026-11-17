@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -18,7 +18,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class PlywoodSheetBlock extends BurnableBlock {
 	// the face of the block the sheet lies against, not the face the sheet points at
-	public static final DirectionProperty FACING = BlockStateProperties.FACING;
+	public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
 
 	// indexed by Direction ordinal
 	private static final VoxelShape[] SHAPES = {
@@ -60,7 +60,7 @@ public class PlywoodSheetBlock extends BurnableBlock {
 
 	@Override
 	public PushReaction getPistonPushReaction(BlockState state) {
-		return PushReaction.DESTROY;
+		return PushReaction.POPPED;
 	}
 
 	// A sheet only burns on the face it lies flat against, the one face it fills

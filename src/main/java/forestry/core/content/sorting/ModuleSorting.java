@@ -15,6 +15,7 @@ import forestry.core.content.sorting.network.packets.PacketFilterChangeRule;
 import forestry.core.content.sorting.network.packets.PacketGuiFilterUpdate;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
+import forestry.core.platform.transfer.Transfers;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
@@ -41,7 +42,7 @@ public class ModuleSorting extends BlankForestryModule {
 	}
 
 	public static void registerCapabilities(RegisterCapabilitiesEvent consumer) {
-		consumer.registerBlockEntity(Capabilities.ItemHandler.BLOCK, SortingBlockEntities.GENETIC_FILTER.tileType(), (tile, side) -> tile.getItemHandler(side));
+		consumer.registerBlockEntity(Capabilities.Item.BLOCK, SortingBlockEntities.GENETIC_FILTER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
 		consumer.registerBlockEntity(ForestryCapabilities.FILTER_LOGIC, SortingBlockEntities.GENETIC_FILTER.tileType(), (tile, side) -> tile.getLogic());
 	}
 

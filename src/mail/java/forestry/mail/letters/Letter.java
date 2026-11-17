@@ -9,6 +9,7 @@ import forestry.core.platform.util.InventoryUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -291,12 +292,12 @@ public class Letter implements ILetter {
 	}
 
 	@Override
-	public void startOpen(Player var1) {
+	public void startOpen(ContainerUser var1) {
         this.inventory.startOpen(var1);
 	}
 
 	@Override
-	public void stopOpen(Player var1) {
+	public void stopOpen(ContainerUser var1) {
         this.inventory.stopOpen(var1);
 	}
 

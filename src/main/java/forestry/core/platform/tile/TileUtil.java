@@ -1,5 +1,7 @@
 package forestry.core.platform.tile;
 
+import forestry.core.platform.transfer.Transfers;
+import forestry.core.platform.util.NBTUtilForestry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -15,9 +17,9 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
-import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
+import forestry.core.platform.transfer.IItemHandler;
+import forestry.core.platform.transfer.InvWrapper;
+import forestry.core.platform.transfer.SidedInvWrapper;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -80,7 +82,7 @@ public abstract class TileUtil {
 
 		Level level = tile.getLevel();
 		if (level != null) {
-			IItemHandler itemCap = level.getCapability(Capabilities.ItemHandler.BLOCK, tile.getBlockPos(), side);
+			IItemHandler itemCap = Transfers.viewItems(level.getCapability(Capabilities.Item.BLOCK, tile.getBlockPos(), side));
 			if (itemCap != null) {
 				return itemCap;
 			}
@@ -106,7 +108,7 @@ public abstract class TileUtil {
 
         for (int i = 0; i < offspring.length; i++) {
             if (offspring[i] != null) {
-                CompoundTag products = (CompoundTag) offspring[i].saveOptional(registries);
+                CompoundTag products = (CompoundTag) NBTUtilForestry.saveItemOptional(offspring[i], registries);
                 products.putByte("Slot", (byte) i);
                 listTag.add(products);
             }

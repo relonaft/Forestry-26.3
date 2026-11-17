@@ -7,11 +7,14 @@ import forestry.api.core.IErrorLogicSource;
 import forestry.api.core.ILocationProvider;
 import forestry.api.core.ValueIoHelper;
 import forestry.api.core.util.TickHelper;
+import forestry.core.engine.circuits.ISocketable;
+import forestry.core.platform.block.BaseBlock;
 import forestry.core.platform.block.TileStreamUpdateTracker;
 import forestry.core.platform.errors.ErrorLogic;
 import forestry.core.platform.inventory.FakeInventoryAdapter;
 import forestry.api.core.IInventoryAdapter;
 import forestry.core.platform.network.IStreamable;
+import forestry.core.platform.util.InventoryUtil;
 import forestry.core.platform.util.NBTUtilForestry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,19 +25,21 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import forestry.core.platform.transfer.IItemHandler;
+import forestry.core.platform.transfer.InvWrapper;
+import forestry.core.platform.transfer.SidedInvWrapper;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
-import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 
 import javax.annotation.Nullable;
 
@@ -204,12 +209,12 @@ public abstract class ForestryBlockEntity extends BlockEntity implements IStream
 	}
 
 	@Override
-	public final void startOpen(Player player) {
+	public final void startOpen(ContainerUser player) {
 		getInternalInventory().startOpen(player);
 	}
 
 	@Override
-	public final void stopOpen(Player player) {
+	public final void stopOpen(ContainerUser player) {
 		getInternalInventory().stopOpen(player);
 	}
 
@@ -283,5 +288,18 @@ public abstract class ForestryBlockEntity extends BlockEntity implements IStream
 	public final void handleUpdateTag(ValueInput input) {
 		super.handleUpdateTag(input);
 		handleUpdateTag(ValueIoHelper.toTag(input), input.lookup());
+	}
+
+	// until 1.21.5 this was BaseBlock.onRemove, and only a BaseBlock spilled its block entity
+	@Override
+	public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+		if (!(state.getBlock() instanceof BaseBlock) || !(this.level instanceof ServerLevel serverLevel)) {
+			return;
+		}
+		Containers.dropContents(serverLevel, pos, this);
+		onDropContents(serverLevel);
+		if (this instanceof ISocketable socketable) {
+			InventoryUtil.dropSockets(socketable, serverLevel, pos);
+		}
 	}
 }

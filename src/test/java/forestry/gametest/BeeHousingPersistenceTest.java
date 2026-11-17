@@ -20,7 +20,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
-import net.neoforged.neoforge.items.IItemHandler;
+import forestry.core.platform.transfer.IItemHandler;
 
 import java.util.function.Consumer;
 

@@ -5,10 +5,13 @@ import forestry.api.core.ISpectacleVision;
 import forestry.core.platform.capabilities.SpectacleVision;
 import forestry.core.platform.config.Constants;
 import forestry.core.platform.util.ItemTooltipUtil;
+import forestry.core.platform.util.TooltipList;
+import java.util.function.Consumer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.*;
 import java.util.List;
@@ -27,7 +30,8 @@ public class ItemSpectacles extends ArmorItem {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag advanced) {
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag advanced) {
+		List<Component> tooltip = new TooltipList(adder);
 		ItemTooltipUtil.addInformation(stack, tooltip);
 	}
 }

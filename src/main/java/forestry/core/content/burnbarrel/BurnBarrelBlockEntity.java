@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
@@ -279,5 +280,13 @@ public class BurnBarrelBlockEntity extends BaseBlockEntity implements IStreamabl
 		this.burnTime = data.readVarInt();
 		this.currentMaxBurnTime = data.readVarInt();
 		this.ashProductionTimer = data.readVarInt();
+	}
+
+	// until 1.21.5 this was BurnBarrelBlock.onRemove
+	@Override
+	public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+		if (this.level != null) {
+			Containers.dropContents(this.level, pos, getInternalInventory());
+		}
 	}
 }

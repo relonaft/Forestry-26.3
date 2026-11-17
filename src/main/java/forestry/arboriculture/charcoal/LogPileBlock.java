@@ -5,6 +5,7 @@ import forestry.api.IForestryApi;
 import forestry.api.arboriculture.ICharcoalManager;
 import forestry.api.arboriculture.ICharcoalPileWall;
 import forestry.arboriculture.features.CharcoalBlocks;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -24,6 +25,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.redstone.Orientation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -57,12 +59,14 @@ public class LogPileBlock extends Block {
 	}
 
 	@Override
-	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block blockIn, BlockPos fromPos, boolean p_220069_6_) {
-		BlockState fromState = level.getBlockState(fromPos);
-
-		if (fromState.is(Blocks.FIRE)) {
-			if (!state.getValue(IS_ACTIVE)) {
-				activatePile(state, level, pos, true);
+	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block blockIn, @Nullable Orientation orientation, boolean p_220069_6_) {
+		// deviation: 1.21.2 no longer passes the changed position, so every neighbor is checked for fire
+		for (Direction direction : Direction.values()) {
+			if (level.getBlockState(pos.relative(direction)).is(Blocks.FIRE)) {
+				if (!state.getValue(IS_ACTIVE)) {
+					activatePile(state, level, pos, true);
+				}
+				return;
 			}
 		}
 	}

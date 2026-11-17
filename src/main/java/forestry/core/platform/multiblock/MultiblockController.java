@@ -17,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -441,12 +442,12 @@ public abstract class MultiblockController implements IMultiblockController, Wor
 	}
 
 	@Override
-	public final void startOpen(Player player) {
+	public final void startOpen(ContainerUser player) {
 		getInternalInventory().startOpen(player);
 	}
 
 	@Override
-	public final void stopOpen(Player player) {
+	public final void stopOpen(ContainerUser player) {
 		getInternalInventory().stopOpen(player);
 	}
 

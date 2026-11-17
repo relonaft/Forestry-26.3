@@ -22,7 +22,7 @@ import net.neoforged.neoforge.client.model.item.DynamicFluidContainerModel;
 import net.neoforged.neoforge.client.model.QuadTransformers;
 import net.neoforged.neoforge.client.model.geometry.*;
 import net.neoforged.neoforge.client.ClientHooks;
-import net.neoforged.neoforge.transfer.fluid.FluidUtil;
+import forestry.core.platform.transfer.FluidUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;

@@ -51,7 +51,7 @@ public class FilteredTank extends StandardTank {
 	 */
 	public FilteredTank setFilter(DataMapType<Fluid, ?> dataMap) {
 		this.filters = () -> BuiltInRegistries.FLUID.getDataMap(dataMap).keySet().stream()
-				.map(ResourceKey::location)
+				.map(ResourceKey::identifier)
 				.collect(Collectors.toSet());
 		setValidator(stack -> !stack.isEmpty() && stack.getFluidHolder().getData(dataMap) != null);
 		return this;

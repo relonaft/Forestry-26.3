@@ -1,11 +1,13 @@
 package forestry.core.platform.fluids;
 
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import forestry.core.platform.transfer.IFluidHandler;
+import forestry.core.platform.transfer.ITransactional;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import javax.annotation.Nonnull;
 
-public class DrainOnlyFluidHandlerWrapper implements IFluidHandler {
+public class DrainOnlyFluidHandlerWrapper implements IFluidHandler, ITransactional {
 	private final IFluidHandler internalFluidHandler;
 
 	public DrainOnlyFluidHandlerWrapper(IFluidHandler internalFluidHandler) {
@@ -48,5 +50,14 @@ public class DrainOnlyFluidHandlerWrapper implements IFluidHandler {
 	@Override
 	public FluidStack drain(int maxDrain, FluidAction action) {
 		return this.internalFluidHandler.drain(maxDrain, action);
+	}
+
+	// the wrapped handler holds the fluid, so it holds the snapshot as well
+	@Override
+	public void updateSnapshots(TransactionContext transaction) {
+		if (!(this.internalFluidHandler instanceof ITransactional transactional)) {
+			throw new IllegalStateException("Fluid handler cannot roll back a transaction: " + this.internalFluidHandler.getClass().getName());
+		}
+		transactional.updateSnapshots(transaction);
 	}
 }

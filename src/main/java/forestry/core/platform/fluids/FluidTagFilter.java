@@ -26,7 +26,7 @@ public class FluidTagFilter extends ReloadableFluidFilter {
 			Set<Identifier> ids = new HashSet<>(set.size());
 
 			for (Holder<Fluid> holder : set) {
-				ids.add(holder.unwrapKey().get().location());
+				ids.add(holder.unwrapKey().get().identifier());
 			}
 
 			return ids;

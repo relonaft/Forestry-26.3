@@ -2,6 +2,7 @@ package forestry.apiculture;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import forestry.api.ForestryCapabilities;
+import forestry.api.ForestryConstants;
 import forestry.api.ForestryDataMaps;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.ForestryBeeSpecies;
@@ -36,6 +37,7 @@ import forestry.apiculture.proxy.ApicultureClientHandler;
 import forestry.apiculture.tab.ApicultureCreativeTab;
 import forestry.apiimpl.client.ForestryClientApiImpl;
 import forestry.apiimpl.client.plugin.ClientRegistration;
+import forestry.core.platform.transfer.Transfers;
 import forestry.core.platform.util.NetworkUtil;
 import forestry.core.platform.util.SpeciesUtil;
 import forestry.modules.BlankForestryModule;
@@ -54,7 +56,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
@@ -92,17 +94,17 @@ public class ModuleApiculture extends BlankForestryModule {
 			ApicultureItems.APIARIST_CHEST.item(),
 			ApicultureItems.APIARIST_LEGS.item(),
 			ApicultureItems.APIARIST_BOOTS.item());
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.ALVEARY_PLAIN.tileType(), AbstractAlvearyBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.ALVEARY_SIEVE.tileType(), AbstractAlvearyBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.ALVEARY_SWARMER.tileType(), AbstractAlvearyBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.ALVEARY_HYGROREGULATOR.tileType(), AbstractAlvearyBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.ALVEARY_STABILISER.tileType(), AbstractAlvearyBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.ALVEARY_FAN.tileType(), AbstractAlvearyBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.ALVEARY_HEATER.tileType(), AbstractAlvearyBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ApicultureTiles.APIARY.tileType(), ApiaryBlockEntity::getItemHandler);
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ApicultureTiles.ALVEARY_FAN.tileType(), AlvearyClimatizerBlockEntity::getEnergyHandler);
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ApicultureTiles.ALVEARY_HEATER.tileType(), AlvearyClimatizerBlockEntity::getEnergyHandler);
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ApicultureTiles.ALVEARY_HYGROREGULATOR.tileType(), AlvearyHygroregulatorBlockEntity::getFluidHandler);
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.ALVEARY_PLAIN.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.ALVEARY_SIEVE.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.ALVEARY_SWARMER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.ALVEARY_HYGROREGULATOR.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.ALVEARY_STABILISER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.ALVEARY_FAN.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.ALVEARY_HEATER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ApicultureTiles.APIARY.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, ApicultureTiles.ALVEARY_FAN.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, ApicultureTiles.ALVEARY_HEATER.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, ApicultureTiles.ALVEARY_HYGROREGULATOR.tileType(), (tile, side) -> Transfers.exposeFluid(tile.getFluidHandler(side)));
 	}
 
 	private static void onNetherBeeMate(ForestryEvent.BeeMatingEvent event) {
@@ -145,23 +147,23 @@ public class ModuleApiculture extends BlankForestryModule {
 	 * already be loaded. The same applies to the jubilance of each species. Core's taxa are registered before any module for the same reason.
 	 */
 	@Override
-	public void registerReloadListeners(AddReloadListenerEvent event) {
+	public void registerReloadListeners(AddServerReloadListenersEvent event) {
 		// Flower types load in ModuleCore, not here: butterflies carry the same FLOWER_TYPE
 		// chromosome, so base owns them.
 
 		// Load bee effects from the "bee_effect" folder. Registered before BeeSpeciesManager: species
 		// projection resolves each genome's bee_effect reference via getBeeEffect, so effects must exist
 		// first.
-		event.addListener(BeeEffectManager.INSTANCE);
+		event.addListener(ForestryConstants.forestry("bee_effect"), BeeEffectManager.INSTANCE);
 
 		// before BeeSpeciesManager, a species resolves its jubilance when it is built
-		event.addListener(BeeJubilanceManager.INSTANCE);
+		event.addListener(ForestryConstants.forestry("bee_jubilance"), BeeJubilanceManager.INSTANCE);
 
 		// Load bee species from the "bee_species" datapack folder and rebuild the live species map from
 		// them. SimpleJsonResourceReloadListener#apply already runs on the game executor, so no extra
 		// marshalling is needed here. Core registers the mutation rebuild after every module, and
 		// mutations must resolve species that already exist in the live map.
-		event.addListener(BeeSpeciesManager.INSTANCE);
+		event.addListener(ForestryConstants.forestry("bee_species"), BeeSpeciesManager.INSTANCE);
 	}
 
 	@Override

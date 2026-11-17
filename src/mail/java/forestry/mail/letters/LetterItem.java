@@ -1,5 +1,7 @@
 package forestry.mail.letters;
 
+import forestry.core.platform.util.TooltipList;
+import java.util.function.Consumer;
 import net.minecraft.world.InteractionResult;
 import forestry.api.core.IItemSubtype;
 import forestry.core.platform.item.WithScreenItem;
@@ -15,6 +17,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
@@ -73,8 +76,9 @@ public class LetterItem extends WithScreenItem {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
-		super.appendHoverText(itemstack, context, list, flag);
+	public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag flag) {
+		List<Component> list = new TooltipList(adder);
+		super.appendHoverText(itemstack, context, display, adder, flag);
 
 		Letter letter = LetterUtils.getLetterData(itemstack);
 		if (letter == null) {

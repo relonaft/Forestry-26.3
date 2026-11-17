@@ -1,11 +1,15 @@
 package forestry.core.platform.item;
 
+import forestry.core.platform.block.IBlockTooltip;
 import forestry.core.platform.util.ItemTooltipUtil;
+import forestry.core.platform.util.TooltipList;
+import java.util.function.Consumer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.Block;
 
 import java.util.List;
@@ -26,8 +30,12 @@ public class ForestryBlockItem<B extends Block> extends BlockItem {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag advanced) {
-		super.appendHoverText(stack, context, tooltip, advanced);
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag advanced) {
+		List<Component> tooltip = new TooltipList(adder);
+		super.appendHoverText(stack, context, display, adder, advanced);
+		if (getBlock() instanceof IBlockTooltip blockTooltip) {
+			blockTooltip.appendHoverText(stack, context, tooltip, advanced);
+		}
 		ItemTooltipUtil.addInformation(stack, tooltip);
 	}
 }

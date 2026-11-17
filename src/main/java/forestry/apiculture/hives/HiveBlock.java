@@ -184,7 +184,7 @@ public class HiveBlock extends Block implements EntityBlock {
 	}
 
 	public IBee adjustForDimension(ServerLevel level, BlockPos pos, IBee bee){
-		if(level.dimension().location().toString().equals("twilightforest:twilight_forest")){
+		if(level.dimension().identifier().toString().equals("twilightforest:twilight_forest")){
 			return bee.copyWithGenome(bee.getGenome().copyWith(Map.of(BeeChromosomes.ACTIVITY, Allele.reference(ForestryActivityTypes.CREPUSCULAR))));
 		}
 		return bee;

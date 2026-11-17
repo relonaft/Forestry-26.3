@@ -42,7 +42,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.neoforged.neoforge.transfer.fluid.FluidUtil;
+import forestry.core.platform.transfer.FluidUtil;
 
 import java.util.Comparator;
 import java.util.List;

@@ -1,5 +1,6 @@
 package forestry.core.content.machines.tiles;
 
+import forestry.core.platform.util.NBTUtilForestry;
 import com.google.common.base.Preconditions;
 import forestry.api.core.ForestryError;
 import forestry.api.core.IErrorLogic;
@@ -29,7 +30,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import forestry.core.platform.transfer.IFluidHandler;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -60,7 +61,7 @@ public class StillBlockEntity extends PoweredBlockEntity implements WorldlyConta
         this.tankManager.write(compoundNBT, registries);
 
 		if (!this.bufferedLiquid.isEmpty()) {
-			compoundNBT.put("Buffer", this.bufferedLiquid.save(registries));
+			compoundNBT.put("Buffer", NBTUtilForestry.saveFluid(this.bufferedLiquid, registries));
 		}
 	}
 
@@ -71,7 +72,7 @@ public class StillBlockEntity extends PoweredBlockEntity implements WorldlyConta
 
 		if (compoundNBT.contains("Buffer")) {
 			CompoundTag buffer = compoundNBT.getCompoundOrEmpty("Buffer");
-            this.bufferedLiquid = FluidStack.parseOptional(registries, buffer);
+            this.bufferedLiquid = NBTUtilForestry.parseFluidOptional(registries, buffer);
 		}
 	}
 

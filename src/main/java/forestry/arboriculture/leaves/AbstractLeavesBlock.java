@@ -17,6 +17,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -69,7 +70,7 @@ public abstract class AbstractLeavesBlock extends ExtendedLeavesBlock implements
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader world, BlockPos pos, Player player) {
+	public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state, boolean includeData, Player player) {
 		ITree tree = getTree(world, pos);
 		if (tree == null) {
 			return ItemStack.EMPTY;
@@ -111,8 +112,8 @@ public abstract class AbstractLeavesBlock extends ExtendedLeavesBlock implements
 	 * Used for walking through willow leaves.
 	 */
 	@Override
-	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn) {
-		super.entityInside(state, worldIn, pos, entityIn);
+	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
+		super.entityInside(state, worldIn, pos, entityIn, effectApplier, isPrecise);
 		Vec3 motion = entityIn.getDeltaMovement();
 		entityIn.setDeltaMovement(motion.x() * 0.4D, motion.y(), motion.z() * 0.4D);
 	}

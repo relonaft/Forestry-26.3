@@ -1,5 +1,7 @@
 package forestry.core.engine.genetics;
 
+import forestry.core.platform.util.TooltipList;
+import java.util.function.Consumer;
 import net.minecraft.world.InteractionResult;
 import com.mojang.authlib.GameProfile;
 import forestry.api.IForestryApi;
@@ -18,6 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
@@ -45,14 +48,15 @@ public class ItemResearchNote extends ItemForestry {
 		if (note.researcher == null) {
 			researcherName = "Sengir";
 		} else {
-			researcherName = note.researcher.getName();
+			researcherName = note.researcher.name();
 		}
 		return Component.translatable(getDescriptionId(itemstack), researcherName);
 	}
 
 	@Override
-	public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
-		super.appendHoverText(itemstack, context, list, flag);
+	public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag flag) {
+		List<Component> list = new TooltipList(adder);
+		super.appendHoverText(itemstack, context, display, adder, flag);
 		ResearchNote note = new ResearchNote(NBTUtilForestry.getItemStackTag(itemstack));
 		note.addTooltip(list);
 	}

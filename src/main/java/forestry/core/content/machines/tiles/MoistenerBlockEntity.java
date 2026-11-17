@@ -1,5 +1,6 @@
 package forestry.core.content.machines.tiles;
 
+import forestry.core.platform.util.NBTUtilForestry;
 import forestry.api.core.ForestryError;
 import forestry.api.core.IErrorLogic;
 import forestry.api.core.machines.fuels.MoistenerFuel;
@@ -37,7 +38,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import forestry.core.platform.transfer.IFluidHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -78,11 +79,11 @@ public class MoistenerBlockEntity extends BaseBlockEntity implements WorldlyCont
 
 		// Write pending product
 		if (this.pendingProduct != null) {
-			CompoundTag CompoundNBTP = (CompoundTag) this.pendingProduct.saveOptional(registries);
+			CompoundTag CompoundNBTP = (CompoundTag) NBTUtilForestry.saveItemOptional(this.pendingProduct, registries);
 			compoundNBT.put("PendingProduct", CompoundNBTP);
 		}
 		if (this.currentProduct != null) {
-			CompoundTag CompoundNBTP = (CompoundTag) this.currentProduct.saveOptional(registries);
+			CompoundTag CompoundNBTP = (CompoundTag) NBTUtilForestry.saveItemOptional(this.currentProduct, registries);
 			compoundNBT.put("CurrentProduct", CompoundNBTP);
 		}
 	}
@@ -100,11 +101,11 @@ public class MoistenerBlockEntity extends BaseBlockEntity implements WorldlyCont
 		// Load pending product
 		if (compoundNBT.contains("PendingProduct")) {
 			CompoundTag compoundNBTP = compoundNBT.getCompoundOrEmpty("PendingProduct");
-            this.pendingProduct = ItemStack.parse(registries, compoundNBTP).orElse(ItemStack.EMPTY);
+            this.pendingProduct = NBTUtilForestry.parseItem(registries, compoundNBTP).orElse(ItemStack.EMPTY);
 		}
 		if (compoundNBT.contains("CurrentProduct")) {
 			CompoundTag compoundNBTP = compoundNBT.getCompoundOrEmpty("CurrentProduct");
-            this.currentProduct = ItemStack.parse(registries, compoundNBTP).orElse(ItemStack.EMPTY);
+            this.currentProduct = NBTUtilForestry.parseItem(registries, compoundNBTP).orElse(ItemStack.EMPTY);
 		}
 
 		checkRecipe();
@@ -207,7 +208,7 @@ public class MoistenerBlockEntity extends BaseBlockEntity implements WorldlyCont
 					return;
 				}
 
-				MoistenerFuel res = getItem(MoistenerInventory.SLOT_WORKING).getItemHolder().getData(ForestryDataMaps.MOISTENER_FUELS);
+				MoistenerFuel res = getItem(MoistenerInventory.SLOT_WORKING).typeHolder().getData(ForestryDataMaps.MOISTENER_FUELS);
 				if (res != null) {
                     this.burnTime = this.totalTime = res.moistenerValue();
 				}
@@ -309,7 +310,7 @@ public class MoistenerBlockEntity extends BaseBlockEntity implements WorldlyCont
 				continue;
 			}
 
-			MoistenerFuel res = slotStack.getItemHolder().getData(ForestryDataMaps.MOISTENER_FUELS);
+			MoistenerFuel res = slotStack.typeHolder().getData(ForestryDataMaps.MOISTENER_FUELS);
 			if (res == null) {
 				continue;
 			}
@@ -330,7 +331,7 @@ public class MoistenerBlockEntity extends BaseBlockEntity implements WorldlyCont
 		if (!getItem(MoistenerInventory.SLOT_WORKING).isEmpty()) {
 			// Get the result of the consumed item in the working slot
 			ItemStack deposit;
-			MoistenerFuel res = getItem(MoistenerInventory.SLOT_WORKING).getItemHolder().getData(ForestryDataMaps.MOISTENER_FUELS);
+			MoistenerFuel res = getItem(MoistenerInventory.SLOT_WORKING).typeHolder().getData(ForestryDataMaps.MOISTENER_FUELS);
 			if (res != null) {
 				deposit = res.product().copy();
 			} else {
@@ -375,7 +376,7 @@ public class MoistenerBlockEntity extends BaseBlockEntity implements WorldlyCont
 				continue;
 			}
 
-			if (getItem(i).getItemHolder().getData(ForestryDataMaps.MOISTENER_FUELS) == null) {
+			if (getItem(i).typeHolder().getData(ForestryDataMaps.MOISTENER_FUELS) == null) {
 				slotsToShift.add(i);
 			}
 		}
@@ -430,7 +431,7 @@ public class MoistenerBlockEntity extends BaseBlockEntity implements WorldlyCont
 				max += 64;
 				continue;
 			}
-			if (inventory.getItem(i).getItemHolder().getData(ForestryDataMaps.MOISTENER_FUELS) != null) {
+			if (inventory.getItem(i).typeHolder().getData(ForestryDataMaps.MOISTENER_FUELS) != null) {
 				max += 64;
 				avail += inventory.getItem(i).getCount();
 			}

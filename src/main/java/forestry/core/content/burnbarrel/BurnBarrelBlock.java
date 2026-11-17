@@ -120,24 +120,11 @@ public class BurnBarrelBlock extends ForestryBlock implements EntityBlock {
 		return (BlockEntityTicker<T>) ticker;
 	}
 
-	@Override
-	protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-		if (!state.is(newState.getBlock())) {
-			BurnBarrelBlockEntity barrel = TileUtil.getTile(level, pos, BurnBarrelBlockEntity.class);
-			if (barrel != null) {
-				Containers.dropContents(level, pos, barrel.getInternalInventory());
-			}
-			level.removeBlockEntity(pos);
-		}
-
-		super.onRemove(state, level, pos, newState, movedByPiston);
-	}
-
 	// Deviation from 1.20.1: this overrode a vanilla BlockBehaviour method. 1.21.1 moved it to NeoForge's
 	// IBlockExtension, where returning null means "use the value from the block properties"
 	@Override
 	public PushReaction getPistonPushReaction(BlockState state) {
-		return PushReaction.DESTROY;
+		return PushReaction.POPPED;
 	}
 
 	@Override
@@ -145,7 +132,7 @@ public class BurnBarrelBlock extends ForestryBlock implements EntityBlock {
 		if (!state.getValue(LIT)) {
 			return;
 		}
-		addParticlesAndSound(level, pos.getCenter().add(0, 0.55f, 0), random);
+		addParticlesAndSound(level, Vec3.atCenterOf(pos).add(0, 0.55f, 0), random);
 	}
 
 	// Adapted from Jumbo Candles which was adapted from vanilla candles

@@ -6,12 +6,15 @@ import forestry.api.apiculture.genetics.IBee;
 import forestry.api.apiculture.hives.IHiveFrame;
 import forestry.api.core.genetics.IGenome;
 import forestry.core.platform.item.ItemForestry;
+import forestry.core.platform.util.TooltipList;
+import java.util.function.Consumer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class HiveFrameItem extends ItemForestry implements IHiveFrame {
 	private final HiveFrameBeeModifier beeModifier;
@@ -42,8 +45,9 @@ public class HiveFrameItem extends ItemForestry implements IHiveFrame {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag advanced) {
-		super.appendHoverText(stack, context, tooltip, advanced);
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag advanced) {
+		List<Component> tooltip = new TooltipList(adder);
+		super.appendHoverText(stack, context, display, adder, advanced);
 		this.beeModifier.addInformation(tooltip);
 		if (!stack.isDamaged()) {
 			tooltip.add(Component.translatable("item.forestry.durability", stack.getMaxDamage()));

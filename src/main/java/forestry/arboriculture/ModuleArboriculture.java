@@ -1,5 +1,6 @@
 package forestry.arboriculture;
 
+import forestry.core.platform.transfer.Transfers;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import forestry.arboriculture.loot.GrafterLootModifier;
@@ -7,7 +8,7 @@ import forestry.api.ForestryConstants;
 import forestry.arboriculture.trees.genetics.TreeSpeciesManager;
 import forestry.arboriculture.network.TreeSpeciesSyncPacket;
 import forestry.core.platform.util.NetworkUtil;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import forestry.arboriculture.network.ArboriculturePacketIds;
 
@@ -40,7 +41,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import forestry.core.platform.transfer.InvWrapper;
 import forestry.arboriculture.tab.ArboricultureCreativeTab;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -78,11 +79,11 @@ public class ModuleArboriculture extends BlankForestryModule {
 	}
 
 	@Override
-	public void registerReloadListeners(AddReloadListenerEvent event) {
+	public void registerReloadListeners(AddServerReloadListenersEvent event) {
 		// Load tree species from the "tree_species" datapack folder and rebuild the live species map from
 		// them. Core registers the mutation rebuild after every module, and mutations must resolve
 		// species that already exist in the live map.
-		event.addListener(TreeSpeciesManager.INSTANCE);
+		event.addListener(ForestryConstants.forestry("tree_species"), TreeSpeciesManager.INSTANCE);
 	}
 
 	@Override
@@ -138,7 +139,7 @@ public class ModuleArboriculture extends BlankForestryModule {
 	}
 
 	private static void registerCapabilities(RegisterCapabilitiesEvent event) {
-		event.registerEntity(Capabilities.ItemHandler.ENTITY, ArboricultureEntities.CHEST_BOAT.entityType(), (boat, context) -> boat.isAlive() ? new InvWrapper(boat) : null);
+		event.registerEntity(Capabilities.Item.ENTITY, ArboricultureEntities.CHEST_BOAT.entityType(), (boat, context) -> boat.isAlive() ? Transfers.exposeItems(new InvWrapper(boat)) : null);
 	}
 
 	private static void commonSetup(FMLCommonSetupEvent event) {

@@ -7,7 +7,7 @@ import forestry.core.content.machines.tiles.FermenterBlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.transfer.fluid.FluidUtil;
+import forestry.core.platform.transfer.FluidUtil;
 
 import java.util.Optional;
 import forestry.api.ForestryDataMaps;
@@ -33,7 +33,7 @@ public class FermenterInventory extends BlockEntityInventoryAdapter<FermenterBlo
 		} else if (slotIndex == SLOT_CAN_INPUT) {
 			return FluidHelper.isFillableContainerWithRoom(stack);
 		} else if (slotIndex == SLOT_FUEL) {
-			return stack.getItemHolder().getData(ForestryDataMaps.FERMENTER_FUELS) != null;
+			return stack.typeHolder().getData(ForestryDataMaps.FERMENTER_FUELS) != null;
 		}
 		return false;
 	}

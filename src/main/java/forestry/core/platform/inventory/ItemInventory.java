@@ -12,11 +12,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import forestry.core.platform.transfer.IItemHandler;
+import forestry.core.platform.transfer.InvWrapper;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -313,11 +314,11 @@ public abstract class ItemInventory implements Container, IFilterSlotDelegate {
 	}
 
 	@Override
-	public void startOpen(Player player) {
+	public void startOpen(ContainerUser player) {
 	}
 
 	@Override
-	public void stopOpen(Player player) {
+	public void stopOpen(ContainerUser player) {
 	}
 
 	@Override

@@ -18,6 +18,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.*;
+import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -26,7 +27,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import forestry.core.platform.transfer.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -123,18 +124,18 @@ public class ForestryLeavesBlock extends AbstractLeavesBlock implements Bonemeal
 	/* IGrowable */
 
 	@Override
-	public boolean isValidBonemealTarget(LevelReader world, BlockPos pos, BlockState state) {
+	public boolean isValidBonemealTarget(LevelReader world, BlockPos pos, BlockState state, BonemealSource source) {
 		LeavesBlockEntity leafTile = TileUtil.getTile(world, pos, LeavesBlockEntity.class);
 		return leafTile != null && leafTile.hasFruit() && leafTile.getRipeness() < 1.0f;
 	}
 
 	@Override
-	public boolean isBonemealSuccess(Level worldIn, RandomSource rand, BlockPos pos, BlockState state) {
+	public boolean isBonemealSuccess(Level worldIn, RandomSource rand, BlockPos pos, BlockState state, BonemealSource source) {
 		return true;
 	}
 
 	@Override
-	public void performBonemeal(ServerLevel world, RandomSource rand, BlockPos pos, BlockState state) {
+	public void performBonemeal(ServerLevel world, RandomSource rand, BlockPos pos, BlockState state, BonemealSource source) {
 		LeavesBlockEntity leafTile = TileUtil.getTile(world, pos, LeavesBlockEntity.class);
 		if (leafTile != null) {
 			leafTile.addRipeness(0.5f);

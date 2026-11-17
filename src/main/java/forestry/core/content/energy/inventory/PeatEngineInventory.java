@@ -18,7 +18,7 @@ public class PeatEngineInventory extends BlockEntityInventoryAdapter<PeatEngineB
 
 	@Override
 	public boolean canSlotAccept(int slotIndex, ItemStack stack) {
-		return slotIndex == SLOT_FUEL && stack.getItemHolder().getData(ForestryDataMaps.PEAT_FUELS) != null;
+		return slotIndex == SLOT_FUEL && stack.typeHolder().getData(ForestryDataMaps.PEAT_FUELS) != null;
 	}
 
 	@Override

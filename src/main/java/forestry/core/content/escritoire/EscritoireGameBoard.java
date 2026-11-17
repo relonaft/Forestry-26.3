@@ -35,7 +35,7 @@ public class EscritoireGameBoard implements INbtWritable, IStreamable {
 	}
 
 	public EscritoireGameBoard(CompoundTag nbt) {
-		if (nbt.contains(NBT_GAME_TOKENS, Tag.TAG_LIST)) {
+		if (nbt.contains(NBT_GAME_TOKENS)) {
 			ListTag list = nbt.getListOrEmpty(NBT_GAME_TOKENS);
 
 			this.tokenCount = Math.min(list.size(), TOKEN_COUNT_MAX);

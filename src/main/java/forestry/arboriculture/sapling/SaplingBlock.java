@@ -5,6 +5,7 @@ import forestry.api.arboriculture.genetics.TreeLifeStage;
 import forestry.arboriculture.trees.TileTreeContainer;
 import forestry.core.platform.tile.TileUtil;
 import forestry.core.platform.util.SpeciesUtil;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -14,11 +15,13 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.HitResult;
@@ -32,7 +35,7 @@ public class SaplingBlock extends Block implements BonemealableBlock, EntityBloc
 	protected static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 12.0D, 14.0D);
 
 	public SaplingBlock(Block.Properties properties) {
-		super(properties.noCollission().strength(0.0F).sound(SoundType.GRASS).randomTicks());
+		super(properties.noCollision().strength(0.0F).sound(SoundType.GRASS).randomTicks());
 	}
 
 	@Override
@@ -71,7 +74,7 @@ public class SaplingBlock extends Block implements BonemealableBlock, EntityBloc
 	}
 
 	@Override
-	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block blockIn, @Nullable Orientation orientation, boolean isMoving) {
 		if (!level.isClientSide() && !canBlockStay(level, pos)) {
 			level.destroyBlock(pos, true);
 		}
@@ -87,7 +90,7 @@ public class SaplingBlock extends Block implements BonemealableBlock, EntityBloc
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
+	public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData, Player player) {
 		SaplingBlockEntity sapling = TileUtil.getTile(level, pos, SaplingBlockEntity.class);
 		if (sapling == null || sapling.getTree() == null) {
 			return ItemStack.EMPTY;
@@ -107,12 +110,12 @@ public class SaplingBlock extends Block implements BonemealableBlock, EntityBloc
 	}
 
 	@Override
-	public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+	public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state, BonemealSource source) {
 		return true;
 	}
 
 	@Override
-	public boolean isBonemealSuccess(Level world, RandomSource rand, BlockPos pos, BlockState state) {
+	public boolean isBonemealSuccess(Level world, RandomSource rand, BlockPos pos, BlockState state, BonemealSource source) {
 		if (world.getRandom().nextFloat() >= 0.45F) {
 			return false;
 		}
@@ -121,7 +124,7 @@ public class SaplingBlock extends Block implements BonemealableBlock, EntityBloc
 	}
 
 	@Override
-	public void performBonemeal(ServerLevel world, RandomSource rand, BlockPos pos, BlockState blockState) {
+	public void performBonemeal(ServerLevel world, RandomSource rand, BlockPos pos, BlockState blockState, BonemealSource source) {
 		SaplingBlockEntity saplingTile = TileUtil.getTile(world, pos, SaplingBlockEntity.class);
 		if (saplingTile != null) {
 			saplingTile.tryGrow(rand, true);

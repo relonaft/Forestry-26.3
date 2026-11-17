@@ -33,7 +33,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.transfer.fluid.FluidUtil;
+import forestry.core.platform.transfer.FluidUtil;
 
 import javax.annotation.Nullable;
 
@@ -127,25 +127,6 @@ public class BaseBlock<P extends IBlockType> extends ForestryBlock implements En
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
-	}
-
-	@Override
-	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (!state.is(newState.getBlock())) {
-			BlockEntity tile = TileUtil.getTile(level, pos);
-			if (tile instanceof Container inventory) {
-				Containers.dropContents(level, pos, inventory);
-			}
-			if (tile instanceof ForestryBlockEntity forestry) {
-				forestry.onDropContents((ServerLevel) level);
-			}
-			if (tile instanceof ISocketable socketable) {
-				InventoryUtil.dropSockets(socketable, level, pos);
-			}
-		}
-
-		// Remove tile entity after emptying out its contents
-		super.onRemove(state, level, pos, newState, isMoving);
 	}
 
 	@Override

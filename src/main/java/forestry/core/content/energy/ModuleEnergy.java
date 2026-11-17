@@ -8,6 +8,7 @@ import forestry.core.content.energy.features.EnergyBlockEntities;
 import forestry.modules.BlankForestryModule;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
+import forestry.core.platform.transfer.Transfers;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
@@ -18,14 +19,14 @@ import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 @ForestryModule
 public class ModuleEnergy extends BlankForestryModule {
 	private static void registerCapabilities(RegisterCapabilitiesEvent event) {
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, EnergyBlockEntities.CLOCKWORK_ENGINE.tileType(), (tile, side) -> tile.getEnergyHandler(side));
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, EnergyBlockEntities.BIOGAS_ENGINE.tileType(), (tile, side) -> tile.getEnergyHandler(side));
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, EnergyBlockEntities.PEAT_ENGINE.tileType(), (tile, side) -> tile.getEnergyHandler(side));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, EnergyBlockEntities.CLOCKWORK_ENGINE.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, EnergyBlockEntities.BIOGAS_ENGINE.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, EnergyBlockEntities.PEAT_ENGINE.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
 		// Deviation from 1.20.1: capabilities are registered here instead of overriding getCapability on the tile.
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, EnergyBlockEntities.SOLAR_ENGINE.tileType(), (tile, side) -> tile.getEnergyHandler(side));
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, EnergyBlockEntities.COMBUSTION_ENGINE.tileType(), (tile, side) -> tile.getEnergyHandler(side));
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, EnergyBlockEntities.BIOGAS_ENGINE.tileType(), (tile, side) -> tile.getFluidHandler(side));
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, EnergyBlockEntities.COMBUSTION_ENGINE.tileType(), (tile, side) -> tile.getFluidHandler(side));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, EnergyBlockEntities.SOLAR_ENGINE.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, EnergyBlockEntities.COMBUSTION_ENGINE.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, EnergyBlockEntities.BIOGAS_ENGINE.tileType(), (tile, side) -> Transfers.exposeFluid(tile.getFluidHandler(side)));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, EnergyBlockEntities.COMBUSTION_ENGINE.tileType(), (tile, side) -> Transfers.exposeFluid(tile.getFluidHandler(side)));
 	}
 
 	@Override

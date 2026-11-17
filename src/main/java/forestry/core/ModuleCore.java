@@ -10,6 +10,7 @@ import forestry.api.modules.ForestryModule;
 import forestry.api.modules.ForestryModuleIds;
 import forestry.api.modules.IForestryModule;
 import forestry.api.modules.IPacketRegistry;
+import forestry.core.content.tools.PipetteFluidHandler;
 import forestry.core.engine.genetics.FlowerTypeManager;
 import forestry.core.engine.genetics.TaxonManager;
 import forestry.apiimpl.plugin.PluginManager;
@@ -41,10 +42,11 @@ import net.minecraft.util.Unit;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import forestry.core.platform.transfer.Transfers;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
@@ -132,14 +134,14 @@ public class ModuleCore extends BlankForestryModule {
 
 	private static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.registerItem(ForestryCapabilities.SPECTACLE_VISION, (stack, context) -> ItemSpectacles.SPECTACLE_VISION, CoreItems.SPECTACLES.item());
-		event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> ((ItemPipette) stack.getItem()).createFluidHandler(stack), CoreItems.PIPETTE.item());
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CoreTiles.ANALYZER.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CoreTiles.ESCRITOIRE.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CoreTiles.APIARIST_CHEST.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CoreTiles.ARBORIST_CHEST.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CoreTiles.LEPIDOPTERIST_CHEST.tileType(), (tile, side) -> tile.getItemHandler(side));
-		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, CoreTiles.ANALYZER.tileType(), (tile, side) -> tile.getEnergyHandler(side));
-		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, CoreTiles.ANALYZER.tileType(), (tile, side) -> tile.getTankManager());
+		event.registerItem(Capabilities.Fluid.ITEM, (stack, access) -> new PipetteFluidHandler(access), CoreItems.PIPETTE.item());
+		event.registerBlockEntity(Capabilities.Item.BLOCK, CoreTiles.ANALYZER.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, CoreTiles.ESCRITOIRE.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, CoreTiles.APIARIST_CHEST.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, CoreTiles.ARBORIST_CHEST.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Item.BLOCK, CoreTiles.LEPIDOPTERIST_CHEST.tileType(), (tile, side) -> Transfers.exposeItems(tile.getItemHandler(side)));
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, CoreTiles.ANALYZER.tileType(), (tile, side) -> Transfers.exposeEnergy(tile.getEnergyHandler(side)));
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, CoreTiles.ANALYZER.tileType(), (tile, side) -> Transfers.exposeFluid(tile.getTankManager()));
 	}
 
 	private static void registerGlobalLootModifiers(RegisterEvent event) {
@@ -173,8 +175,8 @@ public class ModuleCore extends BlankForestryModule {
 		}
 	}
 
-	private static void onAddReloadListeners(AddReloadListenerEvent event) {
-		event.addListener((prepBarrier, resourceManager, prepProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
+	private static void onAddReloadListeners(AddServerReloadListenersEvent event) {
+		event.addListener(ForestryConstants.forestry("recipe_caches"), (sharedState, backgroundExecutor, prepBarrier, gameExecutor) -> {
 			return prepBarrier.wait(Unit.INSTANCE).thenRunAsync(() -> {
 				RecipeManagers.invalidateCaches();
 				NetworkUtil.sendToAllPlayers(new RecipeCachePacket());
@@ -184,11 +186,11 @@ public class ModuleCore extends BlankForestryModule {
 		// Load datapack taxa from the "taxon" folder and merge them onto the code-registered taxonomy. Registered
 		// before any module's species loader: a species' genus is resolved to a taxon as it is projected, so taxa
 		// must exist first.
-		event.addListener(TaxonManager.INSTANCE);
+		event.addListener(ForestryConstants.forestry("taxon"), TaxonManager.INSTANCE);
 		// Flower types are shared by bees and butterflies, so base loads them. They must be in place
 		// before any pollinating species is projected, which is why this sits with the taxa rather
 		// than in apiculture's listener
-		event.addListener(FlowerTypeManager.INSTANCE);
+		event.addListener(ForestryConstants.forestry("flower_type"), FlowerTypeManager.INSTANCE);
 
 		// Modules load in dependency order (see ForestryModuleManager), which is also the order their data
 		// depends on: core's taxa, then apiculture's flower types/effects/species, then arboriculture's
@@ -205,7 +207,7 @@ public class ModuleCore extends BlankForestryModule {
 		// after vanilla ones (and the reload barrier applies listeners in order), so by the apply phase the vanilla
 		// RecipeManager is fully populated. Run on the game executor since this mutates shared species-type state.
 		RecipeManager recipeManager = event.getServerResources().getRecipeManager();
-		event.addListener((prepBarrier, resourceManager, prepProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
+		event.addListener(ForestryConstants.forestry("mutations"), (sharedState, backgroundExecutor, prepBarrier, gameExecutor) -> {
 			return prepBarrier.wait(Unit.INSTANCE).thenRunAsync(() -> GeneticsReloadHandler.rebuildMutations(recipeManager), gameExecutor);
 		});
 	}

@@ -20,6 +20,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -59,7 +61,7 @@ public class JumboCandleBlock extends Block {
 	}
 
 	@Override
-	protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
+	protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess scheduledTicks, BlockPos pos, Direction direction, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
 		BlockState newState;
 
 		// Reads the tag rather than the block, so candles of different colours stack
@@ -108,7 +110,7 @@ public class JumboCandleBlock extends Block {
 		if (!state.getValue(LIT)) return;
 		if (state.getValue(SHAPE) == CandleShape.BOTTOM || state.getValue(SHAPE) == CandleShape.MIDDLE) return;
 
-		addParticlesAndSound(level, pos.getCenter().add(0, 0.6875f, 0), random, this.flame);
+		addParticlesAndSound(level, Vec3.atCenterOf(pos).add(0, 0.6875f, 0), random, this.flame);
 	}
 
 	// Lifted from the vanilla candle code
@@ -139,7 +141,7 @@ public class JumboCandleBlock extends Block {
 			if (stack.is(Items.FLINT_AND_STEEL)) {
 				if (!level.isClientSide()) {
 					level.setBlock(pos, state.setValue(LIT, true), 3);
-					stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+					stack.hurtAndBreak(1, player, hand.asEquipmentSlot());
 				}
 				level.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS);
 				return InteractionResult.SUCCESS;
@@ -164,7 +166,7 @@ public class JumboCandleBlock extends Block {
 
 	@Override
 	public PushReaction getPistonPushReaction(BlockState state) {
-		return PushReaction.DESTROY;
+		return PushReaction.POPPED;
 	}
 
 	/**

@@ -3,8 +3,8 @@ package forestry.core.platform.fluids;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
-import net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler;
+import forestry.core.platform.transfer.IFluidTank;
+import forestry.core.platform.transfer.EmptyFluidHandler;
 
 import javax.annotation.Nullable;
 
