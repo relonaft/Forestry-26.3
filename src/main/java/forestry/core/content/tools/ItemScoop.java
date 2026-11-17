@@ -32,8 +32,8 @@ import java.util.List;
 
 public class ItemScoop extends Item {
 	public ItemScoop(int durability) {
-		// until 1.21.5 this was a TieredItem of wood, which also forced the durability of wood (59) on both scoops
-		super(PendingId.item(new Item.Properties().durability(durability).enchantable(ToolMaterial.WOOD.enchantmentValue()).repairable(ToolMaterial.WOOD.repairItems())));
+		// quirk kept: Community Edition 1.21.1 was a TieredItem of wood, which ignored durability and gave both scoops 59
+		super(PendingId.item(new Item.Properties().durability(ToolMaterial.WOOD.durability()).enchantable(ToolMaterial.WOOD.enchantmentValue()).repairable(ToolMaterial.WOOD.repairItems())));
 	}
 
 	@Override

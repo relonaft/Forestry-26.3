@@ -4,6 +4,7 @@ import forestry.api.ForestryConstants;
 import forestry.api.apiculture.IBeeProtection;
 import forestry.api.apiculture.genetics.IBeeEffect;
 import forestry.core.platform.registration.PendingId;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
@@ -14,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAssets;
+import net.minecraft.world.item.equipment.Equippable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -21,7 +23,7 @@ import java.util.Map;
 public class ApiaristSuitItem extends Item {
 	// an armor material names its repair items by tag since 1.21.2, the tag holds woven silk
 	private static final TagKey<Item> REPAIR_ITEMS = TagKey.create(Registries.ITEM, ForestryConstants.forestry("repairs_apiarist_armor"));
-	// 5 is the durability factor of the armor material in Forestry 5.8.2. The 1.21.1 code set no durability
+	// the durability factor is unused, the constructor skips humanoidArmor
 	private static final ArmorMaterial APIARIST_ARMOR_MATERIAL = new ArmorMaterial(
 		5,
 		Map.of(
@@ -49,6 +51,14 @@ public class ApiaristSuitItem extends Item {
 	}
 
 	public ApiaristSuitItem(ArmorType type) {
-		super(PendingId.item(new Item.Properties().humanoidArmor(APIARIST_ARMOR_MATERIAL, type)));
+		// quirk kept: Community Edition 1.21.1 set no durability, so the suit never wears out and stacks to 64
+		super(PendingId.item(new Item.Properties()
+			.attributes(APIARIST_ARMOR_MATERIAL.createAttributes(type))
+			.enchantable(APIARIST_ARMOR_MATERIAL.enchantmentValue())
+			.component(DataComponents.EQUIPPABLE, Equippable.builder(type.getSlot())
+				.setEquipSound(APIARIST_ARMOR_MATERIAL.equipSound())
+				.setAsset(APIARIST_ARMOR_MATERIAL.assetId())
+				.build())
+			.repairable(APIARIST_ARMOR_MATERIAL.repairIngredient())));
 	}
 }
