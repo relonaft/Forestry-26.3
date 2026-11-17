@@ -1,5 +1,6 @@
 package forestry.lepidopterology.cocoons;
 
+import forestry.api.core.ValueIoHelper;
 import forestry.api.core.genetics.IGenome;
 import forestry.api.core.genetics.alleles.ButterflyChromosomes;
 import forestry.api.lepidopterology.genetics.IButterfly;
@@ -19,6 +20,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class TileCocoon extends BlockEntity {
 	private int maturationTime;
@@ -31,10 +34,7 @@ public class TileCocoon extends BlockEntity {
 	}
 
 	/* SAVING & LOADING */
-	@Override
 	public void loadAdditional(CompoundTag compoundNBT, HolderLookup.Provider registries) {
-		super.loadAdditional(compoundNBT, registries);
-
 		if (compoundNBT.contains("Caterpillar")) {
             this.caterpillar = SpeciesUtil.deserializeIndividual(SpeciesUtil.BUTTERFLY_TYPE.get(), compoundNBT.getCompound("Caterpillar"));
 		}
@@ -42,10 +42,7 @@ public class TileCocoon extends BlockEntity {
 		this.isSolid = compoundNBT.getBoolean("isSolid");
 	}
 
-	@Override
 	public void saveAdditional(CompoundTag compoundNBT, HolderLookup.Provider registries) {
-		super.saveAdditional(compoundNBT, registries);
-
 		Tag tag = SpeciesUtil.serializeIndividual(this.caterpillar);
 		if (tag != null) {
 			compoundNBT.put("Caterpillar", tag);
@@ -98,5 +95,19 @@ public class TileCocoon extends BlockEntity {
 
 	private HolderLookup.Provider getRegistries() {
 		return this.level != null ? this.level.registryAccess() : RegistryAccess.EMPTY;
+	}
+
+	@Override
+	protected final void loadAdditional(ValueInput input) {
+		super.loadAdditional(input);
+		loadAdditional(ValueIoHelper.toTag(input), input.lookup());
+	}
+
+	@Override
+	protected final void saveAdditional(ValueOutput output) {
+		super.saveAdditional(output);
+		CompoundTag data = new CompoundTag();
+		saveAdditional(data, ValueIoHelper.registries(this));
+		output.store(data);
 	}
 }

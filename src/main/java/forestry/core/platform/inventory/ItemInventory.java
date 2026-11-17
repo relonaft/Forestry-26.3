@@ -12,6 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -70,11 +71,11 @@ public abstract class ItemInventory implements Container, IFilterSlotDelegate {
 		if (nbt == null) {
 			return;
 		}
-		CompoundTag nbtSlots = nbt.getCompound(KEY_SLOTS);
+		CompoundTag nbtSlots = nbt.getCompoundOrEmpty(KEY_SLOTS);
 		for (int i = 0; i < this.inventoryStacks.size(); i++) {
 			String slotKey = getSlotNBTKey(i);
 			if (nbtSlots.contains(slotKey)) {
-				CompoundTag itemNbt = nbtSlots.getCompound(slotKey);
+				CompoundTag itemNbt = nbtSlots.getCompoundOrEmpty(slotKey);
 				ItemStack itemStack = InventoryUtil.deserializeItemStack(itemNbt);
 				this.inventoryStacks.set(i, itemStack);
 			} else {
@@ -98,7 +99,7 @@ public abstract class ItemInventory implements Container, IFilterSlotDelegate {
 			return 0;
 		}
 
-		CompoundTag slotNbt = nbt.getCompound(KEY_SLOTS);
+		CompoundTag slotNbt = nbt.getCompoundOrEmpty(KEY_SLOTS);
 		return slotNbt.size();
 	}
 
@@ -168,8 +169,8 @@ public abstract class ItemInventory implements Container, IFilterSlotDelegate {
 			return false;
 		}
 
-		int baseUID = baseTagCompound.getInt(KEY_UID);
-		int comparisonUID = comparisonTagCompound.getInt(KEY_UID);
+		int baseUID = baseTagCompound.getIntOr(KEY_UID, 0);
+		int comparisonUID = comparisonTagCompound.getIntOr(KEY_UID, 0);
 		return baseUID == comparisonUID;
 	}
 
@@ -269,7 +270,7 @@ public abstract class ItemInventory implements Container, IFilterSlotDelegate {
 			slotNbt = new CompoundTag();
 			nbt.put(KEY_SLOTS, slotNbt);
 		} else {
-			slotNbt = nbt.getCompound(KEY_SLOTS);
+			slotNbt = nbt.getCompoundOrEmpty(KEY_SLOTS);
 		}
 
 		String slotKey = getSlotNBTKey(index);
@@ -313,11 +314,11 @@ public abstract class ItemInventory implements Container, IFilterSlotDelegate {
 	}
 
 	@Override
-	public void startOpen(Player player) {
+	public void startOpen(ContainerUser player) {
 	}
 
 	@Override
-	public void stopOpen(Player player) {
+	public void stopOpen(ContainerUser player) {
 	}
 
 	@Override

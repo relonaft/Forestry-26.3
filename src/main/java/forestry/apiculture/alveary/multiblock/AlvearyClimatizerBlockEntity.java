@@ -54,7 +54,7 @@ public abstract class AlvearyClimatizerBlockEntity extends AbstractAlvearyBlockE
 	public void loadAdditional(CompoundTag compoundNBT, HolderLookup.Provider registries) {
 		super.loadAdditional(compoundNBT, registries);
         this.energyStorage.read(compoundNBT, registries);
-        this.workingTime = compoundNBT.getInt("Heating");
+        this.workingTime = compoundNBT.getIntOr("Heating", 0);
 	}
 
 	@Override

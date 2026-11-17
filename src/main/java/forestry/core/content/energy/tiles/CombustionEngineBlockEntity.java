@@ -232,8 +232,8 @@ public class CombustionEngineBlockEntity extends EngineBlockEntity implements Wo
 	public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
 		super.loadAdditional(nbt, registries);
 		this.tankManager.read(nbt, registries);
-		this.burnTime = nbt.getFloat("burnTime");
-		this.coolantTime = nbt.getInt("coolantTime");
+		this.burnTime = nbt.getFloatOr("burnTime", 0.0F);
+		this.coolantTime = nbt.getIntOr("coolantTime", 0);
 		this.sockets.read(nbt, registries);
 
 		ItemStack chip = this.sockets.getItem(0);

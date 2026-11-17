@@ -1,5 +1,6 @@
 package forestry.core.content.energy.tiles;
 
+import forestry.core.platform.util.NBTUtilForestry;
 import forestry.api.IForestryApi;
 import forestry.api.core.ForestryError;
 import forestry.api.core.circuits.ForestryCircuitSocketTypes;
@@ -202,7 +203,7 @@ public class PeatEngineBlockEntity extends EngineBlockEntity implements WorldlyC
 	 * Returns the fuel value (power per cycle) an item of the passed ItemStack provides
 	 */
 	private static int determineFuelValue(ItemStack fuel) {
-		PeatEngineFuel peatFuel = fuel.getItemHolder().getData(ForestryDataMaps.PEAT_FUELS);
+		PeatEngineFuel peatFuel = fuel.typeHolder().getData(ForestryDataMaps.PEAT_FUELS);
 		return peatFuel != null ? peatFuel.powerPerCycle() : 0;
 	}
 
@@ -210,7 +211,7 @@ public class PeatEngineBlockEntity extends EngineBlockEntity implements WorldlyC
 	 * Returns the fuel value (power per cycle) an item of the passed ItemStack provides
 	 */
 	private static int determineBurnDuration(ItemStack fuel) {
-		PeatEngineFuel peatFuel = fuel.getItemHolder().getData(ForestryDataMaps.PEAT_FUELS);
+		PeatEngineFuel peatFuel = fuel.typeHolder().getData(ForestryDataMaps.PEAT_FUELS);
 		return peatFuel != null ? peatFuel.burnDuration() : 0;
 	}
 
@@ -248,14 +249,14 @@ public class PeatEngineBlockEntity extends EngineBlockEntity implements WorldlyC
         this.sockets.read(compoundNBT, registries);
 
 		if (compoundNBT.contains("EngineFuelItemStack")) {
-			CompoundTag fuelItemNbt = compoundNBT.getCompound("EngineFuelItemStack");
-            this.fuel = ItemStack.parse(registries, fuelItemNbt).orElse(ItemStack.EMPTY);
+			CompoundTag fuelItemNbt = compoundNBT.getCompoundOrEmpty("EngineFuelItemStack");
+            this.fuel = NBTUtilForestry.parseItem(registries, fuelItemNbt).orElse(ItemStack.EMPTY);
 		}
 
-        this.burnTime = compoundNBT.getFloat("EngineBurnTime");
-        this.totalBurnTime = compoundNBT.getInt("EngineTotalTime");
+        this.burnTime = compoundNBT.getFloatOr("EngineBurnTime", 0.0F);
+        this.totalBurnTime = compoundNBT.getIntOr("EngineTotalTime", 0);
 		if (compoundNBT.contains("AshProduction")) {
-            this.ashProduction = compoundNBT.getInt("AshProduction");
+            this.ashProduction = compoundNBT.getIntOr("AshProduction", 0);
 		}
 
 		ItemStack chip = this.sockets.getItem(0);
@@ -275,7 +276,7 @@ public class PeatEngineBlockEntity extends EngineBlockEntity implements WorldlyC
         this.sockets.write(nbt, registries);
 
 		if (!this.fuel.isEmpty()) {
-			nbt.put("EngineFuelItemStack", this.fuel.save(registries, new CompoundTag()));
+			nbt.put("EngineFuelItemStack", NBTUtilForestry.saveItem(this.fuel, registries));
 		}
 
 		nbt.putFloat("EngineBurnTime", this.burnTime);

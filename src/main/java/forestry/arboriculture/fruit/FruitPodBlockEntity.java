@@ -2,6 +2,7 @@ package forestry.arboriculture.fruit;
 
 import forestry.api.arboriculture.genetics.IFruit;
 import forestry.api.core.IProduct;
+import forestry.api.core.ValueIoHelper;
 import forestry.api.core.genetics.IFruitBearer;
 import forestry.api.core.genetics.IGenome;
 import forestry.api.core.genetics.alleles.TreeChromosomes;
@@ -27,6 +28,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 import java.util.List;
 import forestry.api.arboriculture.ForestryFruits;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class FruitPodBlockEntity extends BlockEntity implements IFruitBearer, IStreamable {
 	private static final short MAX_MATURITY = 2;
@@ -82,9 +85,7 @@ public class FruitPodBlockEntity extends BlockEntity implements IFruitBearer, IS
 		}
 	}
 
-	@Override
 	public void saveAdditional(CompoundTag compoundNBT, HolderLookup.Provider registries) {
-		super.saveAdditional(compoundNBT, registries);
 		if (this.fruit != null) {
 			compoundNBT.putString(NBT_FRUIT, this.fruitId.toString());
 		}
@@ -92,11 +93,8 @@ public class FruitPodBlockEntity extends BlockEntity implements IFruitBearer, IS
 		compoundNBT.putFloat(NBT_YIELD, this.yield);
 	}
 
-	@Override
 	public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
-		super.loadAdditional(nbt, registries);
-
-		String fruitNbt = nbt.getString(NBT_FRUIT);
+		String fruitNbt = nbt.getStringOr(NBT_FRUIT, "");
 		if (!fruitNbt.isEmpty()) {
 			this.fruitId = Identifier.parse(fruitNbt);
 			// Nullable lookup so an unregistered/stale id gracefully falls back to cocoa instead of crashing on load.
@@ -107,8 +105,8 @@ public class FruitPodBlockEntity extends BlockEntity implements IFruitBearer, IS
 			this.fruit = SpeciesUtil.TREE_TYPE.get().getFruit(ForestryFruits.COCOA);
 		}
 
-		this.maturity = nbt.getShort(NBT_MATURITY);
-		this.yield = nbt.getFloat(NBT_YIELD);
+		this.maturity = nbt.getShortOr(NBT_MATURITY, (short) 0);
+		this.yield = nbt.getFloatOr(NBT_YIELD, 0.0F);
 	}
 
 	/* UPDATING */
@@ -161,17 +159,18 @@ public class FruitPodBlockEntity extends BlockEntity implements IFruitBearer, IS
 		return NBTUtilForestry.writeStreamableToNbt(this, tag, registries);
 	}
 
-	@Override
 	public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
-		super.handleUpdateTag(tag, registries);
 		NBTUtilForestry.readStreamableFromNbt(this, tag, registries);
 	}
 
 	@Override
-	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
-		super.onDataPacket(net, pkt, registries);
-		CompoundTag nbt = pkt.getTag();
-		handleUpdateTag(nbt, registries);
+	public void onDataPacket(Connection net, ValueInput input) {
+		CompoundTag nbt = ValueIoHelper.toTag(input);
+		// an empty tag was not loaded before 1.21.6 either
+		if (!nbt.isEmpty()) {
+			super.onDataPacket(net, input);
+		}
+		handleUpdateTag(nbt, input.lookup());
 	}
 
 	/* IFRUITBEARER */
@@ -211,5 +210,25 @@ public class FruitPodBlockEntity extends BlockEntity implements IFruitBearer, IS
 			BlockState state = getBlockState().setValue(CocoaBlock.AGE, age);
             this.level.setBlockAndUpdate(getBlockPos(), state);
 		}
+	}
+
+	@Override
+	protected final void loadAdditional(ValueInput input) {
+		super.loadAdditional(input);
+		loadAdditional(ValueIoHelper.toTag(input), input.lookup());
+	}
+
+	@Override
+	protected final void saveAdditional(ValueOutput output) {
+		super.saveAdditional(output);
+		CompoundTag data = new CompoundTag();
+		saveAdditional(data, ValueIoHelper.registries(this));
+		output.store(data);
+	}
+
+	@Override
+	public final void handleUpdateTag(ValueInput input) {
+		super.handleUpdateTag(input);
+		handleUpdateTag(ValueIoHelper.toTag(input), input.lookup());
 	}
 }

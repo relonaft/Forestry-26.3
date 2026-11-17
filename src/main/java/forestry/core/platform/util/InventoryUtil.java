@@ -437,11 +437,11 @@ public abstract class InventoryUtil {
 			return;
 		}
 
-		ListTag nbttaglist = compoundNBT.getList(name, 10);
+		ListTag nbttaglist = compoundNBT.getListOrEmpty(name);
 
 		for (int j = 0; j < nbttaglist.size(); ++j) {
-			CompoundTag compoundNBT2 = nbttaglist.getCompound(j);
-			int index = compoundNBT2.getInt("Slot");
+			CompoundTag compoundNBT2 = nbttaglist.getCompoundOrEmpty(j);
+			int index = compoundNBT2.getIntOr("Slot", 0);
 			inventory.setItem(index, deserializeItemStack(compoundNBT2));
 		}
 	}

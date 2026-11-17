@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -36,7 +37,7 @@ public class FruitPodBlock extends CocoaBlock implements EntityBlock {
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
+	public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData, Player player) {
 		FruitPodBlockEntity tile = TileUtil.getTile(level, pos, FruitPodBlockEntity.class);
 		if (tile == null) {
 			return ItemStack.EMPTY;
@@ -86,13 +87,13 @@ public class FruitPodBlock extends CocoaBlock implements EntityBlock {
 
 	/* IGrowable */
 	@Override
-	public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+	public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state, BonemealSource source) {
 		FruitPodBlockEntity podTile = TileUtil.getTile(level, pos, FruitPodBlockEntity.class);
 		return podTile != null && podTile.canMature();
 	}
 
 	@Override
-	public void performBonemeal(ServerLevel level, RandomSource rand, BlockPos pos, BlockState state) {
+	public void performBonemeal(ServerLevel level, RandomSource rand, BlockPos pos, BlockState state, BonemealSource source) {
 		FruitPodBlockEntity podTile = TileUtil.getTile(level, pos, FruitPodBlockEntity.class);
 		if (podTile != null) {
 			podTile.addRipeness(0.5f);

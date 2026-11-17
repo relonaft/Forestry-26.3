@@ -93,11 +93,11 @@ public class FermenterBlockEntity extends PoweredBlockEntity implements WorldlyC
 	public void loadAdditional(CompoundTag compoundNBT, HolderLookup.Provider registries) {
 		super.loadAdditional(compoundNBT, registries);
 
-        this.fermentationTime = compoundNBT.getInt("FermentationTime");
-        this.fermentationTotalTime = compoundNBT.getInt("FermentationTotalTime");
-        this.fuelBurnTime = compoundNBT.getInt("FuelBurnTime");
-        this.fuelTotalTime = compoundNBT.getInt("FuelTotalTime");
-        this.fuelCurrentFerment = compoundNBT.getInt("FuelCurrentFerment");
+        this.fermentationTime = compoundNBT.getIntOr("FermentationTime", 0);
+        this.fermentationTotalTime = compoundNBT.getIntOr("FermentationTotalTime", 0);
+        this.fuelBurnTime = compoundNBT.getIntOr("FuelBurnTime", 0);
+        this.fuelTotalTime = compoundNBT.getIntOr("FuelTotalTime", 0);
+        this.fuelCurrentFerment = compoundNBT.getIntOr("FuelCurrentFerment", 0);
 
         this.tankManager.read(compoundNBT, registries);
 	}
@@ -199,7 +199,7 @@ public class FermenterBlockEntity extends PoweredBlockEntity implements WorldlyC
 		if (this.fuelBurnTime <= 0) {
 			ItemStack fuel = getItem(FermenterInventory.SLOT_FUEL);
 			if (!fuel.isEmpty()) {
-				FermenterFuel fermenterFuel = fuel.getItemHolder().getData(ForestryDataMaps.FERMENTER_FUELS);
+				FermenterFuel fermenterFuel = fuel.typeHolder().getData(ForestryDataMaps.FERMENTER_FUELS);
 				if (fermenterFuel != null) {
                     this.fuelBurnTime = this.fuelTotalTime = fermenterFuel.burnDuration();
                     this.fuelCurrentFerment = fermenterFuel.fermentPerCycle();

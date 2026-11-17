@@ -76,10 +76,10 @@ public class FilterLogic implements IFilterLogic {
 			for (int j = 0; j < 3; j++) {
 				AlleleFilter filter = new AlleleFilter();
 				if (data.contains("GenomeFilterS" + i + "-" + j + "-" + 0)) {
-					filter.activeSpecies = SpeciesUtil.getAnySpecies(Identifier.parse(data.getString("GenomeFilterS" + i + "-" + j + "-" + 0)));
+					filter.activeSpecies = SpeciesUtil.getAnySpecies(Identifier.parse(data.getStringOr("GenomeFilterS" + i + "-" + j + "-" + 0, "")));
 				}
 				if (data.contains("GenomeFilterS" + i + "-" + j + "-" + 1)) {
-					filter.inactiveSpecies = SpeciesUtil.getAnySpecies(Identifier.parse(data.getString("GenomeFilterS" + i + "-" + j + "-" + 1)));
+					filter.inactiveSpecies = SpeciesUtil.getAnySpecies(Identifier.parse(data.getStringOr("GenomeFilterS" + i + "-" + j + "-" + 1, "")));
 				}
 				this.genomeFilter[i][j] = filter;
 			}

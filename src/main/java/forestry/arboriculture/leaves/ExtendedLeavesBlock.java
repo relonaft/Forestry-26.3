@@ -6,6 +6,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -44,15 +46,15 @@ public class ExtendedLeavesBlock extends LeavesBlock {
 	}
 
 	@Override
-	public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
-		BlockState newState = super.updateShape(state, facing, facingState, level, currentPos, facingPos);
+	public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess scheduledTicks, BlockPos currentPos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
+		BlockState newState = super.updateShape(state, level, scheduledTicks, currentPos, facing, facingPos, facingState, random);
 
 		boolean oldSupported = newState.getValue(SUPPORTED);
 		boolean newSupported = hasSupport(newState, level, currentPos);
 
 		if (oldSupported != newSupported) {
 			newState.setValue(SUPPORTED, newSupported);
-			level.scheduleTick(currentPos, this, 1);
+			scheduledTicks.scheduleTick(currentPos, this, 1);
 		}
 
 		return newState;
@@ -81,7 +83,7 @@ public class ExtendedLeavesBlock extends LeavesBlock {
 		}
 	}
 
-	private static boolean hasSupport(BlockState state, LevelAccessor level, BlockPos pos) {
+	private static boolean hasSupport(BlockState state, LevelReader level, BlockPos pos) {
 		if (state.getValue(DISTANCE) <= 6) {
 			return true;
 		}
@@ -89,7 +91,7 @@ public class ExtendedLeavesBlock extends LeavesBlock {
 		return AbstractArboricultureFeature.SKIP_EXTENDED_CHECKS.get() || hasExtendedSupport(level, pos);
 	}
 
-	private static boolean hasExtendedSupport(LevelAccessor level, BlockPos pos) {
+	private static boolean hasExtendedSupport(LevelReader level, BlockPos pos) {
 		byte[] surroundings = ExtendedLeavesBlock.SURROUNDINGS.get();
 
 		BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();

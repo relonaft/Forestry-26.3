@@ -151,12 +151,12 @@ public class EscritoireGameToken implements INbtWritable, IStreamable {
 
 	private void readFromTag(CompoundTag nbt) {
 		if (nbt.contains("state")) {
-			int stateOrdinal = nbt.getInt("state");
+			int stateOrdinal = nbt.getIntOr("state", 0);
 			this.state = State.VALUES[stateOrdinal];
 		}
 
-		String tokenSpecies = nbt.getString(NBT_TOKEN_SPECIES);
-		String tokenType = nbt.getString(NBT_TOKEN_TYPE);
+		String tokenSpecies = nbt.getStringOr(NBT_TOKEN_SPECIES, "");
+		String tokenType = nbt.getStringOr(NBT_TOKEN_TYPE, "");
 
 		if (!tokenSpecies.isEmpty() && !tokenType.isEmpty()) {
 			setTokenSpecies(Identifier.parse(tokenType), Identifier.parse(tokenSpecies));

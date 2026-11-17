@@ -5,10 +5,13 @@ import forestry.core.features.CoreDataComponents;
 import forestry.core.platform.fluids.PipetteContents;
 import forestry.core.platform.item.ITintedItem;
 import forestry.core.platform.util.RenderUtil;
+import forestry.core.platform.util.TooltipList;
+import java.util.function.Consumer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.neoforged.neoforge.fluids.FluidType;
 import forestry.core.platform.transfer.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
@@ -28,8 +31,9 @@ public class ItemPipette extends ItemForestry implements IToolPipette, ITintedIt
 	}
 
 	@Override
-	public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
-		super.appendHoverText(itemstack, context, list, flag);
+	public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag flag) {
+		List<Component> list = new TooltipList(adder);
+		super.appendHoverText(itemstack, context, display, adder, flag);
 
 		PipetteContents contained = PipetteContents.create(itemstack);
 		if (contained != null) {

@@ -87,7 +87,7 @@ public class ForestryBoat extends Boat {
 
 	@Override
 	protected void readAdditionalSaveData(CompoundTag nbt) {
-		if (nbt.contains("type", 8)) {
+		if (nbt.contains("type")) {
 			try {
 				setWoodType(ForestryWoodType.valueOf(nbt.getString("type")));
 			} catch (IllegalArgumentException e) {

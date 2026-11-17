@@ -9,6 +9,8 @@ import forestry.api.core.genetics.capability.IIndividualHandlerItem;
 import forestry.core.engine.genetics.ItemGE;
 import forestry.core.platform.item.ITintedItem;
 import forestry.core.platform.util.SpeciesUtil;
+import forestry.core.platform.util.TooltipList;
+import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class ForestryBeeItem extends ItemGE implements ITintedItem {
 	public ForestryBeeItem(BeeLifeStage type) {
@@ -33,7 +36,8 @@ public class ForestryBeeItem extends ItemGE implements ITintedItem {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag flag) {
+		List<Component> list = new TooltipList(adder);
 		if (!hasIndividual(stack)) {
 			return;
 		}
@@ -48,7 +52,7 @@ public class ForestryBeeItem extends ItemGE implements ITintedItem {
 			});
 		}
 
-		super.appendHoverText(stack, context, list, flag);
+		super.appendHoverText(stack, context, display, adder, flag);
 	}
 
 	@Override

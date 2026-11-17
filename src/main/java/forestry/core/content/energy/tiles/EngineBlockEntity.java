@@ -243,10 +243,10 @@ public abstract class EngineBlockEntity extends BaseBlockEntity implements IActi
 		super.loadAdditional(nbt, registries);
         this.energyStorage.read(nbt, registries);
 
-        this.heat = nbt.getInt("EngineHeat");
+        this.heat = nbt.getIntOr("EngineHeat", 0);
 
-        this.progress = nbt.getFloat("EngineProgress");
-        this.forceCooldown = nbt.getBoolean("ForceCooldown");
+        this.progress = nbt.getFloatOr("EngineProgress", 0.0F);
+        this.forceCooldown = nbt.getBooleanOr("ForceCooldown", false);
 	}
 
 

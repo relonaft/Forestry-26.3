@@ -7,6 +7,8 @@ import forestry.api.core.circuits.ICircuitLayout;
 import forestry.core.features.CoreItems;
 import forestry.core.platform.item.ItemForestry;
 import forestry.core.platform.util.NBTUtilForestry;
+import forestry.core.platform.util.TooltipList;
+import java.util.function.Consumer;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.TooltipFlag;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class ItemCircuitBoard extends ItemForestry {
 	private final EnumCircuitBoardType type;
@@ -29,7 +32,8 @@ public class ItemCircuitBoard extends ItemForestry {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag flag) {
+		List<Component> list = new TooltipList(adder);
 		ICircuitBoard circuitboard = IForestryApi.INSTANCE.getCircuitManager().getCircuitBoard(stack);
 		if (circuitboard != null) {
 			circuitboard.addTooltip(list);

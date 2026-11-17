@@ -13,12 +13,14 @@ import forestry.core.platform.config.ForestryConfig;
 import forestry.core.features.CoreDataComponents;
 import forestry.core.platform.item.ItemForestry;
 import forestry.core.platform.util.GeneticsUtil;
+import forestry.core.platform.util.TooltipList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import javax.annotation.Nullable;
@@ -170,7 +172,8 @@ public abstract class ItemGE extends ItemForestry implements IIndividualItem {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag flag) {
+		List<Component> tooltip = new TooltipList(adder);
 		appendGeneticsTooltip(stack, tooltip);
 	}
 

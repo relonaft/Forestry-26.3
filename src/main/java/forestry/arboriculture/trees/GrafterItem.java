@@ -3,6 +3,8 @@ package forestry.arboriculture.trees;
 import forestry.api.ForestryTags;
 import forestry.api.arboriculture.IToolGrafter;
 import forestry.core.platform.item.ItemForestry;
+import forestry.core.platform.util.TooltipList;
+import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -13,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -24,8 +27,9 @@ public class GrafterItem extends ItemForestry implements IToolGrafter {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag advanced) {
-		super.appendHoverText(stack, context, tooltip, advanced);
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag advanced) {
+		List<Component> tooltip = new TooltipList(adder);
+		super.appendHoverText(stack, context, display, adder, advanced);
 		if (!stack.isDamaged()) {
 			tooltip.add(Component.translatable("item.forestry.uses", stack.getMaxDamage()).withStyle(ChatFormatting.GRAY));
 		}

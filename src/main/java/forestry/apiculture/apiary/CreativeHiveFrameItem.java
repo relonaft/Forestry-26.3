@@ -1,7 +1,9 @@
 package forestry.apiculture.apiary;
 
+import forestry.core.platform.util.TooltipList;
 import java.util.List;
 
+import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -22,6 +24,7 @@ import forestry.api.core.genetics.IGenome;
 import forestry.api.core.genetics.IMutation;
 import forestry.core.platform.item.ItemForestry;
 
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.jetbrains.annotations.Nullable;
 
 // 100% mutation chance. 100% production chance. 0% lifespan.
@@ -45,8 +48,9 @@ public class CreativeHiveFrameItem extends ItemForestry implements IHiveFrame {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag advanced) {
-		super.appendHoverText(stack, context, tooltip, advanced);
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag advanced) {
+		List<Component> tooltip = new TooltipList(adder);
+		super.appendHoverText(stack, context, display, adder, advanced);
 
 		tooltip.add(Component.translatable("item.forestry.bee.modifier.production", Modifier.PRODUCTION));
 		tooltip.add(Component.translatable("item.forestry.bee.modifier.genetic.decay", Modifier.GENETIC_DECAY));
@@ -82,7 +86,7 @@ public class CreativeHiveFrameItem extends ItemForestry implements IHiveFrame {
 		if (customData == null || !customData.contains(NBT_FORCED_MUTATION)) {
 			return null;
 		}
-		return Identifier.tryParse(customData.copyTag().getString(NBT_FORCED_MUTATION));
+		return Identifier.tryParse(customData.copyTag().getStringOr(NBT_FORCED_MUTATION, ""));
 	}
 
 	/** Writes the forced result species onto the frame (see {@link #NBT_FORCED_MUTATION}). */

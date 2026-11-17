@@ -11,7 +11,7 @@ public class CorkBlock extends BurnableBlock {
 	}
 
 	@Override
-	public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, float distance) {
+	public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, double distance) {
 		entity.causeFallDamage(distance, 0.2f, level.damageSources().fall());
 	}
 }

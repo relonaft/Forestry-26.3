@@ -65,7 +65,7 @@ public class ApiaristPoolElement extends SinglePoolElement {
 		// yes this is nullable, shut up intellij
 		if (info.nbt() != null) {
 			if (StructureMode.valueOf(info.nbt().getString("mode")) == StructureMode.DATA) {
-				String marker = info.nbt().getString("metadata");
+				String marker = info.nbt().getStringOr("metadata", "");
 
 				if ("apiary".equals(marker)) {
 					replaceWithApiary(level, info, random);
