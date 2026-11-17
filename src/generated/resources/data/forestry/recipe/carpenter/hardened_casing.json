@@ -9,12 +9,8 @@
   "recipe": {
     "category": "misc",
     "key": {
-      "X": {
-        "tag": "c:gems/diamond"
-      },
-      "Y": {
-        "item": "forestry:sturdy_casing"
-      }
+      "X": "#c:gems/diamond",
+      "Y": "forestry:sturdy_casing"
     },
     "pattern": [
       "X X",

@@ -3,20 +3,14 @@
   "category": "misc",
   "key": {
     "A": {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "components": {},
       "items": "minecraft:air",
       "strict": true
     },
-    "B": {
-      "item": "minecraft:sugar"
-    },
-    "C": {
-      "item": "minecraft:wheat"
-    },
-    "E": {
-      "item": "minecraft:egg"
-    }
+    "B": "minecraft:sugar",
+    "C": "minecraft:wheat",
+    "E": "minecraft:egg"
   },
   "pattern": [
     "AAA",

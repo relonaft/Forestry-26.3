@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_dark_prismarine"
-      }
+      "forestry:crated_dark_prismarine"
     ],
     "result": {
       "count": 9,

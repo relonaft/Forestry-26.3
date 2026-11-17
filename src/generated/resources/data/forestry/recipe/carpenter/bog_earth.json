@@ -9,15 +9,9 @@
   "recipe": {
     "category": "misc",
     "key": {
-      "#": {
-        "item": "minecraft:dirt"
-      },
-      "X": {
-        "tag": "c:sands"
-      },
-      "Y": {
-        "item": "forestry:mulch"
-      }
+      "#": "minecraft:dirt",
+      "X": "#c:sands",
+      "Y": "forestry:mulch"
     },
     "pattern": [
       "#X#",

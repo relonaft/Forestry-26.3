@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_diorite"
-      }
+      "forestry:crated_diorite"
     ],
     "result": {
       "count": 9,

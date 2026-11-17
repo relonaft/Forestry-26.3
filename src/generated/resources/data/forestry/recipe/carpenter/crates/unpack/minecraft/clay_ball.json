@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_clay_ball"
-      }
+      "forestry:crated_clay_ball"
     ],
     "result": {
       "count": 9,

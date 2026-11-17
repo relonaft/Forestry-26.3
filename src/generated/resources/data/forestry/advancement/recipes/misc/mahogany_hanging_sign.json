@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "forestry:mahogany_hanging_sign"
+        "recipes": "forestry:mahogany_hanging_sign"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_acacia_sapling"
-      }
+      "forestry:crated_acacia_sapling"
     ],
     "result": {
       "count": 9,

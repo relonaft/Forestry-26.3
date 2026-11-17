@@ -9,12 +9,8 @@
   "recipe": {
     "category": "misc",
     "key": {
-      "#": {
-        "tag": "c:gems/apatite"
-      },
-      "P": {
-        "item": "minecraft:paper"
-      }
+      "#": "#c:gems/apatite",
+      "P": "minecraft:paper"
     },
     "pattern": [
       "###",

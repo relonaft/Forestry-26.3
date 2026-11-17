@@ -5,12 +5,8 @@
   "recipe": {
     "category": "misc",
     "key": {
-      "#": {
-        "item": "forestry:beeswax"
-      },
-      "X": {
-        "item": "minecraft:string"
-      }
+      "#": "forestry:beeswax",
+      "X": "minecraft:string"
     },
     "pattern": [
       "# #",

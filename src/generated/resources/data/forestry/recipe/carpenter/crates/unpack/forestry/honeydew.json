@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_honeydew"
-      }
+      "forestry:crated_honeydew"
     ],
     "result": {
       "count": 9,

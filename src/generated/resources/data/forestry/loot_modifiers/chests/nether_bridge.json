@@ -1,13 +1,11 @@
 {
   "type": "forestry:condition_modifier",
-  "conditions": [
-    {
-      "condition": "neoforge:loot_table_id",
-      "loot_table_id": "minecraft:chests/nether_bridge"
-    }
-  ],
   "extensions": [
     "apiculture"
   ],
-  "table": "minecraft:chests/nether_bridge"
+  "table": "minecraft:chests/nether_bridge",
+  "condition": {
+    "type": "neoforge:loot_table_id",
+    "loot_table_id": "minecraft:chests/nether_bridge"
+  }
 }

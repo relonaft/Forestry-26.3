@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_refractory_wax"
-      }
+      "forestry:crated_refractory_wax"
     ],
     "result": {
       "count": 9,

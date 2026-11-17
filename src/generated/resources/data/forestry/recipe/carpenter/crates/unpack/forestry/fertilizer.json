@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_fertilizer_compound"
-      }
+      "forestry:crated_fertilizer_compound"
     ],
     "result": {
       "count": 9,

@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_coal"
-      }
+      "forestry:crated_coal"
     ],
     "result": {
       "count": 9,

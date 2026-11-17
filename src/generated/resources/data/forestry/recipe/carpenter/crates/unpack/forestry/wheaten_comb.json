@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_wheaten_comb"
-      }
+      "forestry:crated_wheaten_comb"
     ],
     "result": {
       "count": 9,

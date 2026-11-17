@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_seeds"
-      }
+      "forestry:crated_seeds"
     ],
     "result": {
       "count": 9,

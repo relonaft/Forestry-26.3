@@ -9,9 +9,7 @@
   "recipe": {
     "category": "misc",
     "key": {
-      "X": {
-        "item": "forestry:silk_wisp"
-      }
+      "X": "forestry:silk_wisp"
     },
     "pattern": [
       "XX",

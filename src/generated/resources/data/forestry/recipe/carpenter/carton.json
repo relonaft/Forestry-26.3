@@ -9,9 +9,7 @@
   "recipe": {
     "category": "misc",
     "key": {
-      "#": {
-        "item": "forestry:wood_pulp"
-      }
+      "#": "forestry:wood_pulp"
     },
     "pattern": [
       " # ",

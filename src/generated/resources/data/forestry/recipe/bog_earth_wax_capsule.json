@@ -2,18 +2,14 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": {
-      "item": "minecraft:dirt"
-    },
+    "#": "minecraft:dirt",
     "X": {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "components": {},
       "items": "minecraft:air",
       "strict": true
     },
-    "Y": {
-      "tag": "minecraft:sand"
-    }
+    "Y": "#minecraft:sand"
   },
   "pattern": [
     "#Y#",

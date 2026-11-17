@@ -1,8 +1,6 @@
 {
   "type": "minecraft:brewing",
-  "input": {
-    "item": "minecraft:potion"
-  },
+  "input": "minecraft:potion",
   "output": {
     "components": {
       "minecraft:potion_contents": {
@@ -11,7 +9,5 @@
     },
     "id": "minecraft:potion"
   },
-  "reagent": {
-    "item": "forestry:pollen_cluster"
-  }
+  "reagent": "forestry:pollen_cluster"
 }

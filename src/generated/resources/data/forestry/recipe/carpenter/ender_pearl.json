@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "key": {
-      "#": {
-        "item": "forestry:pulsating_mesh"
-      }
+      "#": "forestry:pulsating_mesh"
     },
     "pattern": [
       " # ",

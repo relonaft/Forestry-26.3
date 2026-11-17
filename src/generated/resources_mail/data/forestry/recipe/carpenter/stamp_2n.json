@@ -9,12 +9,8 @@
   "recipe": {
     "category": "misc",
     "key": {
-      "#": {
-        "item": "minecraft:copper_ingot"
-      },
-      "P": {
-        "item": "minecraft:paper"
-      }
+      "#": "minecraft:copper_ingot",
+      "P": "minecraft:paper"
     },
     "pattern": [
       "###",

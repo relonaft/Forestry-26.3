@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_jungle_sapling"
-      }
+      "forestry:crated_jungle_sapling"
     ],
     "result": {
       "count": 9,

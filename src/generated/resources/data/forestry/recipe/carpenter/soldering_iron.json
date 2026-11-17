@@ -9,12 +9,8 @@
   "recipe": {
     "category": "equipment",
     "key": {
-      "#": {
-        "tag": "c:ingots/iron"
-      },
-      "B": {
-        "tag": "c:ingots/bronze"
-      }
+      "#": "#c:ingots/iron",
+      "B": "#c:ingots/bronze"
     },
     "pattern": [
       " # ",

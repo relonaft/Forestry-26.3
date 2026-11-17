@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_mulch"
-      }
+      "forestry:crated_mulch"
     ],
     "result": {
       "count": 9,

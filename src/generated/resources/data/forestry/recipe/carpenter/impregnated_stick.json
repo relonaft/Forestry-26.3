@@ -9,9 +9,7 @@
   "recipe": {
     "category": "misc",
     "key": {
-      "#": {
-        "tag": "minecraft:logs"
-      }
+      "#": "#minecraft:logs"
     },
     "pattern": [
       "#",

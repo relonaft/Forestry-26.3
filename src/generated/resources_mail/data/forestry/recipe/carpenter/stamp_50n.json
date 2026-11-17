@@ -9,12 +9,8 @@
   "recipe": {
     "category": "misc",
     "key": {
-      "#": {
-        "tag": "c:gems/emerald"
-      },
-      "P": {
-        "item": "minecraft:paper"
-      }
+      "#": "#c:gems/emerald",
+      "P": "minecraft:paper"
     },
     "pattern": [
       "###",

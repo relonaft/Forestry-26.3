@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_sugar_cane"
-      }
+      "forestry:crated_sugar_cane"
     ],
     "result": {
       "count": 9,

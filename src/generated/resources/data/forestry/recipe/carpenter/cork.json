@@ -9,9 +9,7 @@
   "recipe": {
     "category": "building",
     "key": {
-      "*": {
-        "tag": "c:sawdust"
-      }
+      "*": "#c:sawdust"
     },
     "pattern": [
       "**",

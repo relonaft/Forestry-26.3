@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_mycelium"
-      }
+      "forestry:crated_mycelium"
     ],
     "result": {
       "count": 9,

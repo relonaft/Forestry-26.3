@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_mellow_comb"
-      }
+      "forestry:crated_mellow_comb"
     ],
     "result": {
       "count": 9,

@@ -9,12 +9,8 @@
   "recipe": {
     "category": "misc",
     "key": {
-      "#": {
-        "tag": "c:ingots/iron"
-      },
-      "R": {
-        "tag": "c:dusts/redstone"
-      }
+      "#": "#c:ingots/iron",
+      "R": "#c:dusts/redstone"
     },
     "pattern": [
       "R#R",

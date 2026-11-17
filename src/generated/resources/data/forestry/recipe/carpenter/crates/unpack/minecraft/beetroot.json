@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_beetroot"
-      }
+      "forestry:crated_beetroot"
     ],
     "result": {
       "count": 9,

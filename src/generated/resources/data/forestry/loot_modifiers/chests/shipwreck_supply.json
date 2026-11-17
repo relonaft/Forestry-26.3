@@ -1,13 +1,11 @@
 {
   "type": "forestry:condition_modifier",
-  "conditions": [
-    {
-      "condition": "neoforge:loot_table_id",
-      "loot_table_id": "minecraft:chests/shipwreck_supply"
-    }
-  ],
   "extensions": [
     "apiculture"
   ],
-  "table": "minecraft:chests/shipwreck_supply"
+  "table": "minecraft:chests/shipwreck_supply",
+  "condition": {
+    "type": "neoforge:loot_table_id",
+    "loot_table_id": "minecraft:chests/shipwreck_supply"
+  }
 }

@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_oak_sapling"
-      }
+      "forestry:crated_oak_sapling"
     ],
     "result": {
       "count": 9,

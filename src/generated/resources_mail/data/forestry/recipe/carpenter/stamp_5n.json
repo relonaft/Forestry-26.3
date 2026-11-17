@@ -9,12 +9,8 @@
   "recipe": {
     "category": "misc",
     "key": {
-      "#": {
-        "tag": "c:ingots/tin"
-      },
-      "P": {
-        "item": "minecraft:paper"
-      }
+      "#": "#c:ingots/tin",
+      "P": "minecraft:paper"
     },
     "pattern": [
       "###",

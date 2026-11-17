@@ -10,89 +10,85 @@
         },
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "forestry:tree_sapling",
+          "modifier": [
             {
-              "function": "forestry:set_species_nbt",
+              "type": "forestry:set_species_nbt",
               "species_id": "forestry:lime",
               "type_id": "forestry:tree_species"
             },
             {
+              "type": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "max": 3.0,
                 "min": 1.0
-              },
-              "function": "minecraft:set_count"
+              }
             }
-          ],
-          "name": "forestry:tree_sapling"
+          ]
         },
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "forestry:tree_sapling",
+          "modifier": [
             {
-              "function": "forestry:set_species_nbt",
+              "type": "forestry:set_species_nbt",
               "species_id": "forestry:sour_cherry",
               "type_id": "forestry:tree_species"
             },
             {
+              "type": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "max": 3.0,
                 "min": 1.0
-              },
-              "function": "minecraft:set_count"
+              }
             }
-          ],
-          "name": "forestry:tree_sapling"
+          ]
         },
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "forestry:tree_sapling",
+          "modifier": [
             {
-              "function": "forestry:set_species_nbt",
+              "type": "forestry:set_species_nbt",
               "species_id": "forestry:larch",
               "type_id": "forestry:tree_species"
             },
             {
+              "type": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "max": 3.0,
                 "min": 1.0
-              },
-              "function": "minecraft:set_count"
+              }
             }
-          ],
-          "name": "forestry:tree_sapling"
+          ]
         },
         {
           "type": "minecraft:item",
-          "functions": [
-            {
-              "function": "forestry:set_species_nbt",
-              "species_id": "forestry:teak",
-              "type_id": "forestry:tree_species"
-            }
-          ],
-          "name": "forestry:tree_sapling"
+          "name": "forestry:tree_sapling",
+          "modifier": {
+            "type": "forestry:set_species_nbt",
+            "species_id": "forestry:teak",
+            "type_id": "forestry:tree_species"
+          }
         },
         {
           "type": "minecraft:item",
-          "functions": [
-            {
-              "function": "forestry:set_species_nbt",
-              "species_id": "forestry:padauk",
-              "type_id": "forestry:tree_species"
-            }
-          ],
-          "name": "forestry:tree_sapling"
+          "name": "forestry:tree_sapling",
+          "modifier": {
+            "type": "forestry:set_species_nbt",
+            "species_id": "forestry:padauk",
+            "type_id": "forestry:tree_species"
+          }
         }
       ],
       "name": "forestry_arboriculture_items",
-      "rolls": 3.0
+      "rolls": 3
     }
   ],
   "random_sequence": "forestry:chests/village_naturalist/arboriculture"

@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_powdery_comb"
-      }
+      "forestry:crated_powdery_comb"
     ],
     "result": {
       "count": 9,

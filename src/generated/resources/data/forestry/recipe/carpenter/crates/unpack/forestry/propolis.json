@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_propolis"
-      }
+      "forestry:crated_propolis"
     ],
     "result": {
       "count": 9,

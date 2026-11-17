@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_spruce_log"
-      }
+      "forestry:crated_spruce_log"
     ],
     "result": {
       "count": 9,

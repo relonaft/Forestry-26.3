@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_bog_earth"
-      }
+      "forestry:crated_bog_earth"
     ],
     "result": {
       "count": 9,

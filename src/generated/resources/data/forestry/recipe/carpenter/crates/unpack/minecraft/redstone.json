@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_redstone"
-      }
+      "forestry:crated_redstone"
     ],
     "result": {
       "count": 9,

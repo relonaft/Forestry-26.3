@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "forestry:cake_refractory_capsule"
+        "recipes": "forestry:cake_refractory_capsule"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

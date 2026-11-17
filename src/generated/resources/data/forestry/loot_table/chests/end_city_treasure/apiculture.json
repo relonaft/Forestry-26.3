@@ -6,45 +6,45 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "forestry:drone_bee",
+          "weight": 20,
+          "modifier": [
             {
-              "function": "forestry:set_species_nbt",
+              "type": "forestry:set_species_nbt",
               "species_id": "forestry:steadfast",
               "type_id": "forestry:bee_species"
             },
             {
+              "type": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "max": 2.0,
                 "min": 1.0
-              },
-              "function": "minecraft:set_count"
+              }
             }
-          ],
-          "name": "forestry:drone_bee",
-          "weight": 20
+          ]
         },
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "forestry:drone_bee",
+          "weight": 20,
+          "modifier": [
             {
-              "function": "forestry:set_species_nbt",
+              "type": "forestry:set_species_nbt",
               "species_id": "forestry:shulking",
               "type_id": "forestry:bee_species"
             },
             {
+              "type": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "max": 3.0,
                 "min": 1.0
-              },
-              "function": "minecraft:set_count"
+              }
             }
-          ],
-          "name": "forestry:drone_bee",
-          "weight": 20
+          ]
         },
         {
           "type": "minecraft:empty",
@@ -52,7 +52,7 @@
         }
       ],
       "name": "forestry_apiculture_bees",
-      "rolls": 2.0
+      "rolls": 2
     }
   ],
   "random_sequence": "forestry:chests/end_city_treasure/apiculture"

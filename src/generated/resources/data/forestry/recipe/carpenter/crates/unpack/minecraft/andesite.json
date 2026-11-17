@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_andesite"
-      }
+      "forestry:crated_andesite"
     ],
     "result": {
       "count": 9,

@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:broken_survivalists_shovel"
-      }
+      "forestry:broken_survivalists_shovel"
     ],
     "result": {
       "count": 1,

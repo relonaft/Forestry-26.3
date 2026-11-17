@@ -9,12 +9,8 @@
   "recipe": {
     "category": "misc",
     "key": {
-      "#": {
-        "item": "minecraft:nether_star"
-      },
-      "P": {
-        "item": "minecraft:paper"
-      }
+      "#": "minecraft:nether_star",
+      "P": "minecraft:paper"
     },
     "pattern": [
       "###",

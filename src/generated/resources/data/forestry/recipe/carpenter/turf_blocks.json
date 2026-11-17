@@ -9,9 +9,7 @@
   "recipe": {
     "category": "misc",
     "key": {
-      "X": {
-        "item": "minecraft:grass_block"
-      }
+      "X": "minecraft:grass_block"
     },
     "pattern": [
       "XX",

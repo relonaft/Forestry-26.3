@@ -9,9 +9,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "tag": "minecraft:logs"
-      }
+      "#minecraft:logs"
     ],
     "result": {
       "count": 4,

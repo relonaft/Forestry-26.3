@@ -5,9 +5,7 @@
   "recipe": {
     "category": "misc",
     "ingredients": [
-      {
-        "item": "forestry:crated_wheat"
-      }
+      "forestry:crated_wheat"
     ],
     "result": {
       "count": 9,
