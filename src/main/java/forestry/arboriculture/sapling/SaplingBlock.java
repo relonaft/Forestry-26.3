@@ -3,6 +3,7 @@ package forestry.arboriculture.sapling;
 import forestry.api.arboriculture.genetics.ITree;
 import forestry.api.arboriculture.genetics.TreeLifeStage;
 import forestry.arboriculture.trees.TileTreeContainer;
+import forestry.core.platform.registration.PendingId;
 import forestry.core.platform.tile.TileUtil;
 import forestry.core.platform.util.SpeciesUtil;
 import javax.annotation.Nullable;
@@ -35,7 +36,7 @@ public class SaplingBlock extends Block implements BonemealableBlock, EntityBloc
 	protected static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 12.0D, 14.0D);
 
 	public SaplingBlock(Block.Properties properties) {
-		super(properties.noCollision().strength(0.0F).sound(SoundType.GRASS).randomTicks());
+		super(PendingId.block(properties.noCollision().strength(0.0F).sound(SoundType.GRASS).randomTicks()));
 	}
 
 	@Override

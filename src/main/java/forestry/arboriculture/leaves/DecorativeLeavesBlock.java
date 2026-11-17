@@ -5,6 +5,7 @@ import forestry.api.arboriculture.genetics.ITree;
 import forestry.api.client.IForestryClientApi;
 import forestry.api.core.genetics.alleles.TreeChromosomes;
 import forestry.core.platform.block.IColoredBlock;
+import forestry.core.platform.registration.PendingId;
 import forestry.core.platform.util.BlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,14 +32,14 @@ public class DecorativeLeavesBlock extends Block implements IColoredBlock, IShea
 	private final ForestryLeafType type;
 
 	public DecorativeLeavesBlock(Properties properties, ForestryLeafType type) {
-		super(properties
+		super(PendingId.block(properties
 			.strength(0.2f)
 			.sound(SoundType.GRASS)
 			.noOcclusion()
 			.isValidSpawn(BlockUtil.IS_PARROT_OR_OCELOT)
 			.isSuffocating(BlockUtil.ALWAYS)
 			.isRedstoneConductor(BlockUtil.NEVER)
-			.isViewBlocking((state, level, pos, box) -> false));
+			.isViewBlocking((state, level, pos, box) -> false)));
 		this.type = type;
 	}
 

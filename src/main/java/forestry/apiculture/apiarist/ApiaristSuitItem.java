@@ -3,6 +3,7 @@ package forestry.apiculture.apiarist;
 import forestry.api.ForestryConstants;
 import forestry.api.apiculture.IBeeProtection;
 import forestry.api.apiculture.genetics.IBeeEffect;
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
@@ -48,6 +49,6 @@ public class ApiaristSuitItem extends Item {
 	}
 
 	public ApiaristSuitItem(ArmorType type) {
-		super(new Item.Properties().humanoidArmor(APIARIST_ARMOR_MATERIAL, type));
+		super(PendingId.item(new Item.Properties().humanoidArmor(APIARIST_ARMOR_MATERIAL, type)));
 	}
 }

@@ -1,5 +1,6 @@
 package forestry.arboriculture.charcoal;
 
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -10,10 +11,10 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class DecorativeLogPileBlock extends RotatedPillarBlock {
 	public DecorativeLogPileBlock(Block.Properties properties) {
-		super(properties
+		super(PendingId.block(properties
 			.sound(SoundType.WOOD)
 			.strength(1.5f)
-			.noOcclusion());
+			.noOcclusion()));
 	}
 
 	@Override

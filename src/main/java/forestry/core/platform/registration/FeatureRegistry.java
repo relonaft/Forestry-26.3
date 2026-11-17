@@ -85,9 +85,8 @@ public class FeatureRegistry implements IFeatureRegistry {
 	}
 
 	public <B extends Block, I extends BlockItem> FeatureBlock<B, I> block(Function<BlockBehaviour.Properties, B> constructor, Supplier<BlockBehaviour.Properties> blockProperties, @Nullable BiFunction<B, Item.Properties, I> itemConstructor, Supplier<Item.Properties> itemProperties, String name) {
-		Identifier id = this.moduleId.withPath(name);
-		Supplier<B> blockSupplier = () -> constructor.apply(IFeatureRegistry.setBlockId(id, blockProperties.get()));
-		Function<B, I> itemFunction = itemConstructor == null ? null : (block) -> itemConstructor.apply(block, IFeatureRegistry.setItemId(id, itemProperties.get()));
+		Supplier<B> blockSupplier = () -> constructor.apply(PendingId.block(blockProperties.get()));
+		Function<B, I> itemFunction = itemConstructor == null ? null : (block) -> itemConstructor.apply(block, PendingId.blockItem(block, itemProperties.get()));
 		return register(new FeatureBlock<>(this, this.moduleId, name, blockSupplier, itemFunction));
 	}
 
@@ -117,7 +116,7 @@ public class FeatureRegistry implements IFeatureRegistry {
 	}
 
 	public <I extends Item> FeatureItem<I> item(Function<Item.Properties, I> constructor, Supplier<Item.Properties> properties, String identifier) {
-		return register(new FeatureItem<>(this, this.moduleId, identifier, () -> constructor.apply(properties.get())));
+		return register(new FeatureItem<>(this, this.moduleId, identifier, () -> constructor.apply(PendingId.item(properties.get()))));
 	}
 
 	public FeatureItem<Item> backpack(IBackpackDefinition definition, EnumBackpackType type, String identifier) {
@@ -137,7 +136,7 @@ public class FeatureRegistry implements IFeatureRegistry {
 	}
 
 	public <I extends Item, S extends IItemSubtype> FeatureItemGroup.Builder<I, S> itemGroup(BiFunction<S, Item.Properties, I> constructor, Function<S, Item.Properties> properties, S[] subTypes) {
-		return (FeatureItemGroup.Builder<I, S>) new FeatureItemGroup.Builder<I, S>(this, s -> constructor.apply(s, properties.apply(s))).types(subTypes);
+		return (FeatureItemGroup.Builder<I, S>) new FeatureItemGroup.Builder<I, S>(this, s -> constructor.apply(s, PendingId.item(properties.apply(s)))).types(subTypes);
 	}
 
 	public <I extends Item, R extends IItemSubtype, C extends IItemSubtype> FeatureItemTable<I, R, C> itemTable(BiFunction<R, C, I> constructor, R[] rowTypes, C[] columnTypes, String identifier) {

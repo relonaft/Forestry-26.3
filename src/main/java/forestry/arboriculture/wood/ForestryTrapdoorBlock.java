@@ -2,6 +2,7 @@ package forestry.arboriculture.wood;
 
 import forestry.api.arboriculture.IWoodType;
 import forestry.api.arboriculture.WoodBlockKind;
+import forestry.core.platform.registration.PendingId;
 import forestry.core.platform.util.BlockUtil;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
@@ -11,7 +12,7 @@ public class ForestryTrapdoorBlock extends TrapDoorBlock implements IWoodTyped {
 	private final ForestryWoodType type;
 
 	public ForestryTrapdoorBlock(ForestryWoodType type) {
-		super(type.getBlockSetType(), Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(3f).noOcclusion().isValidSpawn(BlockUtil.NEVER_SPAWN).ignitedByLava());
+		super(type.getBlockSetType(), PendingId.block(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(3f).noOcclusion().isValidSpawn(BlockUtil.NEVER_SPAWN).ignitedByLava()));
 
 		this.type = type;
 	}

@@ -9,6 +9,7 @@ import forestry.api.apiculture.hives.IHiveTile;
 import forestry.api.core.genetics.alleles.Allele;
 import forestry.api.core.genetics.alleles.BeeChromosomes;
 import forestry.apiculture.features.ApicultureTiles;
+import forestry.core.platform.registration.PendingId;
 import forestry.core.platform.tile.TileUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.Util;
@@ -53,7 +54,7 @@ public class HiveBlock extends Block implements EntityBlock {
 	}
 
 	public HiveBlock(Identifier speciesId) {
-		super(Properties.of().sound(SoundType.WOOD).lightLevel(state -> 7).strength(2.5f));
+		super(PendingId.block(Properties.of().sound(SoundType.WOOD).lightLevel(state -> 7).strength(2.5f)));
 		this.speciesId = speciesId;
 	}
 

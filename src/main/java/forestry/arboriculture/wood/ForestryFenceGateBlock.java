@@ -2,6 +2,7 @@ package forestry.arboriculture.wood;
 
 import forestry.api.arboriculture.IWoodType;
 import forestry.api.arboriculture.WoodBlockKind;
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -16,7 +17,7 @@ public class ForestryFenceGateBlock extends FenceGateBlock implements IWoodTyped
 	private final IWoodType woodType;
 
 	public ForestryFenceGateBlock(boolean fireproof, IWoodType woodType) {
-		super(createBlockProperties(fireproof, woodType), woodType.getFenceGateOpenSound(), woodType.getFenceGateCloseSound());
+		super(PendingId.block(createBlockProperties(fireproof, woodType)), woodType.getFenceGateOpenSound(), woodType.getFenceGateCloseSound());
 		this.fireproof = fireproof;
 		this.woodType = woodType;
 	}

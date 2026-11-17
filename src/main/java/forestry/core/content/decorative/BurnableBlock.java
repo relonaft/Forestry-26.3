@@ -1,5 +1,6 @@
 package forestry.core.content.decorative;
 
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -9,7 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 // catches on fire like planks
 public abstract class BurnableBlock extends Block {
 	public BurnableBlock(Properties properties) {
-		super(properties);
+		super(PendingId.block(properties));
 	}
 
 	@Override

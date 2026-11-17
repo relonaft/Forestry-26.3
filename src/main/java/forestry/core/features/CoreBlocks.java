@@ -77,7 +77,8 @@ public class CoreBlocks {
 	public static final FeatureBlock<ChainBlock, BlockItem> TIN_CHAIN = REGISTRY.block(ChainBlock::new, () -> Properties.ofFullCopy(Blocks.IRON_CHAIN), ForestryBlockItem::new, "tin_chain");
 	public static final FeatureBlock<LanternBlock, BlockItem> PHOSPHOR_LANTERN = REGISTRY.block(LanternBlock::new, () -> Properties.ofFullCopy(Blocks.SOUL_LANTERN).lightLevel(state -> 13), ForestryBlockItem::new, "phosphor_lantern");
 	public static final FeatureBlock<WaterloggableTorchBlock, ForestryBlockItem<?>> PHOSPHOR_TORCH = REGISTRY.block(WaterloggableTorchBlock::new, () -> Properties.ofFullCopy(Blocks.SOUL_TORCH).lightLevel(state -> 13), null, "phosphor_torch");
-	public static final FeatureBlock<WaterloggableWallTorchBlock, ForestryBlockItem<?>> PHOSPHOR_WALL_TORCH = REGISTRY.block(WaterloggableWallTorchBlock::new, () -> Properties.ofFullCopy(Blocks.SOUL_TORCH).lightLevel(state -> 13), null, "phosphor_wall_torch");
+	// named like the standing torch, as WallTorchBlock.getDescriptionId did before 1.21.2
+	public static final FeatureBlock<WaterloggableWallTorchBlock, ForestryBlockItem<?>> PHOSPHOR_WALL_TORCH = REGISTRY.block(WaterloggableWallTorchBlock::new, () -> Properties.ofFullCopy(Blocks.SOUL_TORCH).lightLevel(state -> 13).overrideDescription(PHOSPHOR_TORCH.block().getDescriptionId()), null, "phosphor_wall_torch");
 
 	public static final FeatureBlockGroup<SpecialRendererBlock<NaturalistChestBlockType>, NaturalistChestBlockType> NATURALIST_CHEST = REGISTRY.blockGroup(type -> new SpecialRendererBlock<>(type, Properties.of().sound(SoundType.WOOD)), List.of(NaturalistChestBlockType.values())).item(SpecialRendererBlockItem::new).create();
 

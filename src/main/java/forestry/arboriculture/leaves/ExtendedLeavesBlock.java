@@ -1,6 +1,7 @@
 package forestry.arboriculture.leaves;
 
 import forestry.arboriculture.worldgen.AbstractArboricultureFeature;
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -25,7 +26,7 @@ public class ExtendedLeavesBlock extends LeavesBlock {
 	public static final BooleanProperty SUPPORTED = BooleanProperty.create("supported");
 
 	public ExtendedLeavesBlock(Properties properties) {
-		super(AmbientLeavesBlockSoundPlayer.noAmbientSound(), properties);
+		super(AmbientLeavesBlockSoundPlayer.noAmbientSound(), PendingId.block(properties));
 
 		registerDefaultState(defaultBlockState().setValue(SUPPORTED, false));
 	}

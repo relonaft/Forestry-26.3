@@ -1,5 +1,6 @@
 package forestry.core.platform.item;
 
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -16,7 +17,7 @@ public interface HasRemnants {
 		private final Supplier<ItemStack> remnants;
 
 		public Pickaxe(ToolMaterial material, int damageBonus, float speedModifier, Properties properties, Supplier<ItemStack> remnants) {
-			super(properties.pickaxe(material, damageBonus, speedModifier));
+			super(PendingId.item(properties.pickaxe(material, damageBonus, speedModifier)));
 			this.remnants = remnants;
 		}
 
@@ -37,7 +38,7 @@ public interface HasRemnants {
 		private final Supplier<ItemStack> remnants;
 
 		public Shovel(ToolMaterial material, float damageBonus, float speedModifier, Properties properties, Supplier<ItemStack> remnants) {
-			super(properties.shovel(material, damageBonus, speedModifier));
+			super(PendingId.item(properties.shovel(material, damageBonus, speedModifier)));
 			this.remnants = remnants;
 		}
 
@@ -58,7 +59,7 @@ public interface HasRemnants {
 		private final Supplier<ItemStack> remnants;
 
 		public Axe(ToolMaterial material, float damageBonus, float speedModifier, Properties properties, Supplier<ItemStack> remnants) {
-			super(properties.axe(material, damageBonus, speedModifier));
+			super(PendingId.item(properties.axe(material, damageBonus, speedModifier)));
 			this.remnants = remnants;
 		}
 
@@ -79,7 +80,7 @@ public interface HasRemnants {
 		private final Supplier<ItemStack> remnants;
 
 		public Sword(ToolMaterial material, int damageBonus, float speedModifier, Properties properties, Supplier<ItemStack> remnants) {
-			super(properties.sword(material, damageBonus, speedModifier));
+			super(PendingId.item(properties.sword(material, damageBonus, speedModifier)));
 			this.remnants = remnants;
 		}
 
@@ -100,7 +101,7 @@ public interface HasRemnants {
 		private final Supplier<ItemStack> remnants;
 
 		public Hoe(ToolMaterial material, int damageBonus, float speedModifier, Properties properties, Supplier<ItemStack> remnants) {
-			super(properties.hoe(material, damageBonus, speedModifier));
+			super(PendingId.item(properties.hoe(material, damageBonus, speedModifier)));
 			this.remnants = remnants;
 		}
 

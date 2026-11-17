@@ -123,7 +123,7 @@ public class CoreItems {
 
 	/* Misc */
 	// Deviation from 1.20.1: forestry.core.items.ItemProperties no longer exists, so this uses a plain Item.Properties.
-	public static final FeatureItem<Item> PHOSPHOR_TORCH_ITEM = REGISTRY.item(() -> new StandingAndWallBlockItem(CoreBlocks.PHOSPHOR_TORCH.block(), CoreBlocks.PHOSPHOR_WALL_TORCH.block(), Direction.DOWN, new Item.Properties()), "phosphor_torch");
+	public static final FeatureItem<Item> PHOSPHOR_TORCH_ITEM = REGISTRY.item(() -> new StandingAndWallBlockItem(CoreBlocks.PHOSPHOR_TORCH.block(), CoreBlocks.PHOSPHOR_WALL_TORCH.block(), Direction.DOWN, PendingId.blockItem(CoreBlocks.PHOSPHOR_TORCH.block(), new Item.Properties())), "phosphor_torch");
 	public static final FeatureItemGroup<ItemCraftingMaterial, EnumCraftingMaterial> CRAFTING_MATERIALS = REGISTRY.itemGroup(ItemCraftingMaterial::new, EnumCraftingMaterial.values()).create();
 	public static final FeatureItemGroup<ItemForestryFood, FruitItemType> FRUITS = REGISTRY
 		.itemGroup(type -> new ItemForestryFood(type.heal, type.saturation, type.useTime), FruitItemType.values())

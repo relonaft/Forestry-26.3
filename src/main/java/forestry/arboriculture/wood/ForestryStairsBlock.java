@@ -2,6 +2,7 @@ package forestry.arboriculture.wood;
 
 import forestry.api.arboriculture.IWoodType;
 import forestry.api.arboriculture.WoodBlockKind;
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -14,7 +15,7 @@ public class ForestryStairsBlock extends StairBlock implements IWoodTyped {
 	private final IWoodType woodType;
 
 	public ForestryStairsBlock(ForestryPlanksBlock plank) {
-		super(plank.defaultBlockState(), Block.Properties.ofFullCopy(plank));
+		super(plank.defaultBlockState(), PendingId.block(Block.Properties.ofFullCopy(plank)));
 		this.fireproof = plank.isFireproof();
 		this.woodType = plank.getWoodType();
 	}

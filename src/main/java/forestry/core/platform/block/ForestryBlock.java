@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import forestry.Forestry;
 import forestry.core.platform.owner.IOwnedTile;
 import forestry.core.platform.owner.IOwnerHandler;
+import forestry.core.platform.registration.PendingId;
 import forestry.core.platform.tile.ForestryBlockEntity;
 import forestry.core.platform.tile.TileUtil;
 import net.minecraft.core.BlockPos;
@@ -21,8 +22,8 @@ public abstract class ForestryBlock extends Block {
 	}
 
 	protected ForestryBlock(Block.Properties properties, boolean defaultStrength) {
-		super(defaultStrength ? properties
-			.strength(1.5f) : properties);
+		super(PendingId.block(defaultStrength ? properties
+			.strength(1.5f) : properties));
 	}
 
 	@Override

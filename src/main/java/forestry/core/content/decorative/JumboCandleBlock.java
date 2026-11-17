@@ -1,6 +1,7 @@
 package forestry.core.content.decorative;
 
 import forestry.api.ForestryTags;
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -47,7 +48,7 @@ public class JumboCandleBlock extends Block {
 	private final SimpleParticleType flame;
 
 	public JumboCandleBlock(BlockBehaviour.Properties properties, JumboCandleBlockType type) {
-		super(properties);
+		super(PendingId.block(properties));
 		this.registerDefaultState(this.getStateDefinition().any()
 			.setValue(LIT, false)
 			.setValue(SHAPE, CandleShape.SINGLE));

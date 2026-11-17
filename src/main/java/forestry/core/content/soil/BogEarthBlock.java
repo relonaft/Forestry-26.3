@@ -1,6 +1,7 @@
 package forestry.core.content.soil;
 
 import forestry.core.features.CoreBlocks;
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -23,10 +24,10 @@ public class BogEarthBlock extends Block {
 	public static final IntegerProperty MATURITY = IntegerProperty.create("maturity", 0, MAX_MATURITY);
 
 	public BogEarthBlock(Block.Properties properties) {
-		super(properties
+		super(PendingId.block(properties
 			.randomTicks()
 			.strength(0.5f)
-			.sound(SoundType.GRAVEL));
+			.sound(SoundType.GRAVEL)));
 
 		registerDefaultState(this.getStateDefinition().any().setValue(MATURITY, 0));
 	}

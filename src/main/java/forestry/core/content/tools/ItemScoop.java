@@ -3,6 +3,7 @@ package forestry.core.content.tools;
 import forestry.api.ForestryTags;
 import forestry.api.apiculture.ForestryBeeSpecies;
 import forestry.api.apiculture.genetics.BeeLifeStage;
+import forestry.core.platform.registration.PendingId;
 import forestry.core.platform.util.ItemTooltipUtil;
 import forestry.core.platform.util.SpeciesUtil;
 import forestry.core.platform.util.TooltipList;
@@ -32,7 +33,7 @@ import java.util.List;
 public class ItemScoop extends Item {
 	public ItemScoop(int durability) {
 		// until 1.21.5 this was a TieredItem of wood, which also forced the durability of wood (59) on both scoops
-		super(new Item.Properties().durability(durability).enchantable(ToolMaterial.WOOD.enchantmentValue()).repairable(ToolMaterial.WOOD.repairItems()));
+		super(PendingId.item(new Item.Properties().durability(durability).enchantable(ToolMaterial.WOOD.enchantmentValue()).repairable(ToolMaterial.WOOD.repairItems())));
 	}
 
 	@Override

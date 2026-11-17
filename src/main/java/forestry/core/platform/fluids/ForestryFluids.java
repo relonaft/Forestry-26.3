@@ -109,9 +109,9 @@ public enum ForestryFluids {
 			.bucket(this::getBucket)
 			.create();
 		this.bucket = registry
-			.item(() -> new BucketItem(getFluid(), new Item.Properties()
+			.item(() -> new BucketItem(getFluid(), PendingId.item(new Item.Properties()
 					.craftRemainder(Items.BUCKET)
-					.stacksTo(1)),
+					.stacksTo(1))),
 				"bucket_" + fluidId
 			);
 		this.tag = ForestryConstants.forestry(this.feature.getName());

@@ -1,6 +1,7 @@
 package forestry.arboriculture.wood;
 
 import forestry.api.arboriculture.WoodBlockKind;
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.world.level.block.CeilingHangingSignBlock;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
@@ -9,7 +10,7 @@ public class ForestryHangingSignBlock extends CeilingHangingSignBlock implements
 	private final ForestryWoodType type;
 
 	public ForestryHangingSignBlock(ForestryWoodType type) {
-		super(type.getWoodType(), Properties.of().mapColor(MapColor.WOOD).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(1f).ignitedByLava());
+		super(type.getWoodType(), PendingId.block(Properties.of().mapColor(MapColor.WOOD).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(1f).ignitedByLava()));
 
 		this.type = type;
 	}

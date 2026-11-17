@@ -3,6 +3,7 @@ package forestry.arboriculture.wood;
 import forestry.api.arboriculture.IWoodType;
 import forestry.api.arboriculture.WoodBlockKind;
 import forestry.arboriculture.features.ArboricultureBlocks;
+import forestry.core.platform.registration.PendingId;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WallHangingSignBlock;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
@@ -12,7 +13,7 @@ public class ForestryWallHangingSignBlock extends WallHangingSignBlock implement
 	private final ForestryWoodType type;
 
 	public ForestryWallHangingSignBlock(ForestryWoodType type) {
-		super(type.getWoodType(), wallVariant(ArboricultureBlocks.HANGING_SIGN.get(type).block()).mapColor(MapColor.WOOD).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0F).ignitedByLava());
+		super(type.getWoodType(), PendingId.block(wallVariant(ArboricultureBlocks.HANGING_SIGN.get(type).block()).mapColor(MapColor.WOOD).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0F).ignitedByLava()));
 
 		this.type = type;
 	}
