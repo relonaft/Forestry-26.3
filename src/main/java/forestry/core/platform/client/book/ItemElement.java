@@ -10,7 +10,7 @@ import org.joml.Matrix3x2fStack;
 import javax.annotation.Nullable;
 import java.util.List;
 
-// an item with its tooltip. Several stacks take turns, one each second
+// several stacks take turns, one each second
 final class ItemElement implements BookElement {
 	private static final int SIZE = 16;
 

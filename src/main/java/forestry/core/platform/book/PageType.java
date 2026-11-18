@@ -7,7 +7,7 @@ import java.util.Set;
 public enum PageType {
 	TEXT("text", "text"),
 	CRAFTING("crafting", "recipe", "recipe2", "title", "text"),
-	// link_recipe is accepted and unused, the book has no lookup from a recipe item to its entry
+	// deviation: link_recipe is read by nothing, the book has no way from a recipe item to its entry
 	SPOTLIGHT("spotlight", "item", "title", "text", "link_recipe"),
 	IMAGE("image", "images", "title", "text"),
 	MULTIBLOCK("multiblock", "name", "multiblock", "text"),

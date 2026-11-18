@@ -47,10 +47,20 @@ final class TextElement implements BookElement {
 	}
 
 	// raw is translated text with book markup
+	// deviation: set in the font of the game, Patchouli sets its books in the thin unicode font
 	static List<Line> layout(Font font, Book book, String raw, int width) {
 		MutableComponent text = Component.empty();
 		for (BookText.Span span : BookText.parse(raw, command -> BookClient.warnOnce("Unknown book markup $(" + command + ")"))) {
-			Style style = Style.EMPTY.withBold(span.bold()).withItalic(span.italic());
+			Style style = Style.EMPTY;
+			for (BookText.Format format : span.formats()) {
+				style = switch (format) {
+					case OBFUSCATED -> style.withObfuscated(true);
+					case BOLD -> style.withBold(true);
+					case STRIKETHROUGH -> style.withStrikethrough(true);
+					case UNDERLINE -> style.withUnderlined(true);
+					case ITALIC -> style.withItalic(true);
+				};
+			}
 			if (span.color() != BookText.NO_COLOR) {
 				style = style.withColor(span.color());
 			}
