@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import com.mojang.logging.LogUtils;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -57,6 +59,11 @@ public final class ForestryGameTests {
 		functions.values().forEach(register -> register.register(modBus));
 		LOGGER.info("Found {} game tests in {} classes", this.tests.size(), this.tests.stream().map(test -> test.method().getDeclaringClass()).distinct().count());
 		modBus.addListener(this::registerTests);
+		// a client-only class, loaded only when the property asks for it
+		String bookSnapshots = System.getProperty("forestry.bookSnapshots", "");
+		if (FMLEnvironment.getDist() == Dist.CLIENT && !bookSnapshots.isEmpty()) {
+			forestry.gametest.client.BookSnapshots.register(bookSnapshots);
+		}
 	}
 
 	private void collect(String className) {

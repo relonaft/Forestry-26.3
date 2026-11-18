@@ -137,6 +137,8 @@ neoForge {
 
 		client {
 			client()
+			// `-Pforestry.bookSnapshots=<world>` pages through the Forester's Manual and saves every spread (src/test BookSnapshots)
+			systemProperty 'forestry.bookSnapshots', providers.gradleProperty('forestry.bookSnapshots').getOrElse('')
 		}
 
 		server {
@@ -953,7 +955,6 @@ if (System.getenv('CURSEFORGE_TOKEN')) {
 
 				if (target.module == 'core') {
 					addRelation('jei', 'optionalDependency')
-					addRelation('patchouli', 'requiredDependency')
 				} else {
 					addRelation('forestry-community-edition', 'requiredDependency')
 				}
@@ -991,7 +992,6 @@ publishTargets.each { target ->
 				modrinth.additionalFiles.set([sourcesJar, apiJar, javadocJar])
 				modrinth.dependencies.set([
 						new com.modrinth.minotaur.dependencies.ModDependency('u6dRKJwZ', 'optional'), // jei
-						new com.modrinth.minotaur.dependencies.ModDependency('nU0bVIaL', 'required'), // patchouli
 				])
 			} else {
 				modrinth.additionalFiles.empty()
