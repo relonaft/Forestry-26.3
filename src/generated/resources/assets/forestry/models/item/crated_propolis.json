@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "forestry:item/propolis.0",
     "layer1": "forestry:item/propolis.0"
   },
   "elements": [

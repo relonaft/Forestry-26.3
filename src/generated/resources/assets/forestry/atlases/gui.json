@@ -4,6 +4,13 @@
       "type": "minecraft:directory",
       "prefix": "",
       "source": "forestry/atlas/gui"
+    },
+    {
+      "type": "minecraft:filter",
+      "pattern": {
+        "namespace": "forestry",
+        "path": "slots/.*"
+      }
     }
   ]
 }

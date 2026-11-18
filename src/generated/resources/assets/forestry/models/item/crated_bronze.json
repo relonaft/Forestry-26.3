@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "forestry:item/bronze_ingot",
     "layer1": "forestry:item/bronze_ingot"
   },
   "elements": [

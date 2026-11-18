@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:block/gravel",
     "layer1": "minecraft:block/gravel"
   },
   "elements": [

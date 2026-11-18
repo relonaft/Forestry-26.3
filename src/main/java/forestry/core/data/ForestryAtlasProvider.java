@@ -20,10 +20,7 @@ public class ForestryAtlasProvider extends SpriteSourceProvider {
 		SourceList icons = atlas(ForestrySpriteUploader.ATLAS_PATH);
 
 		icons.addSource(new DirectoryLister("forestry/atlas/gui", ""));
-
-		// A bit redundant but fixes the issue
-		SourceList blocks = atlas(BLOCKS_ATLAS);
-
-		blocks.addSource(new DirectoryLister("forestry/atlas/gui/slots", "slots/"));
+		// todo port: the generated file also filters out slots/, which live only in the vanilla gui atlas in 26.3
+		// (assets/minecraft/atlases/gui.json); add the filter here when the generator runs again
 	}
 }

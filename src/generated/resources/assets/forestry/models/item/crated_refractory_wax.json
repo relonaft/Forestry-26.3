@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "forestry:item/refractory_wax",
     "layer1": "forestry:item/refractory_wax"
   },
   "elements": [

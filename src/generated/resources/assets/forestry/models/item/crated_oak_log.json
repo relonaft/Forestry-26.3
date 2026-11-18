@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:block/oak_log",
     "layer1": "minecraft:block/oak_log"
   },
   "elements": [

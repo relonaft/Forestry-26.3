@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "forestry:item/honeydew",
     "layer1": "forestry:item/honeydew"
   },
   "elements": [

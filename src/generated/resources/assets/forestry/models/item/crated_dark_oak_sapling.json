@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:block/dark_oak_sapling",
     "layer1": "minecraft:block/dark_oak_sapling"
   },
   "elements": [

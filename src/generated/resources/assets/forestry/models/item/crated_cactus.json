@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:block/cactus_side",
     "layer1": "minecraft:block/cactus_side"
   },
   "elements": [

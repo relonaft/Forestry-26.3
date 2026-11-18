@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "forestry:item/beeswax",
     "layer1": "forestry:item/beeswax"
   },
   "elements": [

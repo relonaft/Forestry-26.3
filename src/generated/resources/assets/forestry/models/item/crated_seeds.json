@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:item/wheat_seeds",
     "layer1": "minecraft:item/wheat_seeds"
   },
   "elements": [

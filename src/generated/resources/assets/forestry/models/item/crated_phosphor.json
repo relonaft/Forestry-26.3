@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "forestry:item/phosphor",
     "layer1": "forestry:item/phosphor"
   },
   "elements": [

@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:block/birch_log",
     "layer1": "minecraft:block/birch_log"
   },
   "elements": [

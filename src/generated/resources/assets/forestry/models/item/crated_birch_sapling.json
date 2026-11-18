@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:block/birch_sapling",
     "layer1": "minecraft:block/birch_sapling"
   },
   "elements": [

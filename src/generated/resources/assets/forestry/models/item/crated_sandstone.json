@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:block/sandstone",
     "layer1": "minecraft:block/sandstone"
   },
   "elements": [

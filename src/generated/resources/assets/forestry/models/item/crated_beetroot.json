@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:item/beetroot",
     "layer1": "minecraft:item/beetroot"
   },
   "elements": [

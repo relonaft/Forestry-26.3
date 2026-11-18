@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "forestry:item/bee_combs.0",
     "layer1": "forestry:item/bee_combs.0",
     "layer2": "forestry:item/bee_combs.1"
   },

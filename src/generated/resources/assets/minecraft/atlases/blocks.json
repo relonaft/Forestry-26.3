@@ -1,11 +1,6 @@
 {
   "sources": [
     {
-      "type": "minecraft:directory",
-      "prefix": "slots/",
-      "source": "forestry/atlas/gui/slots"
-    },
-    {
       "type": "minecraft:single",
       "resource": "forestry:item/chestnut_sapling",
       "sprite": "forestry:block/chestnut_sapling"

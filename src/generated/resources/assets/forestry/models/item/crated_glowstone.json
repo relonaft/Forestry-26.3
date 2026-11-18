@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:item/glowstone_dust",
     "layer1": "minecraft:item/glowstone_dust"
   },
   "elements": [

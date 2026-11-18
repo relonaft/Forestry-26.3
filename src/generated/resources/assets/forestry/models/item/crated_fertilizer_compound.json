@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "forestry:item/fertilizer",
     "layer1": "forestry:item/fertilizer"
   },
   "elements": [

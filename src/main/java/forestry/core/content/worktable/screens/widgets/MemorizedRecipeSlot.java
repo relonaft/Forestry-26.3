@@ -1,7 +1,6 @@
 package forestry.core.content.worktable.screens.widgets;
 
 import forestry.api.client.ForestrySprites;
-import forestry.api.client.IForestryClientApi;
 import forestry.core.platform.gui.widgets.ItemStackWidgetBase;
 import forestry.core.platform.gui.widgets.WidgetManager;
 import forestry.core.platform.util.SoundUtil;
@@ -10,7 +9,6 @@ import forestry.core.content.worktable.screens.WorktableMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.item.ItemStack;
 
 public class MemorizedRecipeSlot extends ItemStackWidgetBase {
@@ -34,8 +32,8 @@ public class MemorizedRecipeSlot extends ItemStackWidgetBase {
 
 
 		if (this.memory.isLocked(this.slotIndex)) {
-			TextureAtlasSprite lockedSprite = IForestryClientApi.INSTANCE.getTextureManager().getSprite(ForestrySprites.SLOT_LOCKED);
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, lockedSprite, startX + this.xPos, startY + this.yPos, 16, 16);
+			// slot sprites live in the vanilla gui atlas, like the empty slot icons
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ForestrySprites.SLOT_LOCKED, startX + this.xPos, startY + this.yPos, 16, 16);
 		}
 
 	}

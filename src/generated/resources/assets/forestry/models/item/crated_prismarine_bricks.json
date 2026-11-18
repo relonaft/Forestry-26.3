@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:block/prismarine_bricks",
     "layer1": "minecraft:block/prismarine_bricks"
   },
   "elements": [

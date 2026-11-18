@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:block/nether_bricks",
     "layer1": "minecraft:block/nether_bricks"
   },
   "elements": [

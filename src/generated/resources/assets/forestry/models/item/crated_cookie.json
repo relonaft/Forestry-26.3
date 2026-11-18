@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:item/cookie",
     "layer1": "minecraft:item/cookie"
   },
   "elements": [

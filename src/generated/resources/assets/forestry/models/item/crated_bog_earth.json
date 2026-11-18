@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "forestry:block/bog_earth",
     "layer1": "forestry:block/bog_earth"
   },
   "elements": [

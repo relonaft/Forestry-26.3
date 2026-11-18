@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:block/jungle_sapling",
     "layer1": "minecraft:block/jungle_sapling"
   },
   "elements": [

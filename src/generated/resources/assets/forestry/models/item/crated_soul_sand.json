@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:block/soul_sand",
     "layer1": "minecraft:block/soul_sand"
   },
   "elements": [

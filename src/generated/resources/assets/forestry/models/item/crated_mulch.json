@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "forestry:item/mulch",
     "layer1": "forestry:item/mulch"
   },
   "elements": [

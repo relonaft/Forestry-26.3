@@ -279,7 +279,8 @@ def main():
 		if loader == 'forestry:filled_crate' or (item_id.startswith('crated_') and model.get('elements') and 'parent' not in model):
 			textures = {k: v for k, v in model['textures'].items() if re.fullmatch(r'layer[1-4]', k)}
 			layers = sorted(int(k[5:]) for k in textures)
-			contents = {'gui_light': 'front', 'textures': textures, 'elements': crate_contents(layers), 'display': crate_display}
+			# particle silences the missing texture warning of 26.3, the lowest layer is the crated item itself
+			contents = {'gui_light': 'front', 'textures': {'particle': textures['layer%d' % layers[0]], **textures}, 'elements': crate_contents(layers), 'display': crate_display}
 			write_json(path, contents)
 			tints = item_tints(max(layers) + 1) if is_tinted(item_id) else []
 			write_json(items_path(out_root, item_id), {'model': {'type': 'minecraft:composite', 'models': [

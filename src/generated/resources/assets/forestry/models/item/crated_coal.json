@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:item/coal",
     "layer1": "minecraft:item/coal"
   },
   "elements": [

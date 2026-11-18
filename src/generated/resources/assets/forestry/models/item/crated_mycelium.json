@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:block/mycelium_side",
     "layer1": "minecraft:block/mycelium_side"
   },
   "elements": [

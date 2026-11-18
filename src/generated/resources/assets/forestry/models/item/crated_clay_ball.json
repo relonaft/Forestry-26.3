@@ -1,6 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
+    "particle": "minecraft:item/clay_ball",
     "layer1": "minecraft:item/clay_ball"
   },
   "elements": [
