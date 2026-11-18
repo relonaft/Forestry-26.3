@@ -5,10 +5,12 @@ import forestry.core.platform.book.Book;
 import forestry.core.platform.book.BookCategory;
 import forestry.core.platform.book.BookEntry;
 import forestry.core.platform.client.book.BookClient;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -98,6 +100,16 @@ public final class BookSnapshots {
 		LOGGER.info("book snapshots: {} targets in {}", targets.size(), code);
 		for (Target target : targets) {
 			steps.add(() -> open(code, target));
+		}
+		// reopening lands on the last spread seen; BACK must then climb to the landing page
+		steps.add(() -> {
+			BookClient.open();
+			grab(code + "_z_reopen_0.png");
+		});
+		for (int i = 1; i <= 4; i++) {
+			int step = i;
+			steps.add(() -> Minecraft.getInstance().gui.screen().keyPressed(new KeyEvent(InputConstants.KEY_BACKSPACE, 0, 0)));
+			steps.add(() -> grab(code + "_z_reopen_back_" + step + ".png"));
 		}
 	}
 
