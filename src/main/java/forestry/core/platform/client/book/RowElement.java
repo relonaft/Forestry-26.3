@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nullable;
 import java.util.List;
 
-// one line of a category or entry list. The whole row is the link
+// the whole row is the link
 final class RowElement implements BookElement {
 	static final int HEIGHT = 11;
 	private static final int HOVER_COLOR = 0xFF8800CC;

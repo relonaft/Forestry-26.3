@@ -24,7 +24,7 @@ public final class BookLoader {
 	public static final String BOOK_PATH = "patchouli_books/foresters_manual/";
 	// the book is i18n, en_us is the only content folder and the texts are translation keys
 	public static final String CONTENT_PATH = BOOK_PATH + "en_us/";
-	private static final String DEFAULT_TEXTURE = "forestry:textures/gui/almanac/foresters_manual.png";
+	private static final Identifier DEFAULT_TEXTURE = ForestryConstants.forestry("textures/gui/almanac/foresters_manual.png");
 	private static final String CATEGORIES = "categories/";
 	private static final String ENTRIES = "entries/";
 	private static final String JSON = ".json";
@@ -63,10 +63,16 @@ public final class BookLoader {
 			}
 		}
 
+		// a category must lead up to the landing page, a loop of parents would never end
+		Map<Identifier, BookCategory> all = Map.copyOf(categories);
 		categories.values().removeIf(category -> {
-			boolean orphan = category.parent() != null && !categories.containsKey(category.parent());
+			BookCategory ancestor = category;
+			for (int steps = 0; ancestor != null && ancestor.parent() != null && steps <= all.size(); steps++) {
+				ancestor = all.get(ancestor.parent());
+			}
+			boolean orphan = ancestor == null || ancestor.parent() != null;
 			if (orphan) {
-				problems.accept("category " + category.id() + " has the unknown parent " + category.parent());
+				problems.accept("category " + category.id() + " has the unknown or looped parent " + category.parent());
 			}
 			return orphan;
 		});
@@ -78,8 +84,10 @@ public final class BookLoader {
 			return orphan;
 		});
 
-		return new Book(GsonHelper.getAsString(bookJson, "name", ""), GsonHelper.getAsString(bookJson, "landing_text", ""),
-			Identifier.parse(GsonHelper.getAsString(bookJson, "book_texture", DEFAULT_TEXTURE)), categories, entries);
+		// an empty text is no texture, it would parse as an identifier with an empty path
+		BookPageData book = new BookPageData("", null, bookJson);
+		Identifier texture = book.string("book_texture").isEmpty() ? null : Identifier.tryParse(book.string("book_texture"));
+		return new Book(book.string("name"), book.string("landing_text"), texture == null ? DEFAULT_TEXTURE : texture, categories, entries);
 	}
 
 	private static Identifier id(String path, String folder) {
@@ -98,7 +106,7 @@ public final class BookLoader {
 		}
 	}
 
-	// for a server, which has no resource manager for assets. A client reads the same files from its resource packs
+	// a server has no resource manager for assets, a client reads these files from its resource packs
 	public static Map<String, JsonObject> readModFiles(Consumer<String> problems) {
 		String root = "assets/forestry/" + CONTENT_PATH;
 		Map<String, JsonObject> files = new TreeMap<>();

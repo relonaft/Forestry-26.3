@@ -1,7 +1,7 @@
 package forestry.core.platform.book;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.util.GsonHelper;
 
 import javax.annotation.Nullable;
 
@@ -11,12 +11,14 @@ public record BookPageData(String typeId, @Nullable PageType type, JsonObject js
 		return this.json.has(key);
 	}
 
+	// empty for a missing key and for an array or object, a resource pack can put anything here
 	public String string(String key) {
-		return GsonHelper.getAsString(this.json, key, "");
+		JsonElement value = this.json.get(key);
+		return value != null && value.isJsonPrimitive() ? value.getAsString() : "";
 	}
 
 	// the anchors of this book are numbers, a link names them as text
 	public String anchor() {
-		return this.json.has("anchor") ? this.json.get("anchor").getAsString() : "";
+		return string("anchor");
 	}
 }

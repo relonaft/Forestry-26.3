@@ -1,24 +1,28 @@
 package forestry.gametest;
 
-import java.io.Reader;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.locale.Language;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -28,6 +32,7 @@ import net.minecraft.world.level.GameType;
 import net.neoforged.fml.ModList;
 
 import forestry.api.ForestryConstants;
+import forestry.api.core.machines.IFabricatorRecipe;
 import forestry.api.core.machines.IForestryRecipe;
 import forestry.core.content.machines.features.FactoryRecipeTypes;
 import forestry.core.features.CoreItems;
@@ -36,25 +41,25 @@ import forestry.core.platform.book.BookCategory;
 import forestry.core.platform.book.BookEntry;
 import forestry.core.platform.book.BookLoader;
 import forestry.core.platform.book.BookPageData;
+import forestry.core.platform.book.BookRecipes;
 import forestry.core.platform.book.BookText;
 import forestry.core.platform.book.PageType;
 import forestry.core.platform.registration.FeatureRecipeType;
-import forestry.core.platform.util.RecipeUtils;
 
 // the Forester's Manual has no screen on a server, this checks all the screen would need to show every page
 @GameTestHolder(ForestryConstants.MOD_ID)
 @PrefixGameTestTemplate(false)
 public class ForestersManualTest {
-	// quirk kept: Forestry: Community Edition names three recipes and one texture it never had, the book shows an error there
+	// quirk kept: Forestry: Community Edition names a texture it never had, the book shows an error there
 	private static final Set<String> KNOWN_BROKEN = Set.of(
-		"recipe forestry:fabricator",
-		"recipe forestry:apatite_from_resource_storage_apatite",
-		"recipe forestry:ingot_bronze_from_resource_storage_bronze",
 		"texture forestry:textures/gui/almanac/scraps/alveary_2.png",
-		// and two page titles are English text in place of a translation key
+		// quirk kept: two page titles are English text in place of a translation key
 		"untranslated text Circuit Boards",
 		"untranslated text Electron Tubes"
 	);
+	// only these must have every text, where another language lacks one the game shows the English text
+	private static final List<String> COMPLETE_LANGUAGES = List.of("en_us", "ru_ru");
+	private static final String BOOK_KEY = "for.gui.book.patchouli.";
 	// the keys the engine reads, a file with any other key would lose it without a word
 	private static final Set<String> CATEGORY_KEYS = Set.of("name", "description", "icon", "parent", "sortnum");
 	private static final Set<String> ENTRY_KEYS = Set.of("name", "category", "icon", "pages", "sortnum", "priority");
@@ -70,8 +75,7 @@ public class ForestersManualTest {
 
 	private final GameTestHelper helper;
 	private final Book book;
-	private final Map<String, String> english = readLang("en_us");
-	private final Map<String, String> russian = readLang("ru_ru");
+	private final Map<String, Map<String, String>> languages = readBookLanguages();
 	// sorted so the failure message is stable
 	private final Set<String> problems = new TreeSet<>();
 
@@ -100,6 +104,18 @@ public class ForestersManualTest {
 				test.checkKeys(path, json, ENTRY_KEYS);
 			}
 		});
+
+		for (String language : COMPLETE_LANGUAGES) {
+			if (!test.languages.containsKey(language)) {
+				test.problems.add("language " + language + " has no book texts");
+			}
+		}
+		// a translation can carry markup in a text no page uses any more
+		test.languages.forEach((language, texts) -> texts.forEach((key, text) -> {
+			if (key.startsWith(BOOK_KEY)) {
+				test.checkMarkup(language, key, text);
+			}
+		}));
 
 		test.checkText("book.json", book.name());
 		test.checkText("book.json", book.landingText());
@@ -130,12 +146,34 @@ public class ForestersManualTest {
 		helper.succeed();
 	}
 
-	// the item opens a client screen, a server must get through use without the client classes
+	// the screen is client code, on a server level use must end without it
 	@GameTest(template = "empty")
-	public static void useOnAServerLoadsNoClientCode(GameTestHelper helper) {
+	public static void useOnAServerLevelSucceeds(GameTestHelper helper) {
 		Player player = helper.makeMockPlayer(GameType.SURVIVAL);
 		player.setItemInHand(InteractionHand.MAIN_HAND, CoreItems.FORESTERS_MANUAL.stack());
-		CoreItems.FORESTERS_MANUAL.item().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+		InteractionResult result = CoreItems.FORESTERS_MANUAL.item().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+		helper.assertTrue(result == InteractionResult.SUCCESS, "use on a server level returned " + result);
+		helper.succeed();
+	}
+
+	// the base jar alone has the farm structure category and none of its entries
+	@GameTest(template = "empty")
+	public static void categoryWithoutEntriesIsHidden(GameTestHelper helper) throws Exception {
+		Map<String, JsonObject> files = BookLoader.readModFiles(problem -> {
+		});
+		Identifier farming = ForestryConstants.forestry("farming");
+		Identifier structure = ForestryConstants.forestry("structure");
+
+		Book full = BookLoader.load(BookLoader.readBookJson(), files, problem -> {
+		});
+		helper.assertTrue(full.categoriesIn(farming).stream().anyMatch(category -> category.id().equals(structure)), "the structure category must show with its entries");
+
+		files.keySet().removeIf(path -> path.startsWith("entries/farming/structure/"));
+		Book base = BookLoader.load(BookLoader.readBookJson(), files, problem -> {
+		});
+		helper.assertTrue(base.categories().containsKey(structure), "the structure category must still load");
+		helper.assertTrue(base.categoriesIn(farming).stream().noneMatch(category -> category.id().equals(structure)), "the structure category must hide without entries");
+		helper.assertTrue(base.parent(new Book.Link(true, structure, "")).id().equals(farming), "the way back from structure must lead to farming");
 		helper.succeed();
 	}
 
@@ -197,7 +235,6 @@ public class ForestersManualTest {
 		}
 	}
 
-	// a text is a translation key. Both languages must have it, with markup the engine knows and links that lead somewhere
 	private void checkText(String where, String key) {
 		if (key.isEmpty()) {
 			return;
@@ -207,17 +244,28 @@ public class ForestersManualTest {
 			this.problems.add("untranslated text " + key);
 			return;
 		}
-		for (Map<String, String> lang : List.of(this.english, this.russian)) {
-			String name = lang == this.english ? "en_us" : "ru_ru";
-			String text = lang.get(key);
+		this.languages.forEach((language, texts) -> {
+			String text = texts.get(key);
 			if (text == null) {
-				this.problems.add("text " + key + " is not in " + name + " (" + where + ")");
-				continue;
-			}
-			for (BookText.Span span : BookText.parse(text, command -> this.problems.add("unknown markup $(" + command + ") in " + name + " " + key))) {
-				if (span.link() != null && this.book.resolve(span.link()) == null) {
-					this.problems.add("link " + span.link() + " leads nowhere, in " + name + " " + key);
+				if (COMPLETE_LANGUAGES.contains(language)) {
+					this.problems.add("text " + key + " is not in " + language + " (" + where + ")");
 				}
+			} else if (!key.startsWith(BOOK_KEY)) {
+				checkMarkup(language, key, text);
+			}
+		});
+	}
+
+	private void checkMarkup(String language, String key, String text) {
+		for (BookText.Span span : BookText.parse(text, command -> this.problems.add("unknown markup $(" + command + ") in " + language + " " + key))) {
+			if (span.link() != null && this.book.resolve(span.link()) == null) {
+				this.problems.add("link " + span.link() + " leads nowhere, in " + language + " " + key);
+			}
+		}
+		// the font of the game reads these codes, the engine passes them on
+		for (int at = text.indexOf(ChatFormatting.PREFIX_CODE); at >= 0; at = text.indexOf(ChatFormatting.PREFIX_CODE, at + 1)) {
+			if (at + 1 >= text.length() || ChatFormatting.getByCode(text.charAt(at + 1)) == null) {
+				this.problems.add("unknown formatting code at " + at + " in " + language + " " + key);
 			}
 		}
 	}
@@ -251,8 +299,11 @@ public class ForestersManualTest {
 		checkItem(item);
 		Identifier key = Identifier.tryParse(item);
 		RecipeMap recipes = this.helper.getLevel().recipeAccess().recipeMap();
-		if (key == null || RecipeUtils.getRecipes(recipes, type).noneMatch(recipe -> BuiltInRegistries.ITEM.getKey(recipe.getResultItem().getItem()).equals(key))) {
+		IForestryRecipe recipe = key == null ? null : BookRecipes.byOutput(recipes, type, new ItemStack(BuiltInRegistries.ITEM.getValue(key)));
+		if (recipe == null) {
 			this.problems.add(BuiltInRegistries.RECIPE_TYPE.getKey(type.type()) + " recipe for " + item);
+		} else if (recipe instanceof IFabricatorRecipe fabricator && BookRecipes.meltable(recipes, fabricator.getResultFluid()).isEmpty()) {
+			this.problems.add("nothing melts into " + BuiltInRegistries.FLUID.getKey(fabricator.getResultFluid().getFluid()) + " for the fabricator recipe of " + item);
 		}
 	}
 
@@ -285,19 +336,23 @@ public class ForestersManualTest {
 		}
 	}
 
-	// the union over every jar, as a client merges the lang files of its packs
-	private static Map<String, String> readLang(String lang) {
-		String path = "assets/forestry/lang/" + lang + ".json";
-		Map<String, String> texts = new HashMap<>();
-		ModList.get().forEachModFile(modFile -> modFile.getContents().visitContent("assets/forestry/lang", (file, resource) -> {
-			if (file.endsWith(path)) {
-				try (Reader reader = resource.bufferedReader()) {
-					GsonHelper.parse(reader).entrySet().forEach(entry -> texts.put(entry.getKey(), entry.getValue().getAsString()));
+	// every language with book texts, each the union over every jar as a client merges the lang files of its packs
+	private static Map<String, Map<String, String>> readBookLanguages() {
+		String folder = "assets/forestry/lang/";
+		Map<String, Map<String, String>> languages = new TreeMap<>();
+		ModList.get().forEachModFile(modFile -> modFile.getContents().visitContent(folder, (file, resource) -> {
+			int start = file.indexOf(folder);
+			if (start >= 0 && file.endsWith(".json")) {
+				String language = file.substring(start + folder.length(), file.length() - ".json".length());
+				// the reader of the game, it takes files a strict parser refuses
+				try (InputStream stream = resource.open()) {
+					Language.loadFromJson(stream, languages.computeIfAbsent(language, name -> new HashMap<>())::put);
 				} catch (Exception e) {
 					throw new IllegalStateException("cannot read " + file, e);
 				}
 			}
 		}));
-		return texts;
+		languages.values().removeIf(texts -> texts.keySet().stream().noneMatch(key -> key.startsWith(BOOK_KEY)));
+		return languages;
 	}
 }

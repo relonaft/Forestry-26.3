@@ -26,7 +26,7 @@ final class BookScreen extends Screen {
 	private static final int LEFT_PAGE_X = 15;
 	private static final int RIGHT_PAGE_X = 141;
 	private static final int PAGE_Y = 18;
-	// under the book, so that no arrow covers a page
+	// deviation: under the book, where no arrow can cover a page
 	private static final int ARROW_Y = BOOK_HEIGHT + 3;
 	private static final int ARROW_WIDTH = 18;
 	private static final int ARROW_HEIGHT = 10;
@@ -101,7 +101,7 @@ final class BookScreen extends Screen {
 		return switch (arrow) {
 			case PREVIOUS -> this.location.spread() > 0;
 			case NEXT -> this.location.spread() < spreads() - 1;
-			case BACK -> !this.history.isEmpty();
+			case BACK -> !this.history.isEmpty() || this.location.target().id() != null;
 		};
 	}
 
@@ -112,7 +112,8 @@ final class BookScreen extends Screen {
 		switch (arrow) {
 			case PREVIOUS -> turnTo(this.location.spread() - 1);
 			case NEXT -> turnTo(this.location.spread() + 1);
-			case BACK -> open(this.history.pop());
+			// a book opened again has no history, last brought the reader here
+			case BACK -> open(this.history.isEmpty() ? new Location(this.book.parent(this.location.target()), 0) : this.history.pop());
 		}
 		playTurn();
 	}

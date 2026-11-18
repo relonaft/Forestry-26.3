@@ -48,12 +48,18 @@ final class BookPages {
 		BookPages builder = new BookPages(book, font);
 		BookCategory category = target.category() ? book.categories().get(target.id()) : null;
 		BookEntry entry = target.category() ? null : book.entries().get(target.id());
-		if (category != null) {
-			builder.category(category);
-		} else if (entry != null) {
-			builder.entry(entry);
-		} else {
-			builder.landing();
+		try {
+			if (category != null) {
+				builder.category(category);
+			} else if (entry != null) {
+				builder.entry(entry);
+			} else {
+				builder.landing();
+			}
+		} catch (RuntimeException e) {
+			BookClient.warnOnce("Cannot build the book pages of " + target.id() + ": " + e);
+			builder.pages.clear();
+			builder.pages.add(new BookPage("").add(TextElement.error(font, Component.translatable("for.gui.book.error.page", e.toString()), 0, 0, BookPage.WIDTH)));
 		}
 		return builder.pages;
 	}
@@ -69,6 +75,7 @@ final class BookPages {
 		if (this.pages.size() % 2 == 0) {
 			this.pages.add(new BookPage(""));
 		}
+		// deviation: the categories are a list of names, Patchouli shows a grid of icons
 		BookPage list = header("", Component.translatable("for.gui.book.categories"));
 		rows(list, BODY_Y, categoryRows(null));
 	}
@@ -147,7 +154,8 @@ final class BookPages {
 					page.add(LabelElement.header(Component.translatable(data.string("title")), 0));
 					y = 12;
 				}
-				// Patchouli shows the 200 by 200 corner of a 256 texture at half size. Only the first image is shown
+				// the 200 by 200 corner of a 256 texture at half size, as Patchouli
+				// deviation: only the first image is shown, Patchouli pages through the list
 				image(page, GsonHelper.getAsJsonArray(data.json(), "images").get(0).getAsString(), 8, y, 200, 200, 256, 256, 0.5f);
 				flow(page, data.string("text"), y + 106);
 			}
@@ -192,23 +200,27 @@ final class BookPages {
 		}
 	}
 
-	// one or two recipes, each under the name of its result, then the text
 	private void crafting(BookPage page, BookPageData data) {
-		int y = 0;
-		for (String key : List.of("recipe", "recipe2")) {
-			if (data.has(key)) {
-				ItemStack result = RecipePages.crafting(this.font, page, (BookPage.WIDTH - RecipePages.CRAFTING_WIDTH) / 2, y + 12, data.string(key));
-				boolean titled = y == 0 && data.has("title");
-				if (titled || !result.isEmpty()) {
-					page.add(LabelElement.header(titled ? Component.translatable(data.string("title")) : result.getHoverName(), y));
-				}
-				y += 12 + RecipePages.HEIGHT + 6;
+		int x = (BookPage.WIDTH - RecipePages.CRAFTING_WIDTH) / 2;
+		ItemStack first = RecipePages.crafting(this.font, page, x, 12, data.string("recipe"));
+		if (data.has("title")) {
+			page.add(LabelElement.header(Component.translatable(data.string("title")), 0));
+		} else if (!first.isEmpty()) {
+			page.add(LabelElement.header(first.getHoverName(), 0));
+		}
+		int y = 12 + RecipePages.HEIGHT + 6;
+		if (data.has("recipe2")) {
+			ItemStack second = RecipePages.crafting(this.font, page, x, y + 12, data.string("recipe2"));
+			// as Patchouli: a title stands for both recipes, and a name is not repeated
+			if (!data.has("title") && !second.isEmpty() && !second.getHoverName().getString().equals(first.getHoverName().getString())) {
+				page.add(LabelElement.header(second.getHoverName(), y));
 			}
+			y += 12 + RecipePages.HEIGHT + 6;
 		}
 		flow(page, data.string("text"), y);
 	}
 
-	// the layers from the bottom up, each a flat grid of items. Patchouli drew the structure in 3D
+	// deviation: the layers from the bottom up as flat grids of items, Patchouli draws the structure in 3D
 	private void multiblock(BookPage page, BookPageData data) {
 		JsonObject multiblock = GsonHelper.getAsJsonObject(data.json(), "multiblock");
 		JsonObject mapping = GsonHelper.getAsJsonObject(multiblock, "mapping");
@@ -277,7 +289,6 @@ final class BookPages {
 		return Language.getInstance().getOrDefault(key);
 	}
 
-	// a page with a centered name and a line under it
 	private BookPage header(String anchor, Component name) {
 		return new BookPage(anchor)
 			.add(LabelElement.header(name, 0))
@@ -298,7 +309,6 @@ final class BookPages {
 		this.pages.add(new BookPage(data.anchor()).add(TextElement.error(this.font, message, 0, 0, BookPage.WIDTH)));
 	}
 
-	// adds the page with the text from y down
 	// deviation: Patchouli lets a long text run off its page, here it goes on to as many pages as it needs
 	private void flow(BookPage page, String key, int y) {
 		this.pages.add(page);

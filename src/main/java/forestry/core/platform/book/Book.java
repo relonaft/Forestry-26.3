@@ -33,11 +33,27 @@ public record Book(String name, String landingText, Identifier texture, Map<Iden
 		return this.categories.containsKey(id) ? new Link(true, id, "") : null;
 	}
 
+	// where the way back leads when the reader has no history
+	public Link parent(Link link) {
+		if (link.category()) {
+			BookCategory category = this.categories.get(link.id());
+			return category == null || category.parent() == null ? Link.LANDING : new Link(true, category.parent(), "");
+		}
+		BookEntry entry = this.entries.get(link.id());
+		return entry == null ? Link.LANDING : new Link(true, entry.category(), "");
+	}
+
+	// without a category that has nothing to show, its entries can be in a jar that is not installed
 	public List<BookCategory> categoriesIn(@Nullable Identifier parent) {
 		return this.categories.values().stream()
-			.filter(category -> Objects.equals(category.parent(), parent))
+			.filter(category -> Objects.equals(category.parent(), parent) && hasContent(category.id()))
 			.sorted(Comparator.comparingInt(BookCategory::sortnum))
 			.toList();
+	}
+
+	private boolean hasContent(Identifier category) {
+		return this.entries.values().stream().anyMatch(entry -> entry.category().equals(category))
+			|| this.categories.values().stream().anyMatch(child -> category.equals(child.parent()) && hasContent(child.id()));
 	}
 
 	public List<BookEntry> entriesIn(Identifier category) {

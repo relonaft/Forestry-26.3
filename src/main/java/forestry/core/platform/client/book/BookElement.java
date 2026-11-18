@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import javax.annotation.Nullable;
 
-// one drawn piece of a page. left and top are the screen position of the page, the mouse is in screen pixels
+// left and top place the page on the screen, the mouse is in screen pixels
 interface BookElement {
 	void extract(GuiGraphicsExtractor graphics, Font font, int left, int top, int mouseX, int mouseY);
 
