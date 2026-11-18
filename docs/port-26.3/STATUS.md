@@ -35,6 +35,10 @@
 
 ### 2026-11-18
 
+- Первая альфа по просьбе владельца: pre-release `3.0.0-alpha9-port26.3` на GitHub (тег на `82714c742`),
+  четыре jar мода, jar с API и исходниками. Перед выкладкой: чистая сборка, GameTest 189 из 189, чистый
+  сервер NeoForge 26.3.0.103 только с этими четырьмя jar (без JEI и Curios) дошёл до `Done`, загрузил мир
+  повторно и остановился командой `stop`. README и описание репозитория обновлены.
 - Интеграция с JEI переведена с API, помеченного в JEI 31 к удалению, на новый: `IRecipeType` вместо
   `RecipeType`, `add` вместо `addItemStack`, `addIngredients` и `addFluidStack`, `addCraftingStation` вместо
   `addRecipeCatalyst`, перенос рецепта через `IRecipeTransferContext` (части `main` и `farms`). Старый
