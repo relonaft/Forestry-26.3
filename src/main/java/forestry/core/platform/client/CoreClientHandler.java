@@ -13,6 +13,7 @@ import forestry.api.core.ISpectacleBlock;
 import forestry.apiimpl.client.ForestryClientApiImpl;
 import forestry.apiimpl.plugin.PluginManager;
 import forestry.core.engine.circuits.SolderingIronScreen;
+import forestry.core.platform.client.book.BookClient;
 import forestry.core.platform.config.Constants;
 import forestry.core.features.*;
 import forestry.core.platform.fluids.ForestryFluids;
@@ -159,6 +160,11 @@ public class CoreClientHandler implements IClientModuleHandler {
 
 		event.addListener(ForestryConstants.forestry("model_cache"), (currentReload, taskExecutor, prepBarrier, reloadExecutor) -> {
 			return prepBarrier.wait(Unit.INSTANCE).thenRunAsync(ModelBlockCached::clear, reloadExecutor);
+		});
+
+		// the pages and the translations of the manual come from the resource packs
+		event.addListener(ForestryConstants.forestry("foresters_manual"), (currentReload, taskExecutor, prepBarrier, reloadExecutor) -> {
+			return prepBarrier.wait(Unit.INSTANCE).thenRunAsync(BookClient::clear, reloadExecutor);
 		});
 	}
 
