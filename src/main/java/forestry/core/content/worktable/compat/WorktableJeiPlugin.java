@@ -38,6 +38,6 @@ public class WorktableJeiPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-		registration.addRecipeCatalyst(new ItemStack(WorktableBlocks.WORKTABLE), RecipeTypes.CRAFTING);
+		registration.addCraftingStation(RecipeTypes.CRAFTING, new ItemStack(WorktableBlocks.WORKTABLE));
 	}
 }

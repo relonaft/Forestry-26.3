@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 
 /**
  * To make your own backpack, create a backpack definition and pass it to
- * {@link IBackpackInterface#createBackpack(IBackpackDefinition, EnumBackpackType)}.
+ * {@link IBackpackInterface#createBackpack(net.minecraft.resources.Identifier, IBackpackDefinition, EnumBackpackType)}.
  */
 public interface IBackpackDefinition {
 	/**
@@ -30,7 +30,7 @@ public interface IBackpackDefinition {
 	 * <p>
 	 * For Backpack Implementers: you can create a new filter with
 	 * {@link IBackpackInterface#createBackpackFilter(net.minecraft.tags.TagKey, net.minecraft.tags.TagKey)} or
-	 * {@link IBackpackInterface#createNaturalistBackpackFilter(net.minecraft.resources.ResourceLocation)}
+	 * {@link IBackpackInterface#createNaturalistBackpackFilter(net.minecraft.resources.Identifier)}
 	 * or implement your own.
 	 *
 	 * @return the backpack's item filter.

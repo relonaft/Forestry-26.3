@@ -8,6 +8,7 @@ import forestry.core.content.worktable.screens.WorktableMenu;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import mezz.jei.api.recipe.transfer.IRecipeTransferContext;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.core.NonNullList;
@@ -41,7 +42,20 @@ class WorktableRecipeTransferHandler implements IRecipeTransferHandler<Worktable
 
 	@Nullable
 	@Override
+	public IRecipeTransferError transferRecipe(IRecipeTransferContext<RecipeHolder<CraftingRecipe>, WorktableMenu> context, boolean doTransfer) {
+		return transfer(context.getContainer(), context.getRecipe(), context.getRecipeSlots(), context.getPlayer(), context.isMaxTransfer(), doTransfer);
+	}
+
+	// still abstract in JEI 31, delete once JEI removes it
+	@SuppressWarnings("removal")
+	@Nullable
+	@Override
 	public IRecipeTransferError transferRecipe(WorktableMenu container, RecipeHolder<CraftingRecipe> recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
+		return transfer(container, recipe, recipeSlots, player, maxTransfer, doTransfer);
+	}
+
+	@Nullable
+	private IRecipeTransferError transfer(WorktableMenu container, RecipeHolder<CraftingRecipe> recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
 		if (doTransfer) {
 			CraftingContainer inventory = new TransientCraftingContainer(container, 3, 3);
 

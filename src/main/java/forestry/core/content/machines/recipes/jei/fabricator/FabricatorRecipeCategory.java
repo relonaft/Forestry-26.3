@@ -21,7 +21,7 @@ import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -64,7 +64,7 @@ public class FabricatorRecipeCategory extends ForestryRecipeCategory<IFabricator
 	}
 
 	@Override
-	public RecipeType<IFabricatorRecipe> getRecipeType() {
+	public IRecipeType<IFabricatorRecipe> getRecipeType() {
 		return ForestryRecipeType.FABRICATOR;
 	}
 
@@ -84,7 +84,7 @@ public class FabricatorRecipeCategory extends ForestryRecipeCategory<IFabricator
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 6, 32)
 			.setFluidRenderer(2000, false, 16, 16)
-			.addFluidStack(recipeLiquid.getFluid(), recipeLiquid.getAmount());
+			.add(recipeLiquid.getFluid(), recipeLiquid.getAmount());
 
 		ShapedRecipe craftingGridRecipe = recipe.getCraftingGridRecipe();
 		List<IRecipeSlotBuilder> craftingSlots = JeiUtil.layoutSlotGrid(builder, RecipeIngredientRole.INPUT, 3, 3, 47, 1, 18);
@@ -100,6 +100,6 @@ public class FabricatorRecipeCategory extends ForestryRecipeCategory<IFabricator
 		//		.addIngredients(plan);
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 119, 37)
-			.addItemStack(craftingGridRecipe.assemble(CraftingInput.EMPTY));
+			.add(craftingGridRecipe.assemble(CraftingInput.EMPTY));
 	}
 }

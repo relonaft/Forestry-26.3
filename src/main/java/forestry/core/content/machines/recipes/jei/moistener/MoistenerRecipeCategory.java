@@ -20,7 +20,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -48,7 +48,7 @@ public class MoistenerRecipeCategory extends ForestryRecipeCategory<IMoistenerRe
 	}
 
 	@Override
-	public RecipeType<IMoistenerRecipe> getRecipeType() {
+	public IRecipeType<IMoistenerRecipe> getRecipeType() {
 		return ForestryRecipeType.MOISTENER;
 	}
 
@@ -60,14 +60,14 @@ public class MoistenerRecipeCategory extends ForestryRecipeCategory<IMoistenerRe
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, IMoistenerRecipe recipe, IFocusGroup focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 128, 4)
-			.addIngredients(recipe.getInput());
+			.add(recipe.getInput());
 
 		var fuels = JeiDataMaps.entries(ForestryDataMaps.MOISTENER_FUELS);
 		IRecipeSlotBuilder fuelResourceSlot = builder.addSlot(RecipeIngredientRole.INPUT, 24, 43)
 			.addItemStacks(fuels.stream().map(Pair::getFirst).toList());
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 128, 40)
-			.addItemStack(recipe.getProduct());
+			.add(recipe.getProduct());
 
 		IRecipeSlotBuilder fuelProductsSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 90, 22)
 			.addItemStacks(fuels.stream().map(entry -> entry.getSecond().product()).toList());
@@ -76,7 +76,7 @@ public class MoistenerRecipeCategory extends ForestryRecipeCategory<IMoistenerRe
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.setFluidRenderer(10000, false, 16, 58)
 			.setOverlay(this.tankOverlay, 0, 0)
-			.addFluidStack(fluidInput.getFluid(), fluidInput.getAmount());
+			.add(fluidInput.getFluid(), fluidInput.getAmount());
 
 		builder.createFocusLink(fuelResourceSlot, fuelProductsSlot);
 	}

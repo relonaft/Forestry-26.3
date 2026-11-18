@@ -13,7 +13,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -32,7 +32,7 @@ public class RainmakerRecipeCategory extends ForestryRecipeCategory<RainmakerJei
 	}
 
 	@Override
-	public RecipeType<RainmakerJeiRecipe> getRecipeType() {
+	public IRecipeType<RainmakerJeiRecipe> getRecipeType() {
 		return ForestryRecipeType.RAINMAKER;
 	}
 
@@ -45,7 +45,7 @@ public class RainmakerRecipeCategory extends ForestryRecipeCategory<RainmakerJei
 	public void setRecipe(IRecipeLayoutBuilder builder, RainmakerJeiRecipe recipe, IFocusGroup focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.setBackground(this.slot, -1, -1)
-			.addItemStack(recipe.substrate());
+			.add(recipe.substrate());
 	}
 
 	@Override

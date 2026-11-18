@@ -19,7 +19,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -48,7 +48,7 @@ public class CarpenterRecipeCategory extends ForestryRecipeCategory<ICarpenterRe
 	}
 
 	@Override
-	public RecipeType<ICarpenterRecipe> getRecipeType() {
+	public IRecipeType<ICarpenterRecipe> getRecipeType() {
 		return ForestryRecipeType.CARPENTER;
 	}
 
@@ -64,17 +64,17 @@ public class CarpenterRecipeCategory extends ForestryRecipeCategory<ICarpenterRe
 		ItemStack processingIngredient = craftingGridRecipe.assemble(CraftingInput.EMPTY).copy();
 		processingIngredient.setCount(1);
 		builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 71, 35)
-			.addItemStack(processingIngredient);
+			.add(processingIngredient);
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 120 - 9, 56 - 16)
-			.addItemStack(craftingGridRecipe.assemble(CraftingInput.EMPTY));
+			.add(craftingGridRecipe.assemble(CraftingInput.EMPTY));
 
 		List<IRecipeSlotBuilder> craftingSlots = JeiUtil.layoutSlotGrid(builder, RecipeIngredientRole.INPUT, 3, 3, 1, 4, 18);
 		JeiUtil.setCraftingItems(craftingSlots, craftingGridRecipe, this.craftingGridHelper);
 
 		// crate comes last to match the internal inventory layout of the carpenter
 		IRecipeSlotBuilder boxSlot = builder.addSlot(RecipeIngredientRole.INPUT, 74, 4);
-		recipe.getBox().ifPresent(boxSlot::addIngredients);
+		recipe.getBox().ifPresent(box -> boxSlot.add(box));
 
 		IRecipeSlotBuilder tankSlot = builder.addSlot(RecipeIngredientRole.INPUT, 141, 1)
 			.setFluidRenderer(10000, false, 16, 58)
@@ -82,7 +82,7 @@ public class CarpenterRecipeCategory extends ForestryRecipeCategory<ICarpenterRe
 
 		FluidStack fluidResource = recipe.getInputFluid();
 		if (!fluidResource.isEmpty()) {
-			tankSlot.addFluidStack(fluidResource.getFluid(), fluidResource.getAmount());
+			tankSlot.add(fluidResource.getFluid(), fluidResource.getAmount());
 		}
 	}
 

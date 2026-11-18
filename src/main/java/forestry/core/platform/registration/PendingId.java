@@ -18,7 +18,8 @@ public final class PendingId {
 	private PendingId() {
 	}
 
-	static <T, V extends T> V construct(ResourceKey<? extends Registry<T>> registry, Identifier id, Supplier<V> constructor) {
+	// public for the API, which builds addon items outside FeatureItem
+	public static <T, V extends T> V construct(ResourceKey<? extends Registry<T>> registry, Identifier id, Supplier<V> constructor) {
 		ResourceKey<?> outer = PENDING.get();
 		PENDING.set(ResourceKey.create(registry, id));
 		try {

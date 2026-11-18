@@ -20,7 +20,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -32,7 +32,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import java.util.List;
 
 public class FarmingInfoRecipeCategory extends ForestryRecipeCategory<FarmingInfoRecipe> {
-	public static final RecipeType<FarmingInfoRecipe> TYPE = RecipeType.create(ForestryConstants.MOD_ID, "farming", FarmingInfoRecipe.class);
+	public static final IRecipeType<FarmingInfoRecipe> TYPE = IRecipeType.create(ForestryConstants.MOD_ID, "farming", FarmingInfoRecipe.class);
 	private final IDrawable slotDrawable;
 	private final IDrawable addition;
 	private final IDrawable arrow;
@@ -49,7 +49,7 @@ public class FarmingInfoRecipeCategory extends ForestryRecipeCategory<FarmingInf
 	}
 
 	@Override
-	public RecipeType<FarmingInfoRecipe> getRecipeType() {
+	public IRecipeType<FarmingInfoRecipe> getRecipeType() {
 		return TYPE;
 	}
 
@@ -62,7 +62,7 @@ public class FarmingInfoRecipeCategory extends ForestryRecipeCategory<FarmingInf
 	public void setRecipe(IRecipeLayoutBuilder builder, FarmingInfoRecipe recipe, IFocusGroup focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 64, 19)
 			.setBackground(this.slotDrawable, -1, -1)
-			.addItemStack(recipe.tube());
+			.add(recipe.tube());
 
 		IFarmType properties = recipe.properties();
 
@@ -86,13 +86,13 @@ public class FarmingInfoRecipeCategory extends ForestryRecipeCategory<FarmingInf
 		// item stacks are distributed to ezach slot using round robin
 		for (IFarmable farmable : properties.getFarmables()) {
 			farmable.addGermlings(germling -> germlingSlots.get(germlingSlotIndex.getAndIncrement() % germlingSlotsSize)
-				.addItemStack(germling));
+				.add(germling));
 			farmable.addProducts(product -> productSlots.get(productSlotIndex.getAndIncrement() % productSlotsSize)
-				.addItemStack(product));
+				.add(product));
 		}
 		for (Soil soil : properties.getSoils()) {
 			soilSlots.get(soilSlotIndex++ % soilSlotsSize)
-				.addItemStack(soil.resource());
+				.add(soil.resource());
 		}
 	}
 

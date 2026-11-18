@@ -52,6 +52,6 @@ public class FarmingJeiPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-		registration.addRecipeCatalyst(new ItemStack(CoreItems.CIRCUITBOARDS.get(EnumCircuitBoardType.INTRICATE)), FarmingInfoRecipeCategory.TYPE);
+		registration.addCraftingStation(FarmingInfoRecipeCategory.TYPE, new ItemStack(CoreItems.CIRCUITBOARDS.get(EnumCircuitBoardType.INTRICATE)));
 	}
 }

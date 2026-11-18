@@ -12,7 +12,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
@@ -27,7 +27,7 @@ public class MutationsRecipeCategory implements IRecipeCategory<MutationDisplay>
 	private static final int SPECIES_SLOT_1_X = 71 + 1;
 	private static final int SPECIES_SLOT_2_X = 125 + 1;
 
-	private final RecipeType<MutationDisplay> type;
+	private final IRecipeType<MutationDisplay> type;
 	private final Component title;
 	private final IDrawable background;
 	private final IDrawable icon;
@@ -38,12 +38,12 @@ public class MutationsRecipeCategory implements IRecipeCategory<MutationDisplay>
 		this.icon = icon;
 
 		this.speciesType = type;
-		this.type = new RecipeType<>(ModUtil.withSuffix(type.id(), "_mutations"), MutationDisplay.class);
+		this.type = IRecipeType.create(ModUtil.withSuffix(type.id(), "_mutations"), MutationDisplay.class);
 		this.title = Component.translatable("for.jei.mutations." + type.id().getNamespace() + '.' + type.id().getPath());
 	}
 
 	@Override
-	public RecipeType<MutationDisplay> getRecipeType() {
+	public IRecipeType<MutationDisplay> getRecipeType() {
 		return this.type;
 	}
 
@@ -80,18 +80,18 @@ public class MutationsRecipeCategory implements IRecipeCategory<MutationDisplay>
 
 		// makes all (default) members of the species show the recipe instead of just the drone or princess
 		for (ILifeStage stage : mutation.getType().getLifeStages()) {
-			inputs.addItemStack(mutation.getFirstParent().createStack(stage));
-			inputs.addItemStack(mutation.getSecondParent().createStack(stage));
-			outputs.addItemStack(mutation.getResult().createIndividual(resultGenome).createStack(stage));
+			inputs.add(mutation.getFirstParent().createStack(stage));
+			inputs.add(mutation.getSecondParent().createStack(stage));
+			outputs.add(mutation.getResult().createIndividual(resultGenome).createStack(stage));
 		}
 
 		// display correct stages in GUI
 		builder.addSlot(RecipeIngredientRole.INPUT, SPECIES_SLOT_0_X, SPECIES_SLOTS_Y)
-			.addItemStack(recipe.firstParent);
+			.add(recipe.firstParent);
 		builder.addSlot(RecipeIngredientRole.INPUT, SPECIES_SLOT_1_X, SPECIES_SLOTS_Y)
-			.addItemStack(recipe.secondParent);
+			.add(recipe.secondParent);
 		builder.addSlot(RecipeIngredientRole.OUTPUT, SPECIES_SLOT_2_X, SPECIES_SLOTS_Y)
-			.addItemStack(result);
+			.add(result);
 	}
 
 	static ItemStack createAnalyzedStack(ILifeStage stage, ISpecies<?> species, @Nullable IGenome genome) {

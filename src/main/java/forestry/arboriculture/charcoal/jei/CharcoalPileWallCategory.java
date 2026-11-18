@@ -16,7 +16,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -44,7 +44,7 @@ public class CharcoalPileWallCategory extends ForestryRecipeCategory<ICharcoalPi
 	}
 
 	@Override
-	public RecipeType<ICharcoalPileWall> getRecipeType() {
+	public IRecipeType<ICharcoalPileWall> getRecipeType() {
 		return ArboricultureJeiPlugin.CHARCOAL_PILE_TYPE;
 	}
 
@@ -70,18 +70,18 @@ public class CharcoalPileWallCategory extends ForestryRecipeCategory<ICharcoalPi
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 21, 17)
 			.setBackground(this.slot, -1, -1)
-			.addItemStack(CharcoalBlocks.LOG_PILE.stack());
+			.add(CharcoalBlocks.LOG_PILE.stack());
 
 		int amount = 9 + recipe.getCharcoalAmount();
 
 		ItemStack coal = new ItemStack(Items.CHARCOAL, amount);
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 85, 17)
 			.setBackground(this.slot, -1, -1)
-			.addItemStack(coal);
+			.add(coal);
 
 		ItemStack ash = CoreItems.ASH.stack(amount / 4);
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 105, 17)
 			.setBackground(this.slot, -1, -1)
-			.addItemStack(ash);
+			.add(ash);
 	}
 }

@@ -16,7 +16,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -39,7 +39,7 @@ public class StillRecipeCategory extends ForestryRecipeCategory<IStillRecipe> {
 	}
 
 	@Override
-	public RecipeType<IStillRecipe> getRecipeType() {
+	public IRecipeType<IStillRecipe> getRecipeType() {
 		return ForestryRecipeType.STILL;
 	}
 
@@ -53,12 +53,12 @@ public class StillRecipeCategory extends ForestryRecipeCategory<IStillRecipe> {
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.setFluidRenderer(10000, false, 16, 58)
 			.setOverlay(this.tankOverlay, 0, 0)
-			.addFluidStack(recipe.getInput().getFluid(), recipe.getInput().getAmount());
+			.add(recipe.getInput().getFluid(), recipe.getInput().getAmount());
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 91, 1)
 			.setFluidRenderer(10000, false, 16, 58)
 			.setOverlay(this.tankOverlay, 0, 0)
-			.addFluidStack(recipe.getOutput().getFluid(), recipe.getOutput().getAmount());
+			.add(recipe.getOutput().getFluid(), recipe.getOutput().getAmount());
 	}
 
 	@Override

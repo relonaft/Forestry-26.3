@@ -18,7 +18,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -49,7 +49,7 @@ public class FermenterRecipeCategory extends ForestryRecipeCategory<IFermenterRe
 	}
 
 	@Override
-	public RecipeType<IFermenterRecipe> getRecipeType() {
+	public IRecipeType<IFermenterRecipe> getRecipeType() {
 		return ForestryRecipeType.FERMENTER;
 	}
 
@@ -61,7 +61,7 @@ public class FermenterRecipeCategory extends ForestryRecipeCategory<IFermenterRe
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, IFermenterRecipe recipe, IFocusGroup focuses) {
 		IRecipeSlotBuilder ingredientInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 51, 5)
-			.addIngredients(recipe.getInputItem());
+			.add(recipe.getInputItem());
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 41, 39)
 			.addItemStacks(JeiDataMaps.stacks(ForestryDataMaps.FERMENTER_FUELS));
@@ -71,7 +71,7 @@ public class FermenterRecipeCategory extends ForestryRecipeCategory<IFermenterRe
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.setFluidRenderer(3000, false, 16, 58)
 			.setOverlay(this.tankOverlay, 0, 0)
-			.addFluidStack(fluidInput.getFluid(), fluidInput.getAmount());
+			.add(fluidInput.getFluid(), fluidInput.getAmount());
 
 		final int baseAmount = Math.round(recipe.getFermentationValue() * recipe.getModifier());
 		List<FluidStack> outputs =
@@ -89,7 +89,7 @@ public class FermenterRecipeCategory extends ForestryRecipeCategory<IFermenterRe
 			.setFluidRenderer(3000, false, 16, 58)
 			.setOverlay(this.tankOverlay, 0, 0);
 		for (FluidStack output : outputs) {
-			fluidOutputSlot.addFluidStack(output.getFluid(), output.getAmount());
+			fluidOutputSlot.add(output.getFluid(), output.getAmount());
 		}
 
 		builder.createFocusLink(ingredientInputSlot, fluidOutputSlot);

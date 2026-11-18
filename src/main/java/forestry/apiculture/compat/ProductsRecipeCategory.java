@@ -12,7 +12,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
@@ -30,7 +30,7 @@ public class ProductsRecipeCategory implements IRecipeCategory<ProductRecipe> {
 
 	private final IDrawable icon;
 	private final IDrawable background;
-	private final RecipeType<ProductRecipe> type;
+	private final IRecipeType<ProductRecipe> type;
 	private final Component title;
 	final ISpeciesType<? extends ISpecies<?>, ?> speciesType;
 
@@ -39,12 +39,12 @@ public class ProductsRecipeCategory implements IRecipeCategory<ProductRecipe> {
 		this.icon = icon;
 
 		this.speciesType = type;
-		this.type = new RecipeType<>(ModUtil.withSuffix(type.id(), "_products"), ProductRecipe.class);
+		this.type = IRecipeType.create(ModUtil.withSuffix(type.id(), "_products"), ProductRecipe.class);
 		this.title = Component.translatable("for.jei.products." + type.id().getNamespace() + '.' + type.id().getPath());
 	}
 
 	@Override
-	public RecipeType<ProductRecipe> getRecipeType() {
+	public IRecipeType<ProductRecipe> getRecipeType() {
 		return this.type;
 	}
 
@@ -75,7 +75,7 @@ public class ProductsRecipeCategory implements IRecipeCategory<ProductRecipe> {
 
 		// input (try to display queen or equivalent)
 		builder.addSlot(RecipeIngredientRole.INPUT, SPECIES_SLOT_X, SPECIES_SLOT_Y)
-			.addItemStack(MutationsRecipeCategory.createAnalyzedStack(this.speciesType.getTypeForMutation(2), recipe.species, null));
+			.add(MutationsRecipeCategory.createAnalyzedStack(this.speciesType.getTypeForMutation(2), recipe.species, null));
 
 		// products
 		if (recipe.products != null) {
@@ -104,7 +104,7 @@ public class ProductsRecipeCategory implements IRecipeCategory<ProductRecipe> {
 		if (products <= 3) {
 			for (int i = 0; i < products; i++) {
 				builder.addSlot(RecipeIngredientRole.OUTPUT, ProductsRecipeCategory.PRODUCT_SLOTS_X + i * 22, slotsY)
-					.addItemStack(productsList.get(i))
+					.add(productsList.get(i))
 					.addRichTooltipCallback(callback);
 			}
 		} else {

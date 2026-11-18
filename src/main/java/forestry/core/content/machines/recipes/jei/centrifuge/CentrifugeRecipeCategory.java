@@ -20,7 +20,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -44,7 +44,7 @@ public class CentrifugeRecipeCategory extends ForestryRecipeCategory<ICentrifuge
 	}
 
 	@Override
-	public RecipeType<ICentrifugeRecipe> getRecipeType() {
+	public IRecipeType<ICentrifugeRecipe> getRecipeType() {
 		return ForestryRecipeType.CENTRIFUGE;
 	}
 
@@ -56,7 +56,7 @@ public class CentrifugeRecipeCategory extends ForestryRecipeCategory<ICentrifuge
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, ICentrifugeRecipe recipe, IFocusGroup focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 5, 19)
-			.addIngredients(recipe.getInput());
+			.add(recipe.getInput());
 
 		List<IRecipeSlotBuilder> outputSlots = JeiUtil.layoutSlotGrid(builder, RecipeIngredientRole.OUTPUT, 3, 3, 101, 1, 18);
 
@@ -66,7 +66,7 @@ public class CentrifugeRecipeCategory extends ForestryRecipeCategory<ICentrifuge
 		for (int i = 0; i < sortedProducts.size() && i < outputSlots.size(); i++) {
 			IProduct product = sortedProducts.get(i);
 			outputSlots.get(i)
-				.addItemStack(product.createStack())
+				.add(product.createStack())
 				.addRichTooltipCallback(new ChanceTooltipCallback(product.chance()));
 		}
 	}

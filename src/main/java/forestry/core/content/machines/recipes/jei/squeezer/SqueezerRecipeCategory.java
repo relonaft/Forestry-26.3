@@ -20,7 +20,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -48,7 +48,7 @@ public class SqueezerRecipeCategory extends ForestryRecipeCategory<ISqueezerReci
 	}
 
 	@Override
-	public RecipeType<ISqueezerRecipe> getRecipeType() {
+	public IRecipeType<ISqueezerRecipe> getRecipeType() {
 		return ForestryRecipeType.SQUEEZER;
 	}
 
@@ -64,13 +64,13 @@ public class SqueezerRecipeCategory extends ForestryRecipeCategory<ISqueezerReci
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 88, 44)
 			.addRichTooltipCallback(new ChanceTooltipCallback(recipe.getRemnantsChance()))
-			.addItemStack(recipe.getRemnants());
+			.add(recipe.getRemnants());
 
 		FluidStack displayFluid = recipe.getFluidOutput().createFluidStack();
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 113, 2)
 			.setFluidRenderer(10000, false, 16, 58)
 			.setOverlay(this.tankOverlay, 0, 0)
-			.addFluidStack(displayFluid.getFluid(), displayFluid.getAmount());
+			.add(displayFluid.getFluid(), displayFluid.getAmount());
 	}
 
 	@Override

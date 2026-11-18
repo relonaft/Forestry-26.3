@@ -20,14 +20,17 @@ import java.util.function.Predicate;
  * or create your own.
  * <p>
  * After you've created your backpack definition, create the item with
- * {@link #createBackpack(IBackpackDefinition, EnumBackpackType)}
- * or {@link #createNaturalistBackpack(IBackpackDefinition, Identifier)}
- * and then register the returned item like any other item.
+ * {@link #createBackpack(Identifier, IBackpackDefinition, EnumBackpackType)}
+ * or {@link #createNaturalistBackpack(Identifier, IBackpackDefinition, Identifier)}
+ * inside your item registration, for example
+ * {@code ITEMS.register("my_backpack", id -> api.createBackpack(id, definition, type))}.
  */
 public interface IBackpackInterface {
 
 	/**
 	 * Creates a backpack with the given UID and type, returning the item.
+	 * Only works inside Forestry's own item registration, addons use
+	 * {@link #createBackpack(Identifier, IBackpackDefinition, EnumBackpackType)}.
 	 *
 	 * @param definition The backpack definition.
 	 * @param type       Type of backpack.
@@ -36,13 +39,39 @@ public interface IBackpackInterface {
 	Item createBackpack(IBackpackDefinition definition, EnumBackpackType type);
 
 	/**
+	 * Creates a backpack item that will be registered under the given id.
+	 * Since Minecraft 1.21.2 an item must know its id when it is constructed, so addons call this
+	 * from their item registration instead of {@link #createBackpack(IBackpackDefinition, EnumBackpackType)},
+	 * which only works inside Forestry's own registration.
+	 *
+	 * @param id         The registry name the item will be registered under.
+	 * @param definition The backpack definition.
+	 * @param type       Type of backpack.
+	 * @return Created backpack item.
+	 */
+	Item createBackpack(Identifier id, IBackpackDefinition definition, EnumBackpackType type);
+
+	/**
 	 * Create a backpack that can hold items from a specific {@link ISpeciesType}.
+	 * Only works inside Forestry's own item registration, addons use
+	 * {@link #createNaturalistBackpack(Identifier, IBackpackDefinition, Identifier)}.
 	 *
 	 * @param definition    The backpack definition.
 	 * @param speciesTypeId The species root.
 	 * @return Created backpack item.
 	 */
 	Item createNaturalistBackpack(IBackpackDefinition definition, Identifier speciesTypeId);
+
+	/**
+	 * Creates a naturalist backpack item that will be registered under the given id.
+	 * See {@link #createBackpack(Identifier, IBackpackDefinition, EnumBackpackType)} for why the id is needed.
+	 *
+	 * @param id            The registry name the item will be registered under.
+	 * @param definition    The backpack definition.
+	 * @param speciesTypeId The species root.
+	 * @return Created backpack item.
+	 */
+	Item createNaturalistBackpack(Identifier id, IBackpackDefinition definition, Identifier speciesTypeId);
 
 	/**
 	 * Makes a new backpack filter that accepts items in the allow tag, unless they are also in the reject tag.

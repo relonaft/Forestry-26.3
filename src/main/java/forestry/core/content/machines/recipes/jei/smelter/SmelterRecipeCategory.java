@@ -16,7 +16,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -42,7 +42,7 @@ public class SmelterRecipeCategory extends ForestryRecipeCategory<ISmelterRecipe
 	}
 
 	@Override
-	public RecipeType<ISmelterRecipe> getRecipeType() {
+	public IRecipeType<ISmelterRecipe> getRecipeType() {
 		return ForestryRecipeType.SMELTER;
 	}
 
@@ -73,7 +73,7 @@ public class SmelterRecipeCategory extends ForestryRecipeCategory<ISmelterRecipe
 		}
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 130, 23)
-			.addItemStack(recipe.getOutput());
+			.add(recipe.getOutput());
 	}
 
 	@Override

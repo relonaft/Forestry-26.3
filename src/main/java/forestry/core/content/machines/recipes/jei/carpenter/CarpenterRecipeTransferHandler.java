@@ -8,8 +8,9 @@ import forestry.core.content.machines.features.FactoryMenuTypes;
 import forestry.core.content.machines.gui.CarpenterMenu;
 import forestry.core.content.machines.network.packets.PacketRecipeTransferRequest;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import mezz.jei.api.recipe.transfer.IRecipeTransferContext;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
@@ -32,13 +33,26 @@ public class CarpenterRecipeTransferHandler implements IRecipeTransferHandler<Ca
 	}
 
 	@Override
-	public RecipeType<ICarpenterRecipe> getRecipeType() {
+	public IRecipeType<ICarpenterRecipe> getRecipeType() {
 		return ForestryRecipeType.CARPENTER;
 	}
 
 	@Nullable
 	@Override
+	public IRecipeTransferError transferRecipe(IRecipeTransferContext<ICarpenterRecipe, CarpenterMenu> context, boolean doTransfer) {
+		return transfer(context.getContainer(), context.getRecipe(), context.getRecipeSlots(), context.getPlayer(), context.isMaxTransfer(), doTransfer);
+	}
+
+	// still abstract in JEI 31, delete once JEI removes it
+	@SuppressWarnings("removal")
+	@Nullable
+	@Override
 	public IRecipeTransferError transferRecipe(CarpenterMenu container, ICarpenterRecipe recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
+		return transfer(container, recipe, recipeSlots, player, maxTransfer, doTransfer);
+	}
+
+	@Nullable
+	private IRecipeTransferError transfer(CarpenterMenu container, ICarpenterRecipe recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
 		if (doTransfer) {
 			Container craftingInventory = container.getCarpenter().getCraftingInventory();
 			NonNullList<ItemStack> items = JeiUtil.getFirstItemStacks(recipeSlots);

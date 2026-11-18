@@ -104,15 +104,15 @@ public class FactoryJeiPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registry) {
-		registry.addRecipeCatalyst(new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.CARPENTER).block()), ForestryRecipeType.CARPENTER);
-		registry.addRecipeCatalyst(new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.CENTRIFUGE).block()), ForestryRecipeType.CENTRIFUGE);
-		registry.addRecipeCatalyst(new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.FABRICATOR).block()), ForestryRecipeType.FABRICATOR);
-		registry.addRecipeCatalyst(new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.FERMENTER).block()), ForestryRecipeType.FERMENTER);
-		registry.addRecipeCatalyst(new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.MOISTENER).block()), ForestryRecipeType.MOISTENER);
-		registry.addRecipeCatalyst(new ItemStack(FactoryBlocks.TESR.get(SpecialFactoryBlockType.RAINMAKER).block()), ForestryRecipeType.RAINMAKER);
-		registry.addRecipeCatalyst(new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.SMELTER).block()), ForestryRecipeType.SMELTER);
-		registry.addRecipeCatalyst(new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.SQUEEZER).block()), ForestryRecipeType.SQUEEZER);
-		registry.addRecipeCatalyst(new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.STILL).block()), ForestryRecipeType.STILL);
+		registry.addCraftingStation(ForestryRecipeType.CARPENTER, new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.CARPENTER).block()));
+		registry.addCraftingStation(ForestryRecipeType.CENTRIFUGE, new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.CENTRIFUGE).block()));
+		registry.addCraftingStation(ForestryRecipeType.FABRICATOR, new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.FABRICATOR).block()));
+		registry.addCraftingStation(ForestryRecipeType.FERMENTER, new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.FERMENTER).block()));
+		registry.addCraftingStation(ForestryRecipeType.MOISTENER, new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.MOISTENER).block()));
+		registry.addCraftingStation(ForestryRecipeType.RAINMAKER, new ItemStack(FactoryBlocks.TESR.get(SpecialFactoryBlockType.RAINMAKER).block()));
+		registry.addCraftingStation(ForestryRecipeType.SMELTER, new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.SMELTER).block()));
+		registry.addCraftingStation(ForestryRecipeType.SQUEEZER, new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.SQUEEZER).block()));
+		registry.addCraftingStation(ForestryRecipeType.STILL, new ItemStack(FactoryBlocks.PLAIN.get(FactoryBlockType.STILL).block()));
 	}
 
 	@Override

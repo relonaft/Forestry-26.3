@@ -14,7 +14,7 @@ import forestry.core.platform.util.SpeciesUtil;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
@@ -23,7 +23,7 @@ import net.minecraft.resources.Identifier;
 
 @JeiPlugin
 public class ArboricultureJeiPlugin implements IModPlugin {
-	public static final RecipeType<ICharcoalPileWall> CHARCOAL_PILE_TYPE = RecipeType.create(ForestryConstants.MOD_ID, "charcoal.pile", ICharcoalPileWall.class);
+	public static final IRecipeType<ICharcoalPileWall> CHARCOAL_PILE_TYPE = IRecipeType.create(ForestryConstants.MOD_ID, "charcoal.pile", ICharcoalPileWall.class);
 
 	@Override
 	public Identifier getPluginUid() {
@@ -51,6 +51,6 @@ public class ArboricultureJeiPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-		registration.addRecipeCatalyst(CharcoalBlocks.LOG_PILE.stack(), CHARCOAL_PILE_TYPE);
+		registration.addCraftingStation(CHARCOAL_PILE_TYPE, CharcoalBlocks.LOG_PILE.stack());
 	}
 }

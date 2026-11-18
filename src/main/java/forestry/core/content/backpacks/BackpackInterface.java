@@ -6,6 +6,8 @@ import forestry.api.core.backpacks.IBackpackDefinition;
 import forestry.api.core.backpacks.IBackpackInterface;
 import forestry.core.content.backpacks.items.BackpackItem;
 import forestry.core.content.backpacks.items.NaturalistBackpackItem;
+import forestry.core.platform.registration.PendingId;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
@@ -35,6 +37,19 @@ public class BackpackInterface implements IBackpackInterface {
 		return new NaturalistBackpackItem(speciesTypeId, definition, new Item.Properties()
 			.stacksTo(1)
 			.component(DataComponents.CONTAINER, ItemContainerContents.EMPTY));
+	}
+
+	// deviation: the id overloads are new, a 26.3 item needs its key while it is constructed
+	@Override
+	public Item createBackpack(Identifier id, IBackpackDefinition definition, EnumBackpackType type) {
+		Preconditions.checkNotNull(id, "id must not be null");
+		return PendingId.construct(Registries.ITEM, id, () -> createBackpack(definition, type));
+	}
+
+	@Override
+	public Item createNaturalistBackpack(Identifier id, IBackpackDefinition definition, Identifier speciesTypeId) {
+		Preconditions.checkNotNull(id, "id must not be null");
+		return PendingId.construct(Registries.ITEM, id, () -> createNaturalistBackpack(definition, speciesTypeId));
 	}
 
 	@Override

@@ -59,6 +59,7 @@ public final class ForestryGameTests {
 		functions.values().forEach(register -> register.register(modBus));
 		LOGGER.info("Found {} game tests in {} classes", this.tests.size(), this.tests.stream().map(test -> test.method().getDeclaringClass()).distinct().count());
 		modBus.addListener(this::registerTests);
+		AddonBackpackTest.register(modBus);
 		// a client-only class, loaded only when the property asks for it
 		String bookSnapshots = System.getProperty("forestry.bookSnapshots", "");
 		if (FMLEnvironment.getDist() == Dist.CLIENT && !bookSnapshots.isEmpty()) {
