@@ -3,6 +3,7 @@ package forestry.core.platform.client;
 import forestry.core.engine.genetics.GeneticsReloadHandler;
 import forestry.core.engine.genetics.root.ClientBreedingHandler;
 import forestry.core.engine.genetics.root.ServerBreedingHandler;
+import forestry.core.platform.client.book.BookClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -27,6 +28,10 @@ public class ClientsideCode {
 
 	public static ServerBreedingHandler newBreedingHandler() {
 		return new ClientBreedingHandler();
+	}
+
+	public static void openForestersManual() {
+		BookClient.open();
 	}
 
 	public static boolean hasShiftDown() {
