@@ -39,7 +39,10 @@
   `RecipeType`, `add` вместо `addItemStack`, `addIngredients` и `addFluidStack`, `addCraftingStation` вместо
   `addRecipeCatalyst`, перенос рецепта через `IRecipeTransferContext` (части `main` и `farms`). Старый
   абстрактный `transferRecipe` в JEI 31 ещё обязателен, он оставлен и вызывает тот же код. Чистая сборка без
-  предупреждений JEI; GameTest 189 из 189. В клиенте JEI после правки не открывался.
+  предупреждений JEI; GameTest 189 из 189. Клиент (`-Pforestry.jeiSnapshots=<мир>`, обвязка
+  `src/test` `JeiSnapshots`): все 16 категорий Forestry открываются, у машин и кучи поленьев есть станции;
+  перенос рецепта в верстак (лодка из акации), плотника и термоионный сборщик раскладывает ингредиенты по
+  сетке. Проверял агент по снимкам и журналу, не человек.
 - API рюкзаков: добавлены `createBackpack(Identifier, ...)` и `createNaturalistBackpack(Identifier, ...)`.
   Аддон вызывает их из своей регистрации предметов, ключ предмета ставится до конструктора. Тест
   `AddonBackpackTest` регистрирует два рюкзака из тестового мода так, как это сделал бы аддон.

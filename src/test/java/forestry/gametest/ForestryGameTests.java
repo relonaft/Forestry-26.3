@@ -65,6 +65,10 @@ public final class ForestryGameTests {
 		if (FMLEnvironment.getDist() == Dist.CLIENT && !bookSnapshots.isEmpty()) {
 			forestry.gametest.client.BookSnapshots.register(bookSnapshots);
 		}
+		String jeiSnapshots = System.getProperty("forestry.jeiSnapshots", "");
+		if (FMLEnvironment.getDist() == Dist.CLIENT && !jeiSnapshots.isEmpty()) {
+			forestry.gametest.client.JeiSnapshots.register(jeiSnapshots);
+		}
 	}
 
 	private void collect(String className) {

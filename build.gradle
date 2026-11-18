@@ -139,6 +139,8 @@ neoForge {
 			client()
 			// `-Pforestry.bookSnapshots=<world>` pages through the Forester's Manual and saves every spread (src/test BookSnapshots)
 			systemProperty 'forestry.bookSnapshots', providers.gradleProperty('forestry.bookSnapshots').getOrElse('')
+			// `-Pforestry.jeiSnapshots=<world>` shows every Forestry JEI category and tries recipe transfer (src/test JeiSnapshots)
+			systemProperty 'forestry.jeiSnapshots', providers.gradleProperty('forestry.jeiSnapshots').getOrElse('')
 		}
 
 		server {
@@ -470,6 +472,7 @@ repositories {
 dependencies {
 	// JEI OPTIONAL
 	compileOnly "mezz.jei:jei-$minecraftVersion-neoforge-api:$jeiVersion"
+	testCompileOnly "mezz.jei:jei-$minecraftVersion-neoforge-api:$jeiVersion"
 	runtimeOnly "mezz.jei:jei-$minecraftVersion-neoforge:$jeiVersion"
 	// Curios Optional
 	implementation "top.theillusivec4.curios:curios-neoforge:${curiosVersion}+${minecraftVersion}"
